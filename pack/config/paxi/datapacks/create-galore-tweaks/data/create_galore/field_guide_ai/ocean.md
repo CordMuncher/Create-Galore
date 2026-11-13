@@ -1,4 +1,4 @@
-<!-- sources sha256:2ef9c01a0a4b9b6582c1d2cd2fc9a072aeb684941c315c50e590d60d0b55ad3d -->
+<!-- sources sha256:93e5eed5d431c49e2a7c18984f7c8086531b35332fe415d3a0b7219d99eb8cc9 -->
 # The Ocean (ocean)
 Create Deep Seas (submarines, High Seas surface ships), Aquatic Ambitions, sea life mods, Aquamirae, diving, structures.
 
@@ -9,14 +9,18 @@ Create Deep Seas (submarines, High Seas surface ships), Aquatic Ambitions, sea l
 - Ballast Vent [create_submarine:ballast_vent]: the sea valve; at least one face must touch the sea water. Every face takes a pipe. Pipe vent, pump and tanks together.
 - Ballast Tank [create_submarine:ballast_tank]: holds the water that weighs the ship down. Read capacity with Engineer's Goggles (see create_basics/tools_wrench).
 - Each empty tank lifts about 75 units of ship mass (`ballastLiftPerTank` in Deep Seas config (see glossary/config)). Plank ~1, iron block ~3.5, machines more; a small iron sub can need a dozen tanks.
-- Tip: fit a few spare tanks; a sub with barely enough lift sinks slowly even with every tank empty.
+- Fit about mass / 75 tanks and a couple spare; more only slows the dive (each tank is 8000 mB the pumps must move first).
 - With full tanks a sub drops fast: past 15 blocks a second in deep water, so start pumping out before the bottom. A sub resting on the sea floor may only lift off once its tanks are nearly empty; give it a moment after the last tank drains.
 - Onboard Computer [create_submarine:command_sub]: depth autopilot. Click its screen to set target depth and speed; it drives the pumps to hold depth. With a Sonar on board it can also follow the sea floor and keep the keel clear.
 - Pump Controllers on the same ship are found automatically; pipe one between vent and tanks. More controllers or faster rotation = quicker dives. Without a Computer a Pump Controller works like an ordinary pump.
 - Sonar [create_submarine:sonar]: maps floor, rocks, ships and mines around you on the Computer's screen.
 - Pumps and thrusters run on Create rotation (see create_basics/rotation) and fluids (see create_basics/fluids).
 - Tip: press W over any Deep Seas block for its Ponder (see start_here/tools).
-- Submarine Propeller [create_submarine:submarine_propeller]: strong in water, useless in air. 4 in a 2x2 square facing one way merge into one big propeller.
+- Submarine Propeller [create_submarine:submarine_propeller]: strong in water, useless in air. 4 in a 2x2 or 9 in a 3x3 square facing one way merge into one big propeller; a shaft into any one turns the whole square. Push direction depends on spin; a Wrench reverses it.
+- A sub that works: it counts as a submarine only while its Oxygen Diffuser runs (lever beside it, oxygen piped from an Electrolyzer with a Shaft in its module slot, own engine, switched on in its screen, sea water pumped in from a Ballast Vent). Without air it is a boat: tilts, cabin floods under water. Nothing may sit on top of an Electrolyzer or Diffuser (they break).
+- Ballast Tanks go in the roof: surfaced, a sub floats with its tanks at the waterline, so roof tanks keep hull and propellers under. Pump Controller on its own engine, piped to tanks and a floor Ballast Vent: at 32 RPM about 310 mB/s on the Computer's fast setting; ten tanks start down ~45 s after a depth is set.
+- Drive: a 3x3 Submarine Propeller square each side of the stern, each on its own Portable Engine through an Analog Transmission: ~5 blocks/s at 32 RPM (a 2x2 pair ~2). Squares level with the middle of the sub's weight: under it they tip the bow up and drive it to the surface; over it they push the bow down.
+- Steer: a comparator each side of the Steering Wheel linked to that side's transmission; full turn stops one square and swings the sub ~25 deg/s. A Throttle Lever linked to both sets speed. A Winds & Weather Rudder spins and tips a sub at the surface: boats only. Board through an iron trapdoor in the roof with a ladder down; full blocks, machines and shut trapdoors seal; slabs, stairs and panes leak.
 - Water Thruster [create_submarine:water_thruster]: uses water and rotation for thrust; more pressure and speed = faster.
 - Hull strength, oxygen, airlocks: Hulls and Pressure (see ocean/hulls_and_pressure). Surface ships and sails: Sailing (see ocean/sailing). Where to dive: Underwater Places (see ocean/underwater_places).
 - Deep Seas also holds an unfinished Create Abyss dimension; it only switches on in development builds, so it is not in this pack.

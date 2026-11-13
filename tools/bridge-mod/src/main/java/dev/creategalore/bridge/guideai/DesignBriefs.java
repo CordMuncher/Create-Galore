@@ -156,17 +156,41 @@ final class DesignBriefs {
             what it can't do (it goes where the wind and a small propeller take it).""";
 
     static final String BOAT = """
-            A boat or submarine has a real hull: a keel, a bow that narrows, sides that curve with stairs and slabs, a \
+            A boat has a real hull: a keel, a bow that narrows, sides that curve with stairs and slabs, a \
             deck with a rail and a cabin or wheelhouse, sized to what it carries. The helmsman stands on the deck at the \
             helm, the engine and its fuel are reached from inside the hull, and it floats level and upright because of \
             where its hold, rooms and machines go.""";
+
+    static final String SUBMARINE = """
+            Design every submarine new through build_model's submarine: say who goes aboard (crew), beds, barrels, hull \
+            (copper to 85 m, iron to 101 m) and whether it has a bow window (Pressurized Glass: plain glass gives way \
+            at 28 m), and the server \
+            lays it out by Deep Seas' rules and checks it, so its first version dives, surfaces and stays dry; then \
+            change it with from_draft only where the player asked for something those don't cover, keeping its \
+            machinery, tanks and propellers in place. One the player built stays theirs: copy it with from_world and \
+            improve it in its own shape by the rules below. The rules, to explain the design and to judge one the \
+            player built: it is a submarine only while an Oxygen Diffuser runs (a lever beside it, oxygen piped in \
+            from an Electrolyzer that has a Shaft in its module slot, turns, and is switched on, fed sea water by a \
+            pump from a Ballast Vent); otherwise Deep Seas treats it as a boat, which floods inside and tilts under \
+            water. Nothing goes on top of an Electrolyzer or a Diffuser: they break themselves. Ballast Tanks push \
+            through the centre of mass toward a climb or sink rate, each driving about 75 mass, so it needs its mass \
+            over 75 of them and no more, since every tank is 8000 mB to pump before it dives; surfaced they ride at the \
+            waterline, so they go in the roof and the hull and propellers stay under. A Pump Controller on its own \
+            engine, piped to the tanks and a Ballast Vent, fills and empties them, and an Onboard Computer at the helm \
+            runs it to hold the depth the pilot sets. Submarine Propellers in a 2x2 or 3x3 square push as one from \
+            any one driven block (16 or 81 times a single one), along their axis by the way they spin: a wrench \
+            reverses them. Steer with a square each side slowed one side at a time by comparators at the Steering \
+            Wheel, through Analog Transmissions with the Throttle Lever; a Winds & Weather Rudder spins and tips a \
+            submarine at the surface. Full blocks, machines and shut trapdoors seal; a slab, stair, pane or fence in \
+            the hull lets the sea in. The hatch is an iron trapdoor on the roof, above the waterline when surfaced, \
+            with a ladder down; every engine is reached from inside.""";
 
     private static final net.minecraft.tags.TagKey<net.minecraft.world.level.block.Block> WINDMILL_SAILS =
             net.minecraft.tags.BlockTags.create(net.minecraft.resources.ResourceLocation.parse("create:windmill_sails"));
 
     /** The briefs for the kinds of build this model is, not counting those already given in this answer. */
     static List<String> forModel(Map<BlockPos, BlockState> cells, Set<String> given) {
-        boolean envelope = false, wing = false, prop = false, water = false, wheels = false;
+        boolean envelope = false, wing = false, prop = false, water = false, wheels = false, sub = false;
         int bottom = Integer.MAX_VALUE, building = 0;
         for (BlockPos p : cells.keySet()) bottom = Math.min(bottom, p.getY());
         for (Map.Entry<BlockPos, BlockState> e : cells.entrySet()) {
@@ -180,6 +204,8 @@ final class DesignBriefs {
             if (s.is(WINDMILL_SAILS) || id.contains("wing") || id.endsWith("_symmetric_sail") || id.equals("aeroworks:gyroscope")) wing = true;
             if (id.endsWith("propeller") || id.startsWith("createpropulsion:") || id.endsWith("propeller_bearing")) prop = true;
             if (id.startsWith("create_high_seas:") || id.startsWith("create_submarine:")) water = true;
+            if (id.equals("create_submarine:ballast_tank") || id.equals("create_submarine:oxygene_diffuser")
+                    || id.equals("create_submarine:submarine_propeller") || id.equals("create_submarine:command_sub")) sub = true;
             if (id.equals("offroad:wheel_mount")) wheels = true;
         }
         List<String> kinds = new ArrayList<>();
@@ -188,7 +214,8 @@ final class DesignBriefs {
         if (envelope || wing && prop) kinds.add("aircraft");
         if (envelope) kinds.add("airship");
         else if (wing && prop) kinds.add("plane");
-        if (water) kinds.add("boat");
+        if (sub) kinds.add("submarine");
+        else if (water) kinds.add("boat");
         List<String> out = new ArrayList<>();
         for (String k : kinds) {
             if (!given.add(k)) continue;
@@ -198,6 +225,7 @@ final class DesignBriefs {
                 case "aircraft" -> AIRCRAFT;
                 case "airship" -> AIRSHIP;
                 case "plane" -> PLANE;
+                case "submarine" -> SUBMARINE;
                 default -> BOAT;
             });
         }

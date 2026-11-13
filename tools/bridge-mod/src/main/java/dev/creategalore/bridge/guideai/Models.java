@@ -129,7 +129,7 @@ public final class Models {
         JsonObject props = new JsonObject();
         props.add("title", WorldTools.prop("string", "A few words naming the model, or empty."));
         props.add("size_x", WorldTools.prop("integer", "Width in blocks, 1 to " + MAX_SIZE + "; 0 to fit from_world, "
-                + "airship or plane."));
+                + "airship, plane or submarine."));
         props.add("size_y", WorldTools.prop("integer", "Height in blocks, 1 to " + MAX_SIZE + "; 0 to fit, as for size_x."));
         props.add("size_z", WorldTools.prop("integer", "Depth in blocks, 1 to " + MAX_SIZE + "; 0 to fit, as for size_x."));
         JsonObject fromWorld = new JsonObject();
@@ -205,6 +205,7 @@ public final class Models {
         props.add("speeds", speeds);
         props.add("airship", Airships.definition());
         props.add("plane", Planes.definition());
+        props.add("submarine", Submarines.definition());
         props.add("open_by_request", WorldTools.prop("boolean", "True only when the player asked for an open vehicle (no cabin)."));
         props.add("new_by_request", WorldTools.prop("boolean", "True if the player asked for a new design."));
         props.add("part_of_vehicle", WorldTools.prop("boolean", "True only when the model shows one part of a vehicle (an "
@@ -346,6 +347,31 @@ public final class Models {
             sz = layout.sz();
             laidOut = layout.summary();
             open = true;
+        }
+        // A submarine the server lays out the same way.
+        JsonArray submarine = array(input, "submarine");
+        if (submarine.size() > 1) return Result.problem("Not built: submarine takes one submarine at most.");
+        if (submarine.size() == 1 && submarine.get(0).isJsonObject()) {
+            if (airship.size() > 0 || plane.size() > 0 || !array(input, "from_world").isEmpty() || Diagrams.intOr(input, "from_draft", 0) != 0
+                    || !array(input, "move").isEmpty() || !array(input, "layers").isEmpty() || !array(input, "blocks").isEmpty())
+                return Result.problem("Not built: the server lays out a submarine by itself, so leave airship, plane, from_world, "
+                        + "from_draft, move, layers and blocks empty with it; change the result afterwards with from_draft.");
+            if (!flag(input, "new_by_request") && ownBuild(drafts, briefs))
+                return Result.problem("Not built: this page is about the player's own build" + ownDraft(drafts) + ", and submarine "
+                        + "would swap it for a new design of yours. Keep improving theirs: start from their copy with from_draft "
+                        + "(or copy it again with from_world) and fix each PROBLEM in its own shape and look. Set new_by_request "
+                        + "true only if the player asked for a new design rather than theirs made better.");
+            if (level == null) return Result.problem("Not built: submarines are laid out against the server's own checks, which "
+                    + "aren't available here.");
+            List<String> wrong = new ArrayList<>();
+            Submarines.Spec spec = Submarines.spec(submarine.get(0).getAsJsonObject(), wrong);
+            Airships.Layout layout = wrong.isEmpty() ? Submarines.design(spec, level, wrong) : null;
+            if (layout == null) return Result.problem("Not built: " + String.join("; ", wrong) + ".");
+            cells.putAll(layout.cells());
+            sx = layout.sx();
+            sy = layout.sy();
+            sz = layout.sz();
+            laidOut = layout.summary();
         }
         // A build copied from the world: its blocks are the starting point, and what changes on them is marked.
         Map<BlockPos, BlockState> base = null;

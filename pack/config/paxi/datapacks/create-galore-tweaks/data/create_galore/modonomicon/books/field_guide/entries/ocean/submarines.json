@@ -13,7 +13,7 @@
     {
       "type": "modonomicon:text",
       "title": "Submarines",
-      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue107[#]() A sub floats until its **Ballast Tanks** fill with sea water. Pump in to sink, out to rise.\n- The **Ballast Vent** is the sea valve and must touch the water.\n- Each tank lifts about 75 units of ship mass.\n- The **Onboard Computer** can hold a target depth for you."
+      "text": "[#](FFFFFF)[#]() **Key points**\n\n- [#](FFFFFF)[#]() A sub floats until its **Ballast Tanks** fill with sea water. Pump in to sink, out to rise.\n- The **Ballast Vent** is the sea valve and must touch the water.\n- Each tank lifts about 75 units of ship mass.\n- The **Onboard Computer** can hold a target depth for you."
     },
     {
       "type": "modonomicon:text",
@@ -32,7 +32,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Each empty tank lifts about **75 units of ship mass** (`ballastLiftPerTank` in the Deep Seas [#](7A3C9A)[config](entry://glossary/config)[#]()). A plank weighs about 1, an iron block about 3.5 and machines more, so a small iron sub can need a dozen tanks.\\\n\\\nFit a few **spare tanks**: a sub with barely enough lift sinks slowly even with every tank empty."
+      "text": "Each empty tank lifts about **75 units of ship mass** (`ballastLiftPerTank` in the Deep Seas [#](7A3C9A)[config](entry://glossary/config)[#]()). A plank weighs about 1, an iron block about 3.5 and machines more, so a small iron sub can need a dozen tanks.\\\n\\\nFit about its mass divided by 75, and a couple spare. More than that only slows the dive: every tank holds 8000 mB that the pumps must move first."
     },
     {
       "type": "modonomicon:text",
@@ -68,6 +68,26 @@
       "text": "Autopilot for depth. With a Sonar on board it can also follow the sea floor and keep the keel clear."
     },
     {
+      "type": "modonomicon:text",
+      "title": "A sub that works",
+      "text": "A build only counts as a submarine while its **Oxygen Diffuser** runs: a lever beside it, and oxygen piped in from an **Electrolyzer** (a Shaft in its module slot, its own engine, switched on in its screen, sea water pumped in from a Ballast Vent).\\\n\\\nWithout air it is a boat. It tilts and its cabin floods under water. Nothing may sit on top of an Electrolyzer or a Diffuser: they break."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Put the **Ballast Tanks in the roof**. Surfaced, a sub floats with its tanks at the waterline, so roof tanks keep the hull and propellers under, ready to drive.\\\n\\\nGive the **Pump Controller** its own engine, piped to the tanks and to a Ballast Vent in the floor. At 32 RPM it moves about 310 mB a second on the Computer's fast setting: ten tanks start down about 45 s after you set a depth."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Drive with a **3x3 Submarine Propeller square** each side of the stern, each on its own Portable Engine through an **Analog Transmission**. At 32 RPM that is about 5 blocks a second (a 2x2 pair gives about 2).\\\n\\\nSet the squares level with the middle of the sub's weight. Under it, they tip the bow up and drive it to the surface; over it, they push the bow down."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Steer** with a comparator each side of the Steering Wheel, linked to that side's transmission: a full turn stops one square and swings the sub round at about 25° a second. A Throttle Lever linked to both sets the speed.\\\n\\\nA Winds & Weather Rudder spins and tips a sub at the surface, so leave it to boats. Board through an iron trapdoor in the roof with a ladder down: full blocks, machines and shut trapdoors seal; slabs, stairs and panes leak."
+    },
+    {
       "type": "modonomicon:spotlight",
       "item": {
         "item": "create_submarine:sonar"
@@ -78,7 +98,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Pumps and thrusters run on Create [#](2E5AAC)[rotation](entry://create_basics/rotation)[#]() and [#](2E5AAC)[fluids](entry://create_basics/fluids)[#](), so a sub is a Create machine through and through.\\\n\\\n[#](FFFFFF)\ue102[#]() **Tip:** press **W** over any Deep Seas block for its [#](2E5AAC)[Ponder](entry://start_here/tools)[#]()."
+      "text": "Pumps and thrusters run on Create [#](2E5AAC)[rotation](entry://create_basics/rotation)[#]() and [#](2E5AAC)[fluids](entry://create_basics/fluids)[#](), so a sub is a Create machine through and through.\\\n\\\n[#](FFFFFF)[#]() **Tip:** press **W** over any Deep Seas block for its [#](2E5AAC)[Ponder](entry://start_here/tools)[#]()."
     },
     {
       "type": "modonomicon:spotlight",
@@ -86,7 +106,7 @@
         "item": "create_submarine:submarine_propeller"
       },
       "title": "Submarine Propeller",
-      "text": "Strong in water, useless in air. Four in a 2x2 square facing one way merge into one big propeller."
+      "text": "Strong in water, useless in air. Four in a 2x2 square, or nine in a 3x3, facing one way merge into one big propeller, and a shaft into any one of them turns the whole square. Which way it pushes depends on which way it spins: a Wrench reverses it."
     },
     {
       "type": "modonomicon:spotlight",
@@ -104,7 +124,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "[#](FFFFFF)\ue103[#]() **In depth.** Deep Seas also holds an unfinished Create Abyss dimension, but it only switches on in development builds, so it is not in this pack."
+      "text": "[#](FFFFFF)[#]() **In depth.** Deep Seas also holds an unfinished Create Abyss dimension, but it only switches on in development builds, so it is not in this pack."
     },
     {
       "type": "modonomicon:text",
