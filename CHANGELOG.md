@@ -5,6 +5,18 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.81
+
+### Added
+- Create Galore Fishing 0.3.31.
+
+### Fixed
+- **Rods broke mid-fight with the drag set below their rating.** A rod wore down whenever it was loaded past 70% of its rating, so a full-durability 9 kg Iron Rod on a 7.6 kg drag lost about 120 durability to a 20 kg fish, nearly 300 to a 40 kg one and broke outright on bigger fish; a rod worn that way also holds less, so the next fight cracked it even sooner. A rod now wears and can crack only while it is loaded past its rating, and a drag at or below the rod's rating slips before a jump or run can push the rod past it, the same way the drag already protects the line. In hand fishing and on Reel Drives alike, a rod under such a drag now only pays the 1 durability every fight costs. A drag set over the rod's rating still wears and cracks it.
+- **Field Guide, Fishing: The Fight** now says a rod wears only past its rating.
+
+### Removed
+- Rod wear from loads under the rod's rating.
+
 ## 0.6.80
 
 ### Added

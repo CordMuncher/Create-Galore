@@ -29,11 +29,12 @@ import java.util.random.RandomGenerator;
  *       pumped in: lift, then wind down.</li>
  *   <li>Runs and jumps add sudden spikes. Line stretch, a smooth drag and a bent rod soak part of each spike; a
  *       rod pointed straight down the line soaks nothing. A working drag set at or below the line's test always
- *       lets line go before the line breaks, so the spike can't snap it.</li>
+ *       lets line go before the line breaks, so the spike can't snap it; one at or below the rod's rating keeps the
+ *       rod under its rating the same way.</li>
  *   <li>Failures: tension over the breaking load snaps the line (only possible with the drag over the line's test,
  *       on a pole with no drag, or with the spool empty), a toothy fish chews line without an iron or steel leader,
  *       fraying it a little all fight and more on each run or jump, in proportion to how big it is for the line
- *       (one far too big can bite straight through), overloading the rod can crack it, a slack line (the fish not
+ *       (one far too big can bite straight through), loading the rod past its rating wears it and can crack it, a slack line (the fish not
  *       pulling and the angler not winding) or a jump on a loose line can throw the hook, and a rod, reel or line
  *       worn through mid-fight breaks there and then.</li>
  *   <li>The fish tires in proportion to the tension it works against (so a drag set too light never tires it)
@@ -54,6 +55,8 @@ public final class Fight {
     public static final double GRIND_PER_SECOND = 4;
     /** Durability one unit of {@link #reelWear()} costs a reel. */
     public static final double REEL_DURABILITY_PER_WEAR = 3;
+    /** Rod wear per second per unit of load past the rod's rating (a rod at 1.5x its rating wears 1 a second). */
+    public static final double ROD_WEAR_PER_OVERLOAD = 2;
     /** Durability one unit of {@link #rodWear()} costs a rod. */
     public static final double ROD_DURABILITY_PER_WEAR = 15;
     /** Water drag on a towed fish, kgf per kg^(2/3) per (m/s)^2. */
@@ -401,6 +404,10 @@ public final class Fight {
                 // A drag set at or below the line's test slips before the line can break: the jolt can take the
                 // line close to its test, never past it.
                 if (drag <= breakLoad) peak = Math.min(peak, drag + (breakLoad - drag) * 0.9);
+                // The same for the rod: the rod only feels what the line pulls, so a drag at or below its rating
+                // slips before a jolt can take the rod past it.
+                double rodRating = tackle.rodMaxLoad();
+                if (drag <= rodRating) peak = Math.min(peak, drag + (rodRating - drag) * 0.9);
             }
             peakTension = peak;
         }
@@ -436,8 +443,10 @@ public final class Fight {
             loss = Loss.REEL_SEIZED;
             return;
         }
+        // A rod wears only while it is loaded past its rating: held at a drag below its rating it bends, it doesn't
+        // tire, however long the fight (a drag set below the rating is what the rating is for).
         double rodLoad = peakTension / tackle.rodMaxLoad();
-        if (rodLoad > 0.7) rodWear += DT * (rodLoad - 0.7) * 2;
+        if (rodLoad > 1) rodWear += DT * (rodLoad - 1) * ROD_WEAR_PER_OVERLOAD;
         if (rodWear * ROD_DURABILITY_PER_WEAR >= rodLife) {
             outcome = Outcome.ROD_BROKE;
             loss = Loss.ROD_WORN;
@@ -744,7 +753,7 @@ public final class Fight {
         return fish;
     }
 
-    /** Rod condition used up, in "seconds at full overload": the caller turns it into durability. */
+    /** Rod condition used up by loading it past its rating: the caller turns it into durability. */
     public double rodWear() {
         return rodWear;
     }

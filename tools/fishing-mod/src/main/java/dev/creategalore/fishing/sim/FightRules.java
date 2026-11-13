@@ -86,6 +86,22 @@ public final class FightRules {
         while (!crack.outcome().over() && crack.ticks() < 2000) crack.tick(idle, rng);
         out.add(new Check(crack.outcome() == Outcome.ROD_BROKE, "a rod worn through mid-fight breaks (" + crack.outcome() + ")"));
 
+        // A rod is safe under a drag below its rating (13 Nov: a full 9 kg rod at 7.6 kg drag kept breaking on
+        // big fish, because it wore from 70% of its rating). Held at that drag for minutes with jumps and runs on
+        // braid (which soaks nothing), it never goes past its rating, takes no wear and never cracks.
+        Fight underRating = new Fight(new FishFight(1.2, 1000, 2.5, Curve.preset("middle"), 0.3, 0.3, 0, false),
+                new Tackle(9, 0.5, true, 10, 1.4, 16, 0.85, 10_000, 18, 0.1, Double.NaN, false, 1), 80, 30);
+        underRating.wearLimits(Double.POSITIVE_INFINITY, 1, Double.POSITIVE_INFINITY);
+        Controls underRatingDrag = new Controls();
+        underRatingDrag.drag = 7.6;
+        underRatingDrag.rodAngle = Math.toRadians(8);
+        rng = new SplittableRandom(12);
+        while (!underRating.outcome().over() && underRating.ticks() < 20 * 300) underRating.tick(underRatingDrag, rng);
+        out.add(new Check(!underRating.outcome().over() && underRating.rodWear() == 0 && underRating.highestTension() <= 9,
+                String.format(Locale.ROOT, "a rod with a drag below its rating never wears or cracks "
+                        + "(%s after %.0f s, highest load %.2f of 9 kg, rod wear %.3f)",
+                        underRating.outcome(), underRating.seconds(), underRating.highestTension(), underRating.rodWear())));
+
         // Emre (22 Oct): a line holds or snaps; load never weakens it. Only teeth fray it, so a line with almost no
         // fraying left, fought by a fish without teeth well below its test, still holds however long the fight.
         Fight fray = new Fight(steady(0.5, 1000), rig(10, 1000, 10_000), 10, 30);

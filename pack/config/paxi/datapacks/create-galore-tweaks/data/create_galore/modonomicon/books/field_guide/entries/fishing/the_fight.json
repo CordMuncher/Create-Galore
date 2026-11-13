@@ -96,7 +96,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "[#](FFFFFF)[#]() **In depth.** A rod loaded above 70%% of its rating wears; above its rating it can crack. A worn rod holds less (down to 60%% when nearly broken), a frayed line holds less (down to half its test; the rod's tooltip, the drag readout and the HUD show what it holds now), a worn reel's drag gets jerky."
+      "text": "[#](FFFFFF)[#]() **In depth.** A rod wears only while loaded past its rating, and there it can crack. With the drag at or below the rod's rating the drag slips first, even on a jump or a run, so the rod never gets there however long the fight. A worn rod holds less (down to 60%% when nearly broken), a frayed line holds less (down to half its test; the rod's tooltip, the drag readout and the HUD show what it holds now), a worn reel's drag gets jerky."
     },
     {
       "type": "modonomicon:text",
