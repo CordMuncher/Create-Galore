@@ -863,3 +863,24 @@ rating read 6 kg. Nothing in the fight changed (the readout code predates the 0.
 sits in decides what it showed). Now `torque / lowest gear` (0.25): 48 kg for the Fuel drive, the network's headroom x 4
 for the Geared one. The Basic drive has no gearbox and is unchanged. `/cgfish machine` still prints the current gear's
 limit.
+
+## Hooked fish stay out of waterfalls; chasing one in a boat gains line (14 Nov 2026, mod 0.3.33, pack 0.6.86)
+
+Reported: a hooked fish swam into a waterfall pouring off a floating island and ended up at the top of the island in
+one tick; and a fast boat chasing a hooked fish never gained on it, the fish seemed to speed up to the boat's pace.
+
+- **Waterfall cause.** `FishingWater.surface` climbed any fluid above the spot (up to 32 blocks), so under a waterfall
+  the "surface" was the top of the fall, and `CastHook.moveFish` puts the fish just under the surface. `fishFits` also
+  accepted falling water as somewhere to swim.
+- **Waterfall fix.** The surface search stops at falling fluid (`FishingWater.falling`: flowing with FALLING set), and
+  a hooked fish swims only in `swimmable` fluid (its medium, not falling) whose surface is within
+  `MAX_SURFACE_STEP` (1 block) of the one it is under, so a waterfall or a higher pool turns it back like a shore.
+  Waiting rigs use the same surface, so a float towed under a waterfall stays on the pool too.
+- **Chase cause.** `CastHook.recede` (and `Fight`) only counted the angler moving away (`max(0, away)`). Moving toward
+  the fish did nothing in the fight, and `moveFish` re-placed the fish at the fight's full distance from the rod tip
+  every tick, so it moved with the boat.
+- **Chase fix.** `recede` is signed: closing on the fish feeds straight into the line spring, the line slackens by
+  that much and the reel takes it up. The fish keeps its own speed through the water. Not winding while chasing just
+  leaves slack (which can throw the hook, as before). Simulator fights have `recede = 0`, so Monte Carlo is unchanged.
+- Checks: FightRules "chasing at 8 m/s ... winding" closes ~28 m in 5 s (standing still loses ~4 m). Self-test `side`
+  adds a chase (closes, fish moves no more than it swims) and a falling-water curtain over the pool (fish stays in it).

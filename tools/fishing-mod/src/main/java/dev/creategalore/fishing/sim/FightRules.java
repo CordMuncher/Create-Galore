@@ -132,6 +132,12 @@ public final class FightRules {
         out.add(tow(0.3, false));
         out.add(tow(15, true));
 
+        // Chasing: a boat closing on a fish that out-pulls the drag gains line by winding in the slack; the fish
+        // keeps its own pace through the water instead of matching the boat's.
+        out.add(chase(0, true));
+        out.add(chase(-8, true));
+        out.add(chase(-8, false));
+
         // A fish swimming at an angler who walks off faster just gets towed: no line comes off the spool.
         Fight charge = new Fight(new FishFight(0.5, 1000, 1.0, new Curve(new double[]{0}, new double[]{1}), 0, 0, 1, false),
                 rig(10, 1000, 10_000), 0.5, 20);
@@ -338,6 +344,22 @@ public final class FightRules {
         boolean ok = pumping ? gained > 10 : gained < 0.5;
         return new Check(ok, String.format(Locale.ROOT, "%s an 8 kgf fish the crank can't turn against gains %.1f m in 30 s",
                 pumping ? "pumping" : "reeling only", gained));
+    }
+
+    /** A 20 kg fish taking line off a 10 kg drag for 5 s, with the angler closing on it at {@code -recede} m/s. */
+    private static Check chase(double recede, boolean reeling) {
+        Fight fight = new Fight(steady(1.5, 1000), rig(10, 1000, 10_000), 20, 30);
+        Controls c = new Controls();
+        c.drag = 10;
+        c.reeling = reeling;
+        c.recede = recede;
+        SplittableRandom rng = new SplittableRandom(3);
+        for (int i = 0; i < 100 && !fight.outcome().over(); i++) fight.tick(c, rng);
+        double gained = 30 - fight.distance();
+        boolean ok = recede == 0 ? gained < 0 : reeling ? gained > 20 && fight.lineOut() < 30 : gained > 5 && fight.lineOut() <= 30 + 1e-9;
+        return new Check(ok, String.format(Locale.ROOT, "%s a fish taking line on a 10 kg drag%s: %.1f m closer in 5 s, %.1f m of line out",
+                recede == 0 ? "standing still with" : "chasing at " + (-recede) + " m/s", reeling ? ", winding" : ", not winding",
+                gained, fight.lineOut()));
     }
 
     private static Check tow(double kg, boolean wantsLine) {

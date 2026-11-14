@@ -120,6 +120,8 @@ public class CastHook extends FishingHook {
     /** The rig's dead weight when junk or treasure is on the line. */
     static final FishFight DEAD_WEIGHT = new FishFight(0.6, 0.01, 0.4, Curve.preset("steady"), 0, 0, 0, false);
     private static final double GRAVITY = 0.04;
+    /** How far up or down (blocks) a hooked fish can follow the surface from one column to the next. */
+    private static final double MAX_SURFACE_STEP = 1.0;
 
     private enum CatchKind { FISH, JUNK, TREASURE, CRATE }
 
@@ -943,7 +945,7 @@ public class CastHook extends FishingHook {
         if (last.distanceToSqr(anchor) > 400) return recedeSpeed = 0;
         double away = anchor.distanceTo(position()) - last.distanceTo(position());
         // Smoothed over a few ticks, so a step or a bob of the boat isn't a yank; walking or sailing off is.
-        recedeSpeed = 0.7 * recedeSpeed + 0.3 * Math.max(0, away) / Fight.DT;
+        recedeSpeed = 0.7 * recedeSpeed + 0.3 * away / Fight.DT;
         return recedeSpeed;
     }
 
@@ -958,10 +960,11 @@ public class CastHook extends FishingHook {
         double distance = fight.distance();
         double radius = Math.max(1, distance);
         double step = fight.sideSpeed() * Fight.DT / radius;
-        // Swimming sideways into a shore or a pier, it turns back. Pushed out against one, it slides along the edge a
-        // little either way, never faster than it swims.
+        double here = medium.equals("void") ? FishingWater.voidSurface(level()) : FishingWater.surface(level(), blockPosition());
+        // Swimming sideways into a shore, a pier or a waterfall, it turns back. Pushed out against one, it slides along
+        // the edge a little either way, never faster than it swims.
         double h = heading + step;
-        if (!fishFits(tip, h, distance) && step != 0 && fishFits(tip, heading, distance)) {
+        if (!fishFits(tip, h, distance, here) && step != 0 && fishFits(tip, heading, distance, here)) {
             fight.blockedSideways();
             h = heading;
         }
@@ -969,7 +972,7 @@ public class CastHook extends FishingHook {
         Vec3 next = null;
         for (int attempt = 0; attempt < 9 && next == null; attempt++) {
             double a = h + (attempt == 0 ? 0 : (attempt % 2 == 0 ? 1 : -1) * nudge * ((attempt + 1) / 2));
-            if (fishFits(tip, a, distance)) {
+            if (fishFits(tip, a, distance, here)) {
                 heading = a;
                 next = new Vec3(tip.x + Math.cos(a) * distance, getY(), tip.z + Math.sin(a) * distance);
             }
@@ -987,10 +990,17 @@ public class CastHook extends FishingHook {
         setPos(next.x, surface - (fight.jumped() ? -0.6 : fishDepth), next.z);
     }
 
-    /** Whether the fish fits {@code distance} out from {@code tip} at {@code angle}: its column holds its fluid. */
-    private boolean fishFits(Vec3 tip, double angle, double distance) {
+    /**
+     * Whether the fish fits {@code distance} out from {@code tip} at {@code angle}: its column holds its fluid, not
+     * falling, with a surface no more than a block from {@code surface} (the one it is under now). A waterfall or a
+     * pool a step higher is a wall to it, as a shore is: a fish never climbs a fall or hops up into another pool.
+     */
+    private boolean fishFits(Vec3 tip, double angle, double distance, double surface) {
         BlockPos column = BlockPos.containing(tip.x + Math.cos(angle) * distance, getY(), tip.z + Math.sin(angle) * distance);
-        return FishingWater.in(level(), column, medium) || FishingWater.in(level(), column.below(), medium);
+        BlockPos in = FishingWater.swimmable(level(), column, medium) ? column
+                : FishingWater.swimmable(level(), column.below(), medium) ? column.below() : null;
+        if (in == null) return false;
+        return medium.equals("void") || Math.abs(FishingWater.surface(level(), in) - surface) <= MAX_SURFACE_STEP;
     }
 
     /**

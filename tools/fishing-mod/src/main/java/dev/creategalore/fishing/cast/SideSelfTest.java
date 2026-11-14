@@ -18,13 +18,16 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.common.util.FakePlayerFactory;
 
 /**
  * The {@code side} self-test: a hooked fish goes round the angler at its own swimming speed, not faster the further
- * out it is, and an angler moving sideways (a boat under way) swings the line instead of carrying the fish along.
+ * out it is, an angler moving sideways (a boat under way) swings the line instead of carrying the fish along, a boat
+ * chasing the fish closes on it instead of pushing it ahead, and a waterfall pouring into the pool is no way up.
  */
 public final class SideSelfTest {
     private static final int HALF = 40;
@@ -129,9 +132,60 @@ public final class SideSelfTest {
             r.check(carried < 4, String.format(Locale.ROOT,
                     "%s: the angler moving 8 m sideways moves the fish %.1f m that way (it can swim %.1f in that time)",
                     name, carried, most * steps * Fight.DT));
+            if (hook.isRemoved() || hook.phase() != CastHook.Phase.FIGHTING) return;
+
+            // A boat chasing the fish at 8 m/s for a second: it closes in, and the fish moves no further than it swims.
+            Vec3 before = hook.position();
+            double gapBefore = flat(player.position(), before);
+            int chase = 20;
+            for (int i = 0; i < chase && !hook.isRemoved() && hook.phase() == CastHook.Phase.FIGHTING; i++) {
+                Vec3 to = new Vec3(hook.getX() - player.getX(), 0, hook.getZ() - player.getZ()).normalize().scale(0.4);
+                player.setPos(player.getX() + to.x, player.getY(), player.getZ() + to.z);
+                hook.tick();
+            }
+            if (hook.isRemoved() || hook.phase() != CastHook.Phase.FIGHTING) {
+                r.info(name + ": the fight ended during the chase");
+                return;
+            }
+            double moved = flat(before, hook.position());
+            double gapAfter = flat(player.position(), hook.position());
+            r.check(moved <= most * chase * Fight.DT + 0.5 && gapAfter < gapBefore - 2, String.format(Locale.ROOT,
+                    "%s: chasing at 8 m/s for 8 m closes from %.1f to %.1f m; the fish moved %.1f m (it can swim %.1f)",
+                    name, gapBefore, gapAfter, moved, most * chase * Fight.DT));
+
+            // A curtain of falling water 6 high over the whole pool (as under a waterfall): the fish stays in the pool.
+            List<BlockPos> fall = new ArrayList<>();
+            BlockState falling = Fluids.FLOWING_WATER.getFlowing(8, true).createLegacyBlock();
+            int top = (int) Math.floor(at.y) - 1;
+            for (int x = -HALF; x <= HALF; x++) {
+                for (int z = -HALF; z <= HALF; z++) {
+                    for (int dy = 1; dy <= 6; dy++) {
+                        BlockPos p = new BlockPos(x, top + dy, z);
+                        if (!level.getBlockState(p).isAir()) continue;
+                        level.setBlock(p, falling, Block.UPDATE_CLIENTS);
+                        fall.add(p);
+                    }
+                }
+            }
+            try {
+                double highest = Double.NEGATIVE_INFINITY;
+                for (int i = 0; i < 100 && !hook.isRemoved() && hook.phase() == CastHook.Phase.FIGHTING; i++) {
+                    hook.tick();
+                    highest = Math.max(highest, hook.getY());
+                }
+                r.check(highest <= top + 1.7, String.format(Locale.ROOT,
+                        "%s: under falling water the fish stays in the pool (highest %.1f above the pool's top, a jump is 0.6)",
+                        name, highest - (top + 1)));
+            } finally {
+                for (BlockPos p : fall) level.setBlock(p, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS);
+            }
         } finally {
             hook.discard();
         }
+    }
+
+    private static double flat(Vec3 a, Vec3 b) {
+        return Math.hypot(a.x - b.x, a.z - b.z);
     }
 
     /** How far the fish moved round the rod tip (across the line) this tick, metres. */

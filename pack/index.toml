@@ -1024,7 +1024,7 @@ hash = "cbcd4654f8289b4414ebba7fa2863122bed59c4ebcb3913e8161b9724bc13594"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/fishing.md"
-hash = "682ddcdeb1c01b13ffdef218c11daab36e0a9635b6a8aff47d53cf6e3a8dfcd9"
+hash = "cdb011f795454467f4ecc940bbf093ae913c0aba8c6e5dc95a283e1a5cc3ae5f"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/flight.md"
@@ -1420,7 +1420,7 @@ hash = "8b84c2820461518c8f2af8fbdd5224735104e67f35d1b571bdb26a966c24c366"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/fishing/the_fight.json"
-hash = "bf7c8afdc2777d89bd655382c0c532f0d07c5ea13b36702c8643c8df51876625"
+hash = "35bce1ca9d064edf8d023f2b5fdd1416d0ea9b87d4b462e9f210215c814e70cb"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/fishing/trolling.json"
@@ -5060,8 +5060,8 @@ file = "mods/create-galore-bridge-1.191.0.jar"
 hash = "8800d1493e5ffeed758800c1ec7aadcd91b5a0073d857429bef923563470979c"
 
 [[files]]
-file = "mods/create-galore-fishing-0.3.32.jar"
-hash = "4e56e485d32b44e8fe47f9bcc039f8ec67f4b049b40716c00475413952ddf0a7"
+file = "mods/create-galore-fishing-0.3.33.jar"
+hash = "1ddf41a5d8b384c36b4701ffb6679da7899c45c50767ab4f7453789b15a49631"
 
 [[files]]
 file = "mods/create-galore-lagwatch-1.2.0.jar"
