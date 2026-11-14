@@ -5,6 +5,26 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.88
+
+### Added
+- Create Galore Bridge 1.193.0.
+- **Ask the Book's planes are flown by hand.** A plane the book lays out has no gyroscope: a fourth Portable Engine works Tilt Adapters that swing its ailerons and elevator on Swivel Bearings, so the pilot banks it to turn, and it loops and rolls. The book adds a Gyroscope only for a player who asks for a plane that holds itself level, and says what that costs (it fights every roll and loop).
+- **One propeller on the nose, on a speed controller.** Three Portable Engines under the cockpit floor drive a Rotation Speed Controller set to -256 (no tower of cogwheels); its shaft runs through an Analog Transmission, the throttle, to a twelve-sail Propeller Bearing on the nose. In a test world the two-seater lifts off in about 20 blocks and flies level at about 16 blocks a second on 60% power.
+- **Toe brakes and a real cockpit.** Each main wheel has its own brake, so the plane steers on the ground by braking one wheel, as light planes do. It is flown from a Control Stand with a Joystick Module for the stick, a Lever Module for the throttle and a Pedal Module for each brake.
+- **Schematics print wired.** A model the book saves as a schematic now carries each Redstone Link's frequency, each Rotation Speed Controller's speed and each Wheel Mount's suspension, and a Schematicannon prints them set.
+- **The pilot sits in the back cockpit**, as in an open-cockpit biplane, where the nose propeller doesn't fill the view; a passenger sits in front. One-seat planes lay out this way too.
+- **Sail-winged biplanes.** Asked for sail wings, the book now lays out a 17-wide sail biplane that flies; one deck of sails still can't lift a plane, and the book says so and offers the biplane or Copycat Wings.
+- **The plane guide loads only when it is needed.** What the book knows about plane parts (every one in the pack, from a sweep of the mods: wings, propellers, engines, servos, Tilt Adapters, wheel mounts, consoles and their modules) is a guide it reads when a plane, airship, helicopter or submarine comes up, instead of riding along with every question.
+
+### Fixed
+- **The book said two Portable Engines on one shaft fight each other.** One lit while its shaft already turns sets its own direction to match, so their stress adds up; the check now says that instead of telling the player to turn one round.
+- **The plane search ruled out whole wing sizes** after a heavy tail failed on one, hiding smaller planes that fly; the two-seater is now a 13-wide biplane.
+- **Field Guide flight pages** (Propellers, Thrusters and Engines, Steering and Controls, Designing Aircraft) taught the old plane; they now describe the hand-flown one, the speed controller and toe brakes.
+
+### Removed
+- The gyroscope tower and the wing-mounted propellers from the book's default plane.
+
 ## 0.6.87
 
 ### Added
