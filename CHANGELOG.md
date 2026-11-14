@@ -5,6 +5,19 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.84
+
+### Added
+- Create Galore Bridge 1.191.0.
+- **Ask the Book lays out small jets.** Asked for a plane, the book can now pick a jet engine instead of a propeller: two Smart Vector Thrusters either side of the tail, each fed by its own Fluid Tank, run by a Flight Control Computer with an Attitude Stabilizer (Medium preset) that holds the wings and nose level, a Velocity Coupler that holds the cruising speed and an Angular Velocity Coupler that turns it flat. It is flown from a Control Stand: the Yoke Module's Turn Left and Turn Right turn it, and a latched lever on the Redstone Proxy is the throttle. The answer covers the Flight Control Tool Gun links (they are made after the plane is placed), the nozzles and fuel, and assembling with the controllers' engine stopped. A test jet built this way flies level at about 28 blocks a second, holds its heading, turns about 8 degrees a second and sinks gently with the throttle off.
+- **The book's vehicle check knows Flight Control.** Smart Vector Thrusters count as thrust, a Flight Control Computer with a stabilizer holds a plane level without a gyroscope, the Velocity Coupler caps the speed, and a jet whose thrusters sit too close to the centre of weight (so holding level drives it past its speed) is named as a problem.
+
+### Fixed
+- **Planes stood on Grindstones.** The book's planes now stand on Wheel Mounts with tires and their suspension turned down, and the check rolls them the way the mounts really roll.
+- **Planes were steered with a ship's Steering Wheel.** They now use a Control Stand with a Yoke Module (or a Wheel Module's Left and Right).
+- **Copycat wings showed as holey metal struts** in the book's 3D models; they now show filled, and the book's planes default to copycat wings.
+- **The check called every thruster on or off only;** that is true only of Solid Fuel Thrusters, and the wording now says so only for them.
+
 ## 0.6.83
 
 ### Added

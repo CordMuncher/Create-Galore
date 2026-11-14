@@ -922,11 +922,33 @@ final class ModelView {
         }
     }
 
+    /**
+     * A model has no block entities, so a Copycat Wing would show as Create's bare copycat frame, struts and holes, which is
+     * not what a finished plane looks like: the wing is drawn with white wool, the look the book tells the player to give it.
+     */
+    private static ModelData dataFor(BlockState state) {
+        if (!net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(state.getBlock()).getPath().startsWith("copycat_wing")) return DATA;
+        try {
+            return Copycats.wool(DATA);
+        } catch (LinkageError e) {
+            return DATA;
+        }
+    }
+
+    /** Kept apart so Create's copycat model class is only touched for a copycat. */
+    private static final class Copycats {
+        static ModelData wool(ModelData base) {
+            return base.derive().with(com.simibubi.create.content.decoration.copycat.CopycatModel.MATERIAL_PROPERTY,
+                    net.minecraft.world.level.block.Blocks.WHITE_WOOL.defaultBlockState()).build();
+        }
+    }
+
     private void block(Minecraft mc, BlockRenderDispatcher blocks, BlockState state, int x, int y, int z, PoseStack pose,
                        MultiBufferSource buffers, RandomSource random) {
         BakedModel model = blocks.getBlockModel(state);
-        if (hasQuads.computeIfAbsent(state, s -> anyQuads(model, s, DATA))) {
-            modelQuads(mc, model, state, x, y, z, pose, buffers, random, DATA);
+        ModelData data = dataFor(state);
+        if (hasQuads.computeIfAbsent(state, s -> anyQuads(model, s, data))) {
+            modelQuads(mc, model, state, x, y, z, pose, buffers, random, data);
         } else if (state.getRenderShape() == RenderShape.ENTITYBLOCK_ANIMATED) {
             // Chests, beds and the like are drawn by their item renderer.
             blocks.renderSingleBlock(state, pose, buffers, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, DATA, null);

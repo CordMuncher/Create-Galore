@@ -112,7 +112,7 @@
     {
       "type": "modonomicon:text",
       "title": "Planes",
-      "text": "A plane flies only while it moves, so it must be light: a slim body, long fabric wings over the weight's centre, a tail far back with a flat stabiliser and an upright fin, engines behind the pilot and propellers out on the wings so the pilot sees ahead, Grindstones for landing gear. No plane holds itself level here: it needs a Gyroscope. See [#](2E5AAC)[Propellers](entry://flight/propellers)[#]()."
+      "text": "A plane flies only while it moves, so it must be light: a slim body, long fabric wings over the weight's centre, a tail far back with a flat stabiliser and an upright fin, engines behind the pilot and propellers out on the wings so the pilot sees ahead, Wheel Mounts with tires for landing gear. No plane holds itself level here: it needs a Gyroscope, or a Flight Control Computer with a Stabilizer. See [#](2E5AAC)[Propellers](entry://flight/propellers)[#]() and [#](2E5AAC)[Flight Control](entry://flight/flight_control)[#]()."
     },
     {
       "type": "modonomicon:text",
@@ -137,7 +137,7 @@
     {
       "type": "modonomicon:text",
       "title": "Ask the Book",
-      "text": "Where the book has its voice, ask it for an airship and it lays one out to your wishes (open deck or cabin, beds, chests, speed, height), balanced to hang level, as a 3D model you can save as a schematic. Ask it for a small plane (one or two seats) and it designs one that flies from a short field, with one wing or two, sails or Copycat Wings, round or square tips, to suit what you want and can make. Ask it for a helicopter (one to three seats) and it lays one out on a gyroscopic rotor, balanced and checked."
+      "text": "Where the book has its voice, ask it for an airship and it lays one out to your wishes (open deck or cabin, beds, chests, speed, height), balanced to hang level, as a 3D model you can save as a schematic. Ask it for a small plane (one or two seats) and it designs one that flies from a short field, with one wing or two, sails or Copycat Wings, round or square tips, propellers or a Flight Control jet, to suit what you want and can make. Ask it for a helicopter (one to three seats) and it lays one out on a gyroscopic rotor, balanced and checked."
     },
     {
       "type": "modonomicon:text",

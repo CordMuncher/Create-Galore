@@ -1,5 +1,5 @@
 {
-  "title": "A plane on wheel mounts is judged as a plane, and its wheels' rolling drag shows as a field far too long, with Grindstones as the fix",
+  "title": "A plane on wheel mounts is judged as a plane: its wheels' rolling drag (1.5 x suspension per block/s) keeps it short of take-off speed, and the fix is the setting, more thrust or more wing, never Grindstones",
   "from": "2026-11-06 report (pack 0.6.72): wheel mounts made the book's plane need huge wings; the check used to judge any build with wheel mounts as a car and never worked out a take-off run",
   "roots": [
     "R3"
@@ -2564,13 +2564,14 @@
   "expect": {
     "built": false,
     "has": [
-      "stands on 3 wheel mounts",
-      "too long to be of use",
-      "Grindstones roll almost freely"
+      "on its 3 wheel mounts",
+      "never gets off the ground",
+      "set to 5"
     ],
     "lacks": [
       "Top speed on flat ground",
-      "rotation never reaches"
+      "rotation never reaches",
+      "Grindstones roll"
     ]
   }
 }
