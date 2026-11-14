@@ -5,6 +5,17 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.85
+
+### Added
+- Create Galore Fishing 0.3.32.
+
+### Fixed
+- **Goggles on a Geared or Fuel Reel Drive showed "Can wind against" for the gear it was in, not for the drive.** A small fish puts the gearbox in top gear, where the crank's limit is a quarter of the lowest gear's, so a Fuel Reel Drive read 6.0 kg while it could shift down and wind against 48 kg. The readout now shows the most the drive can wind against: the limit in its lowest gear, which the gearbox drops to before a fish can stall it. How the drives fight is unchanged.
+
+### Removed
+- Nothing.
+
 ## 0.6.84
 
 ### Added

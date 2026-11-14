@@ -27,6 +27,11 @@ public final class Gearbox {
         return GEARS[gear];
     }
 
+    /** The lowest gear's ratio: the most torque this gearbox can shift down to. */
+    public double lowestRatio() {
+        return GEARS[lowest];
+    }
+
     public int index() {
         return gear;
     }

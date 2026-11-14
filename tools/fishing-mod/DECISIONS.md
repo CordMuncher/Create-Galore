@@ -853,3 +853,13 @@ Reported: a full-durability 9 kg Iron Rod kept breaking mid-fight on big fish wi
   set under. A drag over the rod's rating still wears and cracks it (Iron Rod, 10 kg drag, 20 kg fish: ~73% cracked).
 - After: the same fights all land (bar the odd thrown hook) with no rod wear past the 1 a fight. Self-test "a rod with a drag
   below its rating never wears or cracks" (fails on the old rule: broke in 1 s).
+
+## "Can wind against" shows the drive, not the gear (14 Nov 2026, mod 0.3.32, pack 0.6.85)
+
+Reported: a Fuel Reel Drive's goggles read "Can wind against 6.0 kg" with a 7.5 kg drag; it should read more than the
+drag, since a fish fights rather than weighs in the water and a drive must be able to wind in a fish pulling over it.
+The readout was `torque / current gear`; with a small fish the gearbox sits in gear 2.0, so the Fuel drive's 12 kgf
+rating read 6 kg. Nothing in the fight changed (the readout code predates the 0.3.31 rod fix; which gear a fight
+sits in decides what it showed). Now `torque / lowest gear` (0.25): 48 kg for the Fuel drive, the network's headroom x 4
+for the Geared one. The Basic drive has no gearbox and is unchanged. `/cgfish machine` still prints the current gear's
+limit.
