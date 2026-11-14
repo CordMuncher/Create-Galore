@@ -177,7 +177,7 @@ vec3 shadow_light(vec3 scene_pos, float radius, float ignore, float beyond, bool
             float below = depth * g_light_dir.y;
             float pixel = length(scene_pos) * 2.0 / (gbufferProjection[1][1] * render_size().y);
             focus = caustic_focus(water_local(surface), g_light_dir.xyz, WATER_WAVES * water_chop(surface), g_water.x,
-                                  below, max(below * 0.05, pixel * 2.0));
+                                  below, max(below * 0.02, pixel * 2.0));
         }
 #endif
         vec3 color = exp(-(water_absorption_for(biome) + water_scatter) * depth) * focus;

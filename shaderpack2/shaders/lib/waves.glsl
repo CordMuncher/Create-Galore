@@ -25,6 +25,7 @@
 #include "/lib/water_color.glsl"
 
 uniform sampler2D cg_water_waves; // one band of waves: rg its slope now, ba a quarter of a swing later (see above)
+uniform sampler3D cg_water_curve; // the band's curvature, for the caustics: at 16 moments of the swing along z
 
 // The bands. span: the pattern's repeat across the wind's whole-number way (1, -2), in blocks times the way's length
 // (powers of two, so 1024 blocks hold a whole number of repeats): the pattern is 114, 57, 29, 14, 7.2, 3.6 and 1.8
@@ -40,7 +41,8 @@ const float wave_swings[7] = float[](470.0, 665.0, 940.0, 1330.0, 1880.0, 2660.0
 const vec2 wave_shift[7] = vec2[](vec2(0.0, 0.0), vec2(0.37, 0.61), vec2(0.71, 0.19), vec2(0.13, 0.83),
                                   vec2(0.59, 0.41), vec2(0.89, 0.07), vec2(0.23, 0.67));
 const float wave_rain[7] = float[](1.0, 1.0, 1.2, 1.5, 2.0, 2.5, 3.0);
-const float wave_tex_peak = 4.0; // tools/wave_noise.py's PEAK
+const float wave_tex_peak = 4.0;     // tools/wave_noise.py's PEAK
+const float wave_curve_peak = 176.0; // and its CURVE_PEAK
 
 struct Waves {
     vec2 slope;  // d height / dx, d height / dz
@@ -87,6 +89,56 @@ Waves water_waves(vec2 local, float strength, float swell, float rain, float foo
         // Back to the world's x and z.
         w.slope += vec2(s.x * way.x - s.y * way.y, s.x * way.y + s.y * way.x) / way_len * (steep * fade);
     }
+    return w;
+}
+
+// The waves' slope at a point and how it changes around it (d slope / dx in the first column, d slope / dz in the
+// second: the surface's curvature), for the caustics. As water_waves, with the curvature from its own texture
+// (tools/wave_noise.py): one read per band more.
+struct WaveBend {
+    vec2 slope;
+    mat2 curve;
+};
+
+WaveBend water_waves_bent(vec2 local, float strength, float swell, float rain, float footprint) {
+    float hour = frameTimeCounter / 3600.0;
+    const vec2 way = vec2(wind_way);
+    const float way_len = length(vec2(wind_way));
+    const vec2 along = way / way_len;
+    const vec2 across = vec2(-way.y, way.x) / way_len;
+    vec2 q = vec2(dot(local, way), dot(local, vec2(-way.y, way.x)));
+    vec2 slope = vec2(0.0);
+    vec3 curve = vec3(0.0); // along-along, along-across, across-across
+    for (int k = 0; k < wave_bands; k++) {
+        float steep = wave_steep[k] * strength * mix(1.0, wave_rain[k], rain);
+        if (k == 0) {
+            steep *= swell;
+        } else if (k == 1) {
+            steep *= mix(0.35, 1.0, swell);
+        } else if (k == 2) {
+            steep *= mix(0.7, 1.0, swell);
+        }
+        float crest = wave_span[k] / way_len / 8.0;
+        float fade = 1.0 - smoothstep(0.12, 0.45, footprint / crest);
+        if (fade <= 0.0 || steep <= 0.0) {
+            continue;
+        }
+        float flip = (k & 1) == 0 ? 1.0 : -1.0;
+        vec2 uv = vec2(q.x, q.y * flip) / wave_span[k] + wave_shift[k];
+        float turn = fract(wave_swings[k] * hour);
+        vec4 t = (textureLod(cg_water_waves, uv, 0.0) * 2.0 - 1.0) * wave_tex_peak;
+        float swing = TAU * turn;
+        vec2 s = t.xy * cos(swing) + t.zw * sin(swing);
+        slope += vec2(s.x, s.y * flip) * (steep * fade);
+        // The curvature at this moment of the swing: between the two stored moments either side of it.
+        vec3 c = (textureLod(cg_water_curve, vec3(uv, turn + 0.5 / 16.0), 0.0).rgb * 2.0 - 1.0) * wave_curve_peak;
+        // Per block: the pattern is span / way_len blocks across.
+        curve += vec3(c.x, c.y * flip, c.z) * (steep * fade * way_len / wave_span[k]);
+    }
+    WaveBend w;
+    w.slope = along * slope.x + across * slope.y;
+    w.curve = curve.x * outerProduct(along, along) + curve.y * (outerProduct(along, across) + outerProduct(across, along))
+            + curve.z * outerProduct(across, across);
     return w;
 }
 
@@ -161,45 +213,53 @@ vec2 rain_rings(vec2 local, float amount, float footprint, inout float rough) {
 
 // How the waves focus the light on what lies below blocks under the surface (caustics): the light through a spot of
 // the surface, bent at its wave's slope (Snell's law), is followed down that far, and the patch it lands on compared
-// with the patch it left (the light through a small step either way says how big both are): where the slopes bend
-// the light together it lands on less and is brighter, where they spread it, darker. 1 for flat water and right under
-// the surface. local: the spot on the surface right over the point (water_local); light_dir: towards the light;
-// footprint: how fine the pattern may be there (blocks): waves smaller than that only blur it, so they don't count.
+// with the patch it left: where the surface's curvature bends the light together it lands on less and is brighter,
+// where it spreads it, darker. 1 for flat water and right under the surface. local: the spot on the surface right over
+// the point (water_local); light_dir: towards the light; footprint: how fine the pattern may be there (blocks): waves
+// smaller than that only blur it, so they don't count.
 //
-// Which waves: those with crests about a block apart and longer. The finer ripples would focus the light within a
-// block of the surface and cross it into a grain below that, so they are left out (caustic_fine), and what is left
-// draws a net of light lines with meshes about a block across, drifting with the waves you see. How far down the
-// bent light is followed (caustic_reach): it grows over the first blocks down and then holds at the depth where
-// these waves' lines are sharpest: past there they would cross and blur into each other. The light is looked for
-// where it left the surface (a step back along the way it was bent), so the floor gets about as much light as under
-// flat water (within a few parts in a hundred, measured over these waves), only gathered into lines.
-// For the look: the lines' brightest parts roll off softly towards twice the flat water's light (a hard cap at four
-// read as white lines pasted on bright sand), and the lines lose their contrast with depth (by e every 10 blocks
-// below the surface), as the light scattered on its way down fills in between them.
-const float caustic_reach = 8.0;
-const float caustic_fine = 0.22;
+// The light is looked for where it left the surface (a step back along the way it was bent), which is what draws a
+// net of thin bright lines instead of a relief of the waves, and the size of the patch comes from the waves' own
+// curvature there (water_waves_bent), exact and smooth. The floor gets about as much light as under flat water
+// (within a few parts in a hundred, measured over these waves), only gathered into lines.
+//
+// How far down the bent light is followed (the reach): it grows over the first block down and then holds at the
+// depth where the finest waves that count draw their lines sharpest, since past it they would cross and blur into
+// a grain. So in shallow water the ripples draw a fine net, meshes a third to half a block across. Deeper down (and
+// further from you) the finest ripples no longer count (footprint), and the reach grows with the finest that still
+// do, so the longer waves take over with a wider, softer net, as the lines on a deep floor are.
+// For the look: the lines' brightest parts roll off softly towards two and a half times the flat water's light (a
+// hard cap at four read as white lines pasted on bright sand), and the lines lose their contrast with depth (by e
+// every 14 blocks below the surface), as the light scattered on its way down fills in between them.
+const float caustic_reach = 3.5;
+const float caustic_fine = 0.06;
+const float caustic_top = 2.5;
 
-vec2 caustic_land(vec2 at, vec3 light_dir, float strength, float rain, float reach, float footprint) {
-    vec3 n = wave_normal(water_waves(at, strength, 1.0, rain, footprint));
-    vec3 down = refract(-light_dir, n, 1.0 / water_ior);
+// Where the light through a surface of that slope lands, from the spot it went in at.
+vec2 caustic_fall(vec2 slope, vec3 light_dir, float reach) {
+    vec3 down = refract(-light_dir, normalize(vec3(-slope.x, 1.0, -slope.y)), 1.0 / water_ior);
     return down.xz * (reach / max(-down.y, 0.2));
 }
 
 float caustic_focus(vec2 local, vec3 light_dir, float strength, float rain, float below, float footprint) {
     footprint = max(footprint, caustic_fine);
-    float reach = caustic_reach * (1.0 - exp(-below * 0.5));
-    vec3 flat_down = refract(-light_dir, vec3(0.0, 1.0, 0.0), 1.0 / water_ior);
-    vec2 flat_land = flat_down.xz * (reach / max(-flat_down.y, 0.2));
-    vec2 from = local - (caustic_land(local, light_dir, strength, rain, reach, footprint) - flat_land);
-    const float step = 0.05;
-    vec2 land = caustic_land(from, light_dir, strength, rain, reach, footprint);
-    vec2 land_x = caustic_land(from + vec2(step, 0.0), light_dir, strength, rain, reach, footprint);
-    vec2 land_z = caustic_land(from + vec2(0.0, step), light_dir, strength, rain, reach, footprint);
-    mat2 spread = mat2(1.0) + mat2((land_x - land) / step, (land_z - land) / step);
+    // The ripples that draw the lines are on calm water too: the lines follow the waves' strength only part of the way.
+    strength = 0.6 * WATER_WAVES + 0.4 * strength;
+    float reach = caustic_reach * (1.0 - exp(-below * 1.2)) * pow(footprint / caustic_fine, 0.8);
+    vec2 flat_fall = caustic_fall(vec2(0.0), light_dir, reach);
+    vec2 over = caustic_fall(water_waves(local, strength, 1.0, rain, footprint).slope, light_dir, reach);
+    WaveBend w = water_waves_bent(local - (over - flat_fall), strength, 1.0, rain, footprint);
+    // How the landing spot moves with the slope (Snell's law has no short form for it: two small steps), times how
+    // the slope changes with the place.
+    const float step = 0.004;
+    vec2 fall = caustic_fall(w.slope, light_dir, reach);
+    mat2 by_slope = mat2((caustic_fall(w.slope + vec2(step, 0.0), light_dir, reach) - fall) / step,
+                         (caustic_fall(w.slope + vec2(0.0, step), light_dir, reach) - fall) / step);
+    mat2 spread = mat2(1.0) + by_slope * w.curve;
     float focus = 1.0 / max(abs(determinant(spread)), 1e-4);
-    float over = max(focus - 1.0, 0.0);
-    focus = min(focus, 1.0) + over / (1.0 + over); // towards 2
-    return 1.0 + (focus - 1.0) * exp(-below / 10.0);
+    float more = max(focus - 1.0, 0.0);
+    focus = min(focus, 1.0) + more / (1.0 + more / (caustic_top - 1.0));
+    return 1.0 + (focus - 1.0) * exp(-below / 14.0);
 }
 
 #endif

@@ -40,7 +40,7 @@ void main() {
                 float below = path * l.y;
                 float size = length(lit) * 2.0 / (gbufferProjection[1][1] * render_size().y);
                 focus = caustic_focus(water_local(surface), l, WATER_WAVES * water_chop(surface), g_water.x, below,
-                                      max(below * 0.05, size * 4.0));
+                                      max(below * 0.02, size * 4.0));
             }
         }
     }
