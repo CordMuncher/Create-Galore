@@ -214,7 +214,11 @@ cloud and water code in a stand-in for Iris) in a second or two a view, at any t
 `tools/rig/` runs the real game without a screen or a graphics card (a slim client under Xvfb, drawn on the CPU at
 about a frame a second, so slow but exact): `setup.sh` once, `launch.sh WORLD`, `sync.sh` to copy the pack in
 (`FREEZE=` holds the water's clock for stills), `view.sh OUT.png X Y Z YAW PITCH` for a picture from a spot,
-`motion.sh` for pictures while the camera turns or flies, `cmd.sh` and `key.sh` for commands and keys. The Bridge's
+`motion.sh` for pictures while the camera turns or flies, `cmd.sh` and `key.sh` for commands and keys. `setup.sh`
+copies the modpack's own settings for every mod (`pack/config`), so the mods behave as they do in the pack: on its
+own defaults Winds & Weather draws local rain the pack has switched off. Weather for a picture: `aeroweather set
+TYPE INTENSITY TICKS RADIUS` holds the mod's weather round the player (`aeroweather query` reads it back), and
+`weather clear` stops the mod's rain regions from starting the game's rain for as long as it runs. The Bridge's
 cost meter (F10) works in it, so a change's cost per pass can be compared before and after. The bad frame mark
 (`lib/bad_frame.glsl`, a small square at the middle of the left edge) counts frames, so at the rig's pace it stays
 up for about two and a half minutes: look for it in every picture, a red one means a pass wrote an infinite or

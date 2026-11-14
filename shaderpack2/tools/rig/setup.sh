@@ -44,10 +44,10 @@ else
   jar="$(git -C "$REPO" ls-tree --name-only "$REF" pack/mods/ | grep 'create-galore-bridge-.*\.jar$' | tail -1)"
   git -C "$REPO" show "$REF:$jar" > "$SLIM/mods/$(basename "$jar")"
 fi
-# The pack's own settings for the mods that have them here (Distant Horizons, the Bridge's display settings).
-for c in DistantHorizons.toml; do
-  git -C "$REPO" show "$REF:pack/config/$c" > "$SLIM/config/$c" 2>/dev/null || true
-done
+# The pack's own settings, all of them (the ones for mods that aren't here do nothing): the rig has to run the mods
+# the way the pack does. Winds & Weather, say, draws its own local rain by default and the pack turns that off, so
+# a rig on the mod's defaults shows rain the real game never has. FML's own file is the rig's (below).
+git -C "$REPO" archive "$REF" pack/config | tar -x --strip-components=2 -C "$SLIM/config"
 cat > "$SLIM/options.txt" <<OPT
 pauseOnLostFocus:false
 tutorialStep:none
