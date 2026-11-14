@@ -21,8 +21,8 @@ flat in int v_material;
 
 #include "/lib/forward.glsl"
 #include "/lib/water.glsl"
+#include "/lib/water_shade.glsl"
 #if defined SUNLIGHT
-#define CLOUDS_NO_READ_BACK
 #include "/lib/sky_mirror.glsl"
 #endif
 
@@ -57,48 +57,48 @@ void main() {
     if (near_depth < 1.0 && length(near_scene_at(near_depth)) < distance_away - 0.5) {
         discard;
     }
-    // The same water as near by (see shade_water in gbuffers.fsh): the waves a pixel can still show this far off (the
-    // rest as roughness that spreads the sun's glint into a path), the sky mirrored, the sun without the shadow map.
+    // The same water as near by (lib/water_shade.glsl, see shade_water in gbuffers.fsh): the waves a pixel can still
+    // show this far off (the rest as roughness that spreads the sun's glint into a path), the sky mirrored, the sun
+    // without the shadow map.
     vec3 to_eye = normalize(-v_scene_pos);
     bool inside = isEyeInWater == 1;
     vec3 face = normalize(v_normal);
     if (dot(face, to_eye) < 0.0) {
         face = -face;
     }
-    vec3 n = face;
-    float rough = 0.0;
-    if (abs(face.y) > 0.5) {
-        float grazing = abs(to_eye.y);
-        float footprint = distance_away * pixel_angle() * inversesqrt(max(grazing, 0.02));
-        float strength = WATER_WAVES * mix(0.25, 1.0, smoothstep(0.5, 0.95, v_light.y)) * water_chop(v_scene_pos);
-        float rain = g_water.x * smoothstep(0.8, 0.9, v_light.y);
-        Waves w = water_waves(water_local(v_scene_pos), strength, 1.0, rain, footprint, distance_away);
-        // As the near water (program/gbuffers.fsh): flatter at a grazing look, the rest as roughness, which tilts
-        // the water towards you.
-        float flatter = mix(0.35, 1.0, smoothstep(0.0, 0.25, grazing));
-        w.slope *= flatter;
-        rough = w.rough + w.seen * (1.0 - flatter * flatter);
-        if (face.y > 0.0 && !inside) {
-            w.slope += facing_tilt(rough, to_eye);
-        }
-        vec3 wave = wave_normal(w);
-        n = face.y > 0.0 ? wave : -wave;
+    Waves w;
+    w.slope = vec2(0.0);
+    w.seen = 0.0;
+    w.rough = 0.0;
+    bool level = abs(face.y) > 0.5;
+    if (level) {
+        float footprint;
+        w = water_waves_seen(v_scene_pos, to_eye, smoothstep(0.5, 0.95, v_light.y), 1.0,
+                             g_water.x * smoothstep(0.8, 0.9, v_light.y), footprint);
     }
-    float spread = 2.0 * sqrt(rough);
-    float cos_v = max(dot(n, to_eye), 0.0);
-    float fresnel = fresnel_dielectric(cos_v, inside ? 1.0 / water_ior : water_ior);
+    WaterSurface surface = water_finish(w, level ? face : vec3(0.0, 1.0, 0.0), to_eye, inside);
+    if (!level) {
+        surface.n = face;
+        surface.cos_v = max(dot(face, to_eye), 0.0);
+        surface.fresnel = fresnel_dielectric(surface.cos_v, inside ? 1.0 / water_ior : water_ior);
+    }
+    vec3 n = surface.n;
+    float cos_v = surface.cos_v;
+    float fresnel = surface.fresnel;
     vec3 light_here = forward_light(vec3(0.0, 1.0, 0.0), v_scene_pos, v_light, 1.0, 0.0);
     vec3 r = reflect(-to_eye, n);
+    vec3 crests = vec3(0.0);
 #if defined SUNLIGHT
     r.y = inside ? -abs(r.y) : abs(r.y);
     // The sky mirrored wherever it is open to the sky, as the near water's traced reflection sees it there (a dim copy
     // of its own light only where Distant Horizons says the sky is mostly hidden).
     float open_sky = smoothstep(0.1, 0.5, v_light.y);
-    float turn = fract(ign(floor(gl_FragCoord.xy)) + float(frameCounter & 255) * GOLDEN);
     vec3 reflected = inside ? light_here * 0.05
-                            : mix(light_here * 0.05, reflect_sky(r, v_scene_pos, spread, turn), open_sky);
+                            : mix(light_here * 0.05, reflect_sky(r, v_scene_pos, surface.soft), open_sky);
     if (!inside && g_light_dir.w > 0.5) {
-        reflected += sun_seen(r, spread) * smoothstep(0.05, 0.3, v_light.y) * cloud_shadow(v_scene_pos);
+        float reach = smoothstep(0.05, 0.3, v_light.y) * cloud_shadow(v_scene_pos);
+        reflected += sun_seen(r, surface.spread) * reach;
+        crests = water_crest_glow(surface, to_eye, g_light_color.rgb * reach);
     }
 #else
     vec3 reflected = light_here * 0.05;
@@ -121,10 +121,8 @@ void main() {
     vec3 extinction = water_view_extinction(v_color.rgb);
     float lit = smoothstep(0.02, 0.4, luminance(light_here));
     float depth = inside ? 0.0 : max(thickness, mix(2.0, 1.0, lit));
-    vec3 through = exp(-extinction * depth);
-    float cos_t = sqrt(max(1.0 - (1.0 - cos_v * cos_v) / (water_ior * water_ior), 0.0));
-    vec3 along = extinction * (1.0 + 1.15 * cos_t);
-    vec3 glow = light_here * water_view_glow * (1.0 - exp(-along * depth)) / along;
+    vec3 through;
+    vec3 glow = water_body(light_here, extinction, depth, cos_v, through) + crests;
 #ifdef DH_WATER_SEES_UNDER
     // Tinted by the water between, as the near water's floor is (not greyed by a single blend).
     vec3 under_light = textureLod(colortex5, gl_FragCoord.xy / window_size(), 0.0).rgb;

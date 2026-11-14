@@ -1,15 +1,19 @@
 // Water's waves, and the caustics they make (its colour is in lib/water_color.glsl).
 //
-// Waves: four layers of smooth noise, each stretched into crests across its own direction and running along it at
-// 0.4 of the speed of real deep-water waves its size. The biggest, the swell (crests about 28 blocks apart), runs with
-// the clouds' steady wind (lib/wind.glsl) and only builds where there is open water up-wind of it; the next (crests
-// about 15 blocks apart) carries lakes and the sea, and is calmer on ponds and rivers too. The two small ones are
-// weak; the finest shows only within about 100 blocks. Each runs a golden angle (137.5 degrees) round from the one before, so no
-// two run together and nothing marches one way. The crests bend a little along their length. Each layer's grid is
-// laid on a whole-number direction, so the pattern repeats every 1024 blocks exactly and its time every hour exactly
-// (frameTimeCounter's own repeat): it never jumps. Where a layer is finer than a pixel can show (far off, or seen at a
-// grazing angle), it fades out and its slopes become roughness instead, which spreads the sun's glint and tilts the
-// water you see towards you, the way all those unseen waves would.
+// Waves: a wind sea in seven bands, from a swell with crests about 14 blocks apart down to ripples a fifth of a block
+// apart, each band half the size of the one before. Every band is the same baked pattern (textures/water_waves.dat,
+// tools/wave_noise.py: a whole band of waves running down the wind and about 45 degrees either side of it, as real
+// wind waves do) laid down at its own size, turned over or shifted so no two bands line up, and swung at its own
+// rate (0.4 of the speed of real deep-water waves its size), so crests travel, catch each other up and dissolve
+// instead of sliding by as a fixed picture. The slopes are those of a real sea in a fresh breeze (each band as steep
+// as the next, about 7 degrees in all on open water), so the surface has relief you can see, the sky in it is broken
+// by the waves, and the sun lays a path of glitter on it. The wind is the clouds' steady wind (lib/wind.glsl). The two
+// longest bands only build where there is open water up-wind, so a pond or a river stays rippled but calm while a
+// lake or the sea rolls. Each band's grid is laid on the wind's whole-number direction, so the pattern repeats every
+// 1024 blocks exactly and its time every hour exactly (frameTimeCounter's own repeat): it never jumps. Where a band
+// is finer than a pixel can show (far off, or seen at a grazing angle), it fades out and its slopes become roughness
+// instead, which spreads the sun's glint and the mirrored sky and tilts the water you see towards you, the way all
+// those unseen waves would.
 
 #if !defined LIB_WAVES
 #define LIB_WAVES
@@ -20,104 +24,68 @@
 #include "/lib/wind.glsl"
 #include "/lib/water_color.glsl"
 
-// Smooth gradient noise and its slope (d/dx, d/dy) on a grid of whole numbers that repeats every period cells (powers
-// of two).
-vec3 wave_noise(vec2 p, ivec2 period, uint seed) {
-    vec2 i = floor(p);
-    vec2 f = p - i;
-    vec2 u = f * f * f * (f * (f * 6.0 - 15.0) + 10.0);
-    vec2 du = 30.0 * f * f * (f * (f - 2.0) + 1.0);
-    ivec2 c = ivec2(i);
-    ivec2 c0 = c & (period - 1);
-    ivec2 c1 = (c0 + 1) & (period - 1);
-    float ha = hash33(uvec3(uvec2(c0.x, c0.y), seed)).x * TAU;
-    float hb = hash33(uvec3(uvec2(c1.x, c0.y), seed)).x * TAU;
-    float hc = hash33(uvec3(uvec2(c0.x, c1.y), seed)).x * TAU;
-    float hd = hash33(uvec3(uvec2(c1.x, c1.y), seed)).x * TAU;
-    vec2 ga = vec2(cos(ha), sin(ha));
-    vec2 gb = vec2(cos(hb), sin(hb));
-    vec2 gc = vec2(cos(hc), sin(hc));
-    vec2 gd = vec2(cos(hd), sin(hd));
-    float va = dot(ga, f);
-    float vb = dot(gb, f - vec2(1.0, 0.0));
-    float vc = dot(gc, f - vec2(0.0, 1.0));
-    float vd = dot(gd, f - vec2(1.0, 1.0));
-    float k1 = vb - va;
-    float k2 = vc - va;
-    float k4 = va - vb - vc + vd;
-    float value = va + u.x * k1 + u.y * k2 + u.x * u.y * k4;
-    vec2 slope = ga + u.x * (gb - ga) + u.y * (gc - ga) + u.x * u.y * (ga - gb - gc + gd)
-               + du * (vec2(k1, k2) + vec2(u.y, u.x) * k4);
-    return vec3(value, slope);
-}
+uniform sampler2D cg_water_waves; // one band of waves: rg its slope now, ba a quarter of a swing later (see above)
 
-// The layers. way: the whole-number direction it runs (x, z), each a golden angle round from the one before (-63, 76,
-// 211 and 349 degrees); along, across: the grid's cell in blocks times the way's length (powers of two, so 1024 blocks
-// hold a whole number of cells); height: how high its waves stand at full strength (blocks); periods: how many times
-// its pattern runs through its repeat in an hour, which sets its speed (0.4 of real deep-water waves twice its cell
-// long, crests that far apart: 2.6, 1.9, 1.2 and 0.6 blocks a second).
-const int wave_layers = 4;
-const ivec2 wave_way[4] = ivec2[](ivec2(1, -2), ivec2(1, 4), ivec2(-5, -3), ivec2(5, -1));
-const float wave_along[4] = float[](32.0, 32.0, 16.0, 4.0);
-const float wave_across[4] = float[](64.0, 64.0, 32.0, 8.0);
-const float wave_height[4] = float[](0.5, 0.23, 0.033, 0.0047);
-const float wave_periods[4] = float[](21.0, 28.0, 24.0, 11.0);
-// What rain does to each (its drops roughen the small waves, not the swell).
-const float wave_rain[4] = float[](1.0, 2.0, 6.0, 12.0);
-// How far off (blocks) the two small layers fade from what you see (into roughness): the 16-block ripples only where a
-// pixel can no longer show them (so the far water keeps a texture to the horizon), the finest within about 100.
-const vec2 wave_near[4] = vec2[](vec2(1e4, 2e4), vec2(1e4, 2e4), vec2(1e4, 2e4), vec2(32.0, 96.0));
+// The bands. span: the pattern's repeat across the wind's whole-number way (1, -2), in blocks times the way's length
+// (powers of two, so 1024 blocks hold a whole number of repeats): the pattern is 114, 57, 29, 14, 7.2, 3.6 and 1.8
+// blocks across, its strongest waves an eighth of that from crest to crest. steep: the band's slope (root mean
+// square) at full strength. swings: how many times it swings in an hour, which sets its waves' speed (about 1.9, 1.3,
+// 0.95, 0.65, 0.47, 0.33 and 0.24 blocks a second). shift: where the pattern is laid (so no two bands line up); every
+// other band is also turned over across the wind. rain: what rain does to it (its drops roughen the small waves, not
+// the swell).
+const int wave_bands = 7;
+const float wave_span[7] = float[](256.0, 128.0, 64.0, 32.0, 16.0, 8.0, 4.0);
+const float wave_steep[7] = float[](0.036, 0.046, 0.05, 0.05, 0.046, 0.038, 0.03);
+const float wave_swings[7] = float[](470.0, 665.0, 940.0, 1330.0, 1880.0, 2660.0, 3760.0);
+const vec2 wave_shift[7] = vec2[](vec2(0.0, 0.0), vec2(0.37, 0.61), vec2(0.71, 0.19), vec2(0.13, 0.83),
+                                  vec2(0.59, 0.41), vec2(0.89, 0.07), vec2(0.23, 0.67));
+const float wave_rain[7] = float[](1.0, 1.0, 1.2, 1.5, 2.0, 2.5, 3.0);
+const float wave_tex_peak = 4.0; // tools/wave_noise.py's PEAK
 
 struct Waves {
     vec2 slope;  // d height / dx, d height / dz
     float seen;  // the shown slopes' spread (their variance)
-    float rough; // the slopes' spread finer than a pixel or too far to show (their variance), from the layers faded out
+    float rough; // the slopes' spread finer than a pixel (their variance), from the bands faded out
 };
 
 // The surface's waves at a point. local: the point within 1024 blocks (water_local); strength: how strong the waves
-// are here (0 calm .. 1, more with wind and open sky); swell: how much room the swell has to build (0..1); rain: how
-// hard it rains on it (0..1); footprint: how wide the spot one pixel covers there is (blocks); distance_away: how far
-// from you it is (blocks; 0 for all of them).
-Waves water_waves(vec2 local, float strength, float swell, float rain, float footprint, float distance_away) {
-    float t = frameTimeCounter / 3600.0; // through the hour
+// are here (0 calm .. 1, more with wind and open sky); swell: how much room the long waves have to build (0..1);
+// rain: how hard it rains on it (0..1); footprint: how wide the spot one pixel covers there is (blocks).
+Waves water_waves(vec2 local, float strength, float swell, float rain, float footprint) {
+    float hour = frameTimeCounter / 3600.0;
+    const vec2 way = vec2(wind_way);
+    const float way_len = length(vec2(wind_way));
+    // Along the wind and across it (to the wind's left), in blocks times the way's length.
+    vec2 q = vec2(dot(local, way), dot(local, vec2(-way.y, way.x)));
     Waves w;
     w.slope = vec2(0.0);
     w.seen = 0.0;
     w.rough = 0.0;
-    for (int k = 0; k < wave_layers; k++) {
-        vec2 way = vec2(wave_way[k]);
-        float way_len = length(way);
-        float cell = wave_along[k] / way_len;
-        float height = wave_height[k] * strength * mix(1.0, wave_rain[k], rain);
+    for (int k = 0; k < wave_bands; k++) {
+        float steep = wave_steep[k] * strength * mix(1.0, wave_rain[k], rain);
         if (k == 0) {
-            height *= swell;
+            steep *= swell;
         } else if (k == 1) {
-            height *= mix(0.4, 1.0, swell);
+            steep *= mix(0.35, 1.0, swell);
+        } else if (k == 2) {
+            steep *= mix(0.7, 1.0, swell);
         }
-        // The layer's typical slope, for the roughness it leaves where it fades.
-        float typical = height / cell;
-        float fade = (1.0 - smoothstep(0.3, 1.0, footprint / cell))
-                   * (1.0 - smoothstep(wave_near[k].x, wave_near[k].y, distance_away));
-        w.rough += (1.0 - fade) * typical * typical * 0.5;
-        w.seen += fade * typical * typical * 0.5;
-        if (fade <= 0.0 || height <= 0.0) {
+        // Its strongest waves' length; it shows while a pixel is well under that.
+        float crest = wave_span[k] / way_len / 8.0;
+        float fade = 1.0 - smoothstep(0.12, 0.45, footprint / crest);
+        w.rough += (1.0 - fade) * steep * steep;
+        w.seen += fade * steep * steep;
+        if (fade <= 0.0 || steep <= 0.0) {
             continue;
         }
-        ivec2 period = ivec2(1024.0 / wave_along[k], 1024.0 / wave_across[k]);
-        // The grid: across its way and along it, in cells.
-        vec2 q = vec2(dot(local, way) / wave_along[k], dot(local, vec2(-way.y, way.x)) / wave_across[k]);
-        q.x -= fract(wave_periods[k] * t) * float(period.x);
-        // Crests bend along their length, unevenly: a slower noise of the same kind, over 4 cells along the crest
-        // and 16 across, shifts them back and forth (it runs with the waves, so the bends travel with them).
-        vec3 b = wave_noise(vec2(q.y / 4.0, q.x / 16.0), max(ivec2(period.y / 4, period.x / 16), 1), uint(5 + k * 31));
-        float bend = 1.2 * b.x;
-        vec2 bend_slope = 1.2 * vec2(b.z / 16.0, b.y / 4.0); // d bend / d q
-        vec3 n = wave_noise(vec2(q.x + bend, q.y), period, uint(17 + k * 31));
-        vec2 dq = vec2(n.y * (1.0 + bend_slope.x), n.z + n.y * bend_slope.y); // d noise / d q
-        // Back to blocks: q.x = (x a + z b) / along, q.y = (-x b + z a) / across.
-        vec2 d_world = vec2(dq.x * way.x / wave_along[k] - dq.y * way.y / wave_across[k],
-                            dq.x * way.y / wave_along[k] + dq.y * way.x / wave_across[k]);
-        w.slope += d_world * height * fade;
+        float flip = (k & 1) == 0 ? 1.0 : -1.0;
+        vec2 uv = vec2(q.x, q.y * flip) / wave_span[k] + wave_shift[k];
+        vec4 t = (textureLod(cg_water_waves, uv, 0.0) * 2.0 - 1.0) * wave_tex_peak;
+        float swing = TAU * fract(wave_swings[k] * hour);
+        vec2 s = t.xy * cos(swing) + t.zw * sin(swing); // d/du, d/dv, root mean square 1
+        s.y *= flip;
+        // Back to the world's x and z.
+        w.slope += vec2(s.x * way.x - s.y * way.y, s.x * way.y + s.y * way.x) / way_len * (steep * fade);
     }
     return w;
 }
@@ -198,26 +166,28 @@ vec2 rain_rings(vec2 local, float amount, float footprint, inout float rough) {
 // the surface. local: the spot on the surface right over the point (water_local); light_dir: towards the light;
 // footprint: how fine the pattern may be there (blocks): waves smaller than that only blur it, so they don't count.
 //
-// How far down the bent light is followed: most of a real floor's light lines come from ripples of a few centimetres,
-// far too fine to draw, which ride on the waves and bend the light far more than the drawn waves do, so it is followed
-// as far as the drawn waves would need to bend it as much (and the lines follow the waves you see: bigger and slower
-// where they are). That grows over the first blocks down and then holds: past there the ripples' lines have crossed
-// and blur into each other. And the light is looked for where it left the surface (a step back along the way it was
-// bent), and what the lines still add on average (more the stronger the waves, from a simulation of these waves)
-// taken back off, so the floor gets about as much light as under flat water, only gathered into lines.
+// Which waves: those with crests about a block apart and longer. The finer ripples would focus the light within a
+// block of the surface and cross it into a grain below that, so they are left out (caustic_fine), and what is left
+// draws a net of light lines with meshes about a block across, drifting with the waves you see. How far down the
+// bent light is followed (caustic_reach): it grows over the first blocks down and then holds at the depth where
+// these waves' lines are sharpest: past there they would cross and blur into each other. The light is looked for
+// where it left the surface (a step back along the way it was bent), so the floor gets about as much light as under
+// flat water (within a few parts in a hundred, measured over these waves), only gathered into lines.
 // For the look: the lines' brightest parts roll off softly towards twice the flat water's light (a hard cap at four
 // read as white lines pasted on bright sand), and the lines lose their contrast with depth (by e every 10 blocks
 // below the surface), as the light scattered on its way down fills in between them.
-const float caustic_reach = 52.0;
+const float caustic_reach = 8.0;
+const float caustic_fine = 0.22;
 
 vec2 caustic_land(vec2 at, vec3 light_dir, float strength, float rain, float reach, float footprint) {
-    vec3 n = wave_normal(water_waves(at, strength, 1.0, rain, footprint, 0.0));
+    vec3 n = wave_normal(water_waves(at, strength, 1.0, rain, footprint));
     vec3 down = refract(-light_dir, n, 1.0 / water_ior);
     return down.xz * (reach / max(-down.y, 0.2));
 }
 
 float caustic_focus(vec2 local, vec3 light_dir, float strength, float rain, float below, float footprint) {
-    float reach = caustic_reach * (1.0 - exp(-below));
+    footprint = max(footprint, caustic_fine);
+    float reach = caustic_reach * (1.0 - exp(-below * 0.5));
     vec3 flat_down = refract(-light_dir, vec3(0.0, 1.0, 0.0), 1.0 / water_ior);
     vec2 flat_land = flat_down.xz * (reach / max(-flat_down.y, 0.2));
     vec2 from = local - (caustic_land(local, light_dir, strength, rain, reach, footprint) - flat_land);
@@ -229,7 +199,6 @@ float caustic_focus(vec2 local, vec3 light_dir, float strength, float rain, floa
     float focus = 1.0 / max(abs(determinant(spread)), 1e-4);
     float over = max(focus - 1.0, 0.0);
     focus = min(focus, 1.0) + over / (1.0 + over); // towards 2
-    focus /= 1.0 + 0.05 * pow(reach * strength / caustic_reach, 2.4);
     return 1.0 + (focus - 1.0) * exp(-below / 10.0);
 }
 

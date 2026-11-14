@@ -160,7 +160,7 @@ bool clouds_here() {
 }
 
 // Where the clouds' bases gather (world Y, the CLOUD_HEIGHT option): from 15 under it to 20 over it, cloud by cloud
-// and region by region, and the biggest cumulus tower up about 120 over their base. Pollution of the Realms' smog piles
+// and region by region, and the biggest cumulus tower up about 150 over their base. Pollution of the Realms' smog piles
 // up at Y 189-192; even the lowest choice keeps every base above it, so clouds never hide what goes on under them.
 float cloud_layer() {
     return float(CLOUD_HEIGHT);
@@ -170,7 +170,7 @@ float cloud_layer() {
 float cloud_bottom() {
     return cloud_layer() - 15.0;
 }
-const float cloud_depth = 160.0;
+const float cloud_depth = 190.0;
 
 // The clouds' shadows on the land: a map 4096 blocks across (16 blocks a texel, on a grid fixed to the world), each
 // texel the line towards the sun (or the moon) up from a point on the layer's floor (cloud_bottom()), and in its four
@@ -263,14 +263,25 @@ float cloud_shadow(vec3 scene_pos) {
 // the stars and the Milky Way show, while surfaces keep the moonlit sky's light (program/frame.csh).
 const float night_sky_seen = 0.3;
 
-// The air's own light from a direction: the sun's sky, and the moon's times moon_share.
+// The night's own light with the sun well down, whatever the moon does: the stars' and the air's faint glow, a deep
+// blue, a little brighter towards the horizon (and dimmer towards a new moon, like the moonlight). It is over half of
+// a moonlit night's sky, so the hours when the sun has set and the moon is still low (dusk, dawn) are no darker than
+// midnight.
+vec3 night_air(vec3 dir) {
+    float night = 1.0 - smoothstep(-0.25, -0.03, g_sun_dir.w);
+    float low = 1.0 - smoothstep(0.0, 0.5, max(dir.y, 0.0));
+    return vec3(0.008, 0.013, 0.025) * (0.7 + 0.5 * low) * night * NIGHT_BRIGHTNESS * (0.35 + 0.65 * g_moon_dir.w);
+}
+
+// The air's own light from a direction: the sun's sky, and the night's (the moon's sky and the night's own glow)
+// times moon_share.
 vec3 sky_air_lit(vec3 dir, float moon_share) {
     vec2 uv_sun = skyview_uv(dir, g_sun_dir.xyz);
     vec2 uv_moon = skyview_uv(dir, g_moon_dir.xyz);
     ivec2 both = skyview_size * ivec2(1, 2);
     vec3 sun_sky = texture(cg_sky_tex, sky_atlas_uv(vec2(uv_sun.x, uv_sun.y * 0.5), both, skyview_origin)).rgb;
     vec3 moon_sky = texture(cg_sky_tex, sky_atlas_uv(vec2(uv_moon.x, uv_moon.y * 0.5 + 0.5), both, skyview_origin)).rgb;
-    return sun_sky * sun_illuminance + moon_sky * moon_illuminance() * moon_share;
+    return sun_sky * sun_illuminance + (moon_sky * moon_illuminance() * 0.6 + night_air(dir)) * moon_share;
 }
 
 // The light the air gives from a direction (for the light on surfaces).
@@ -297,17 +308,20 @@ float twilight() {
     return 1.0 - smoothstep(0.0, 0.25, abs(g_sun_dir.w + 0.02));
 }
 
-// The air's light in our look: pushed away from grey, most at dusk and dawn; by day deeper overhead and paler and
-// brighter towards the horizon, where you look through the most air; round the setting sun it burns orange, on the
-// far side a pink band sits over the horizon (the sky's evening belt), and at night it stays a deep blue.
+// The air's light in our look: pushed away from grey, most at dusk and dawn; by day deeper overhead and paler towards
+// the horizon, where you look through the most air, but a pale blue there, never white (the air alone is ten times
+// brighter at the horizon than overhead, which the fixed exposure would burn out: its brightest parts are held back,
+// the more the brighter, and the low sky keeps its blue); round the setting sun it burns orange, on the far side a
+// pink band sits over the horizon (the sky's evening belt), and at night it stays a deep blue.
 vec3 sky_look(vec3 c, vec3 dir) {
     float dusk = twilight();
     float day = smoothstep(-0.05, 0.1, g_sun_dir.w) * (1.0 - dusk);
     c = push_from_grey(c, mix(mix(1.25, 1.15, day), 1.55, dusk));
     float up = clamp(dir.y, 0.0, 1.0);
     float horizon = 1.0 - smoothstep(0.0, 0.35, up);
-    c = mix(c, luminance(c) * vec3(0.93, 1.0, 1.12), 0.4 * horizon * day);
-    c *= 1.0 + day * (0.22 * horizon - 0.15 * smoothstep(0.3, 1.0, up));
+    c *= mix(1.0, 1.0 / (1.0 + luminance(c) / 1.2), day);
+    c = mix(c, luminance(c) * vec3(0.72, 1.0, 1.38), 0.5 * horizon * day);
+    c *= 1.0 - day * 0.15 * smoothstep(0.3, 1.0, up);
     vec2 flat_dir = normalize(dir.xz + vec2(1e-5, 0.0));
     vec2 flat_sun = normalize(g_sun_dir.xz + vec2(1e-5, 0.0));
     float toward_sun = dot(flat_dir, flat_sun) * 0.5 + 0.5; // 1 under the sun, 0 away
@@ -316,8 +330,10 @@ vec3 sky_look(vec3 c, vec3 dir) {
     float belt = smoothstep(0.02, 0.1, dir.y) * (1.0 - smoothstep(0.12, 0.35, dir.y)) * sqr(1.0 - toward_sun);
     glow = mix(glow, vec3(1.3, 0.95, 1.15), belt * dusk);
     c *= glow;
-    // Rain: the sky closes into grey, a little cool, and darker.
-    c = mix(c, vec3(luminance(c)) * vec3(0.93, 0.97, 1.04), 0.8 * rainStrength) * mix(1.0, 0.55, rainStrength);
+    // Rain: the sky closes into an even grey, a little cool: the light the overcast gives the land, a little
+    // brighter overhead than low down (as under any closed deck), not the clear air's bright horizon.
+    vec3 overcast = g_sky_up.rgb * (0.85 + 0.45 * up);
+    c = mix(c, overcast, rainStrength);
     return c;
 }
 
@@ -444,9 +460,12 @@ vec3 milky_way(vec3 local) {
     return color * band * clouds * clouds * mix(1.0, 0.2, lanes * band) * 0.045;
 }
 
-// The whole sky in a direction (without the clouds).
+// The whole sky in a direction (without the clouds). Under the horizon (past the edge of the land that is drawn, or
+// through a hole where it isn't loaded yet) it is the horizon's own colour in that direction, a little darker further
+// down: far haze, where the air's table has only the unlit ground's black.
 vec3 sky(vec3 dir, bool with_sun) {
-    vec3 c = sky_look(sky_air_seen(dir), dir);
+    vec3 look = dir.y >= 0.0 ? dir : normalize(vec3(dir.x, 0.0, dir.z) + vec3(1e-5, 0.0, 0.0));
+    vec3 c = sky_look(sky_air_seen(look), look) * (1.0 - 0.35 * smoothstep(0.0, 0.5, -dir.y));
     float night = 1.0 - smoothstep(-0.15, 0.05, g_sun_dir.w);
     float cam_r = camera_radius(cameraPosition.y);
     vec3 through = air_transmittance(cam_r, max(dir.y, 0.0));

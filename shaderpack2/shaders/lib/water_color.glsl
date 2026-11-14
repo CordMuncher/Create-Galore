@@ -59,7 +59,10 @@ const vec3 water_murk_glow = vec3(0.01, 0.035, 0.07);
 vec3 water_view_extinction(vec3 biome_srgb) {
     return water_absorption_for(biome_srgb) + water_scatter + water_murk;
 }
-const vec3 water_view_glow = water_scatter * water_scatter_boost + water_murk * water_murk_glow;
+// The water's own colour is drawn four times stronger than those numbers give: real deep water sends back a few
+// hundredths of the light on it, which reads as near black beside a sunlit shore; the look we follow gives a sea or
+// a lake a clear blue body in the sun.
+const vec3 water_view_glow = (water_scatter * water_scatter_boost + water_murk * water_murk_glow) * 4.0;
 
 // Snell's law at the surface: how much of the light is reflected (unpolarised), for the cosine between the look and
 // the normal on the side it comes from, and eta the other side's index over this side's (1.333 from the air into

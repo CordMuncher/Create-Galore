@@ -1,7 +1,13 @@
 #!/usr/bin/env python3
-"""Writes shaders/textures/cloud_noise.dat, the clouds' noise (lib/clouds.glsl): a 64 x 64 x 64 RGBA8 volume that
-repeats seamlessly on every side, made the same way each time (fixed seeds), so the file only changes when this
-script does. Each channel is 0..255:
+"""Writes the clouds' noise (lib/clouds.glsl), volumes that repeat seamlessly on every side, made the same way each
+time (fixed seeds), so the files only change when this script does.
+
+shaders/textures/cloud_shape.dat, 128 x 128 x 128 R8: the clouds' shapes. Cell noise (four, eight and sixteen cells
+across) with a little smooth gradient noise of the same sizes, so it comes in heaps of round lumps on lumps, the way
+cumulus heap up: 1 in a heap's heart, 0 in the clear air between, spread so that the share of the volume over a
+level v is 1 - sqrt(v).
+
+shaders/textures/cloud_noise.dat, 64 x 64 x 64 RGBA8. Each channel is 0..255:
 
     R  puffs: cell noise (four cells across, eight under it) mixed with smooth gradient noise (four and eight cells
        across), so it comes in round lumps with uneven outlines
@@ -17,13 +23,19 @@ from pathlib import Path
 
 import numpy as np
 
-SIZE = 64
-OUT = Path(__file__).resolve().parent.parent / "shaders" / "textures" / "cloud_noise.dat"
+TEXTURES = Path(__file__).resolve().parent.parent / "shaders" / "textures"
+OUT = TEXTURES / "cloud_noise.dat"
+SHAPE_OUT = TEXTURES / "cloud_shape.dat"
 
-# Every texel's centre, 0..1 over the volume, as (z, y, x) arrays.
-_axis = (np.arange(SIZE) + 0.5) / SIZE
-Z, Y, X = np.meshgrid(_axis, _axis, _axis, indexing="ij")
-P = np.stack([X, Y, Z], axis=-1)
+
+def grid(size):
+    """Every texel's centre, 0..1 over the volume, as (z, y, x) arrays."""
+    axis = (np.arange(size) + 0.5) / size
+    z, y, x = np.meshgrid(axis, axis, axis, indexing="ij")
+    return np.stack([x, y, z], axis=-1)
+
+
+P = grid(64)
 
 
 def cells(freq, seed):
@@ -78,6 +90,15 @@ def to_unit(a):
     return np.clip((a - lo) / (hi - lo), 0.0, 1.0)
 
 
+def ranked(a):
+    """Every value replaced by where it ranks among them all: 0 the least, 1 the most, evenly spread."""
+    flat = a.ravel()
+    order = np.argsort(flat, kind="stable")
+    out = np.empty_like(flat)
+    out[order] = np.linspace(0.0, 1.0, flat.size)
+    return out.reshape(a.shape)
+
+
 def main():
     # Nothing finer than eight texels a cell anywhere: the clouds' outlines come from where these cross a level, and
     # finer noise there gives outlines that follow the texel grid (straight edges, square corners, combs along the
@@ -94,6 +115,20 @@ def main():
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_bytes(data.tobytes())
     print("wrote %s (%d bytes)" % (OUT, data.nbytes))
+
+    # The shapes, on a finer grid (sixteen cells across still get eight texels each): mostly cell noise, lumps on lumps
+    # on lumps, so the clouds come out as heaps of rounds, the way cumulus heap up, with a quarter of smooth noise so
+    # no two heaps are alike. Then every value is put where it ranks (0 the least, 1 the most, evenly) and squared: the
+    # share of the volume over a level v is 1 - sqrt(v), whatever the noise was, so the clouds' cover means the same
+    # thing wherever this noise is read.
+    global P
+    P = grid(128)
+    heaps = to_unit(octaves(gradient, (4, 8, 16), (1.0, 0.5, 0.25), 60))
+    lumps = octaves(cells, (4, 8, 16), (0.625, 0.25, 0.125), 70)
+    shape = ranked(lumps * 0.75 + heaps * 0.25) ** 2
+    data = np.round(shape * 255.0).astype(np.uint8)
+    SHAPE_OUT.write_bytes(data.tobytes())
+    print("wrote %s (%d bytes)" % (SHAPE_OUT, data.nbytes))
 
 
 if __name__ == "__main__":

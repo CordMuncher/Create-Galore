@@ -259,8 +259,8 @@ float distance_under(vec2 at, float depth, vec3 here, float fallback) {
 uniform sampler2D colortex5;
 #endif
 #endif
-#define CLOUDS_NO_READ_BACK
 #include "/lib/sky_mirror.glsl"
+#include "/lib/water_shade.glsl"
 #if defined PROGRAM_WATER
 #include "/lib/trace.glsl"
 
@@ -309,12 +309,12 @@ vec2 splash_ring(vec3 world) {
     return d / max(r, 1e-3) * cos(TAU * x / 0.2) * env * 0.6;
 }
 
-// The water's surface: what lies under it (dimmed and tinted by the water between, bent by the waves), the light the
-// water scatters back towards you on the way, and the sun's glint; its reflection comes later, over the whole scene
-// (traced through the block copy in program/water_reflect.csh, added in program/fog.fsh). reflected: how much it
-// reflects (Fresnel, exact for water); n: its normal on your side; spread: how far the waves finer than a pixel
-// scatter a reflection (radians).
-vec4 shade_water(vec4 base, out float reflected, out vec3 n, out float spread) {
+// The water's surface (lib/water_shade.glsl): what lies under it (dimmed and tinted by the water between, bent by the
+// waves), the light the water scatters back towards you on the way, the sun through the crests and the sun's glint;
+// its reflection comes later, over the whole scene (traced through the block copy in program/water_reflect.csh,
+// added in program/fog.fsh). reflected: how much it reflects (Fresnel, exact for water); n: its normal on your side;
+// soft: how soft what it mirrors is (radians).
+vec4 shade_water(vec4 base, out float reflected, out vec3 n, out float soft) {
     vec3 to_eye = normalize(-v_scene_pos);
     float distance_away = length(v_scene_pos);
     vec3 world = v_scene_pos + cameraPosition;
@@ -324,37 +324,36 @@ vec4 shade_water(vec4 base, out float reflected, out vec3 n, out float spread) {
     if (dot(face, to_eye) < 0.0) {
         face = -face;
     }
-    n = face;
-    float rough = 0.0;
+    WaterSurface surface;
     if (abs(face.y) > 0.5) {
-        vec2 local = water_local(v_scene_pos);
-        float grazing = abs(to_eye.y);
-        float footprint = distance_away * pixel_angle() * inversesqrt(max(grazing, 0.02));
         float open = smoothstep(0.5, 0.95, levels.y);
         float rain = g_water.x * smoothstep(0.8, 0.9, levels.y);
-        // Weaker under a roof and in caves, stronger in the open; calm and choppy stretches.
-        float strength = WATER_WAVES * mix(0.25, 1.0, open) * water_chop(v_scene_pos);
-        Waves w = water_waves(local, strength, swell_room(v_scene_pos), rain, footprint, distance_away);
-        // Flatter at a grazing look, where the waves would only break the reflection into noise; what that takes
-        // off is still there, finer than the eye follows: roughness.
-        float flatter = mix(0.35, 1.0, smoothstep(0.0, 0.25, grazing));
-        w.slope *= flatter;
-        rough = w.rough + w.seen * (1.0 - flatter * flatter);
+        float footprint;
+        Waves w = water_waves_seen(v_scene_pos, to_eye, open, swell_room(v_scene_pos), rain, footprint);
 #ifdef RAIN_RINGS
-        w.slope += rain_rings(local, rain * (1.0 - smoothstep(10.0, 35.0, distance_away)), footprint, rough);
+        w.slope += rain_rings(water_local(v_scene_pos), rain * (1.0 - smoothstep(10.0, 35.0, distance_away)),
+                              footprint, w.rough);
 #endif
         w.slope += splash_ring(world);
         // The wakes of what moves through the water (lib/wakes.glsl).
         w.slope += wake_slope(v_scene_pos);
-        if (face.y > 0.0 && !inside) {
-            w.slope += facing_tilt(rough, to_eye);
-        }
-        vec3 wave = wave_normal(w);
-        n = face.y > 0.0 ? wave : -wave;
+        surface = water_finish(w, face, to_eye, inside);
+    } else {
+        // The side of a water block (a fall, a stream's edge): flat.
+        Waves none;
+        none.slope = vec2(0.0);
+        none.seen = 0.0;
+        none.rough = 0.0;
+        surface = water_finish(none, vec3(0.0, 1.0, 0.0), to_eye, inside);
+        surface.n = face;
+        surface.cos_v = max(dot(face, to_eye), 0.0);
+        surface.fresnel = fresnel_dielectric(surface.cos_v, inside ? 1.0 / water_ior : water_ior);
     }
-    spread = 2.0 * sqrt(rough);
-    float cos_v = max(dot(n, to_eye), 0.0);
-    float fresnel = fresnel_dielectric(cos_v, inside ? 1.0 / water_ior : water_ior);
+    n = surface.n;
+    soft = surface.soft;
+    float spread = surface.spread;
+    float cos_v = surface.cos_v;
+    float fresnel = surface.fresnel;
     // The light the water takes in from above (its own surface never shades it, a03).
     vec3 light_here = forward_light(vec3(0.0, 1.0, 0.0), v_scene_pos, levels, 1.0, 1.0, true);
 
@@ -367,20 +366,23 @@ vec4 shade_water(vec4 base, out float reflected, out vec3 n, out float spread) {
     reflected = 0.0;
     vec3 r = reflect(-to_eye, n);
     r.y = inside ? -abs(r.y) : abs(r.y);
-    float turn = fract(ign(floor(gl_FragCoord.xy)) + float(frameCounter & 255) * GOLDEN);
     vec3 own_reflection = (inside ? light_here * 0.05
-                                  : mix(light_here * 0.05, reflect_sky(r, v_scene_pos, spread, turn),
+                                  : mix(light_here * 0.05, reflect_sky(r, v_scene_pos, soft),
                                         vanilla_sky_share(levels.y))) * fresnel;
 #endif
 
-    // The sun's glint: its disc as the sky shows it, mirrored, spread by the waves too fine to see.
+    // The sun's glint: its disc as the sky shows it, mirrored, spread by the waves too fine to see. And the sun
+    // through the crests.
     vec3 sun_glint = vec3(0.0);
+    vec3 crests = vec3(0.0);
 #ifdef SUNLIGHT
     float sky_gate = smoothstep(0.05, 0.3, levels.y);
     if (!inside && sky_gate > 0.0 && g_light_dir.w > 0.5) {
         vec3 r_sun = reflect(-to_eye, n);
-        float reach = shadow_solid(v_scene_pos + vec3(0.0, 0.05, 0.0), 1.0, sun_beyond_map(levels.y));
-        sun_glint = sun_seen(r_sun, spread) * fresnel * reach * sky_gate * cloud_shadow(v_scene_pos);
+        float reach = shadow_solid(v_scene_pos + vec3(0.0, 0.05, 0.0), 1.0, sun_beyond_map(levels.y))
+                * sky_gate * cloud_shadow(v_scene_pos);
+        sun_glint = sun_seen(r_sun, spread) * fresnel * reach;
+        crests = water_crest_glow(surface, to_eye, g_light_color.rgb * reach);
     }
 #endif
 
@@ -409,12 +411,8 @@ vec4 shade_water(vec4 base, out float reflected, out vec3 n, out float spread) {
     // it (program/fog.fsh has that water).
     float lit = smoothstep(0.02, 0.4, luminance(light_here));
     float depth = inside ? 0.0 : max(thickness, mix(2.0, 1.0, lit));
-    vec3 through = exp(-extinction * depth);
-    // The light it scatters towards you on the way, from the light that came in at the surface (dimmed on its way
-    // down as well as on its way back): it fades in over the first blocks and then holds, the water's own glow.
-    float cos_t = sqrt(max(1.0 - (1.0 - cos_v * cos_v) / (water_ior * water_ior), 0.0));
-    vec3 along = extinction * (1.0 + 1.15 * cos_t);
-    vec3 glow = light_here * water_view_glow * (1.0 - exp(-along * depth)) / along;
+    vec3 through;
+    vec3 glow = water_body(light_here, extinction, depth, cos_v, through) + crests;
 
 #if DEBUG_VIEW == 15
     // The water's own: red your feet are in water, green eighths of the seconds since you last went in or out (to
@@ -457,11 +455,11 @@ void main() {
 #endif
         float reflected;
         vec3 wave;
-        float spread;
-        out_color = shade_water(color, reflected, wave, spread);
+        float soft;
+        out_color = shade_water(color, reflected, wave, soft);
         out_motion = motion_out();
 #if defined PROGRAM_WATER
-        out_water = vec4(encode_normal(wave), reflected, 1.0 - 0.49 * clamp(spread / 0.5, 0.0, 1.0));
+        out_water = vec4(encode_normal(wave), reflected, 1.0 - 0.49 * clamp(soft / 0.5, 0.0, 1.0));
 #endif
         return;
     }
