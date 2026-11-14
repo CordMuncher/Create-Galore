@@ -109,10 +109,10 @@ final class VehicleCheck {
             if (id.equals("aeronautics:adjustable_burner") || id.equals("aeronautics:steam_vent") || s.is(LEVITITE)) air = true;
             if (id.equals("offroad:wheel_mount")) land = true;
         }
-        boolean props = blocks.values().stream().anyMatch(s -> isPropeller(id(s)) || isThruster(id(s)) || liftScalar(s) > 0);
+        boolean props = blocks.values().stream().anyMatch(s -> isPropeller(id(s)) || isThruster(id(s)) || isSmartThruster(id(s)) || liftScalar(s) > 0);
         if (!sub && !water && !air && !land && !props) return null;
         // A plane on wheel mounts is an aircraft that rolls: judged in the air, with its wheels in its ground run.
-        boolean winged = blocks.values().stream().anyMatch(s -> isPropeller(id(s)))
+        boolean winged = blocks.values().stream().anyMatch(s -> isPropeller(id(s)) || isSmartThruster(id(s)))
                 && blocks.values().stream().filter(s -> liftScalar(s) > 0).count() >= 8;
 
         List<Part> parts = new ArrayList<>();
@@ -237,7 +237,7 @@ final class VehicleCheck {
     private static Direction.Axis driveAxis(List<Part> parts) {
         int x = 0, z = 0;
         for (Part p : parts) {
-            if (!isPropeller(p.id) && !isThruster(p.id) && !p.id.equals("create_high_seas:boat_engine")
+            if (!isPropeller(p.id) && !isThruster(p.id) && !isSmartThruster(p.id) && !p.id.equals("create_high_seas:boat_engine")
                     && !p.id.equals("create_submarine:submarine_propeller")) continue;
             Direction f = facing(p.state);
             if (f == null) continue;
@@ -306,7 +306,7 @@ final class VehicleCheck {
                     || id.equals("create_submarine:water_thruster") || id.equals("aeronauticswinds:keel") || id.equals("aeronauticswinds:rudder")
                     || id.equals("create_high_seas:rudder") || s.is(HIGH_SEAS_SAILS) || id.equals("aeronautics:adjustable_burner")
                     || id.equals("aeronautics:steam_vent") || s.is(LEVITITE) || id.equals("offroad:wheel_mount")
-                    || isPropeller(id) || isThruster(id) || liftScalar(s) > 0) return true;
+                    || isPropeller(id) || isThruster(id) || isSmartThruster(id) || liftScalar(s) > 0) return true;
         }
         return false;
     }
@@ -1699,6 +1699,32 @@ final class VehicleCheck {
                 best = d;
             }
         }
+        // A flight computer pushes only as hard as its controllers ask; forward, that is its Velocity Coupler's set speed.
+        boolean fc = flightComputer(b);
+        if (fc && best != null && v > 0) {
+            double cap = couplerSpeed(b);
+            if (cap <= 0) {
+                faults.add("nothing asks its Flight Control Computer for forward speed, so its Smart Vector Thrusters only hold "
+                        + "it level: link a Velocity Coupler to the computer, set its forward max speed and give it a forward "
+                        + "input (a Redstone Proxy face mapped to Forward Velocity)");
+                v = 0;
+            } else if (cap < v) {
+                out.append(String.format(Locale.ROOT, "- Its Velocity Coupler holds it at %.0f blocks/s while its forward input "
+                        + "is on (the max forward speed set in its screen); its thrusters could push it to %.0f.\n", cap, v));
+                // The computer eases its thrusters off as the speed nears the set one, the way a propeller's push fades as
+                // the ship nears its airflow speed: judged from here on that way, for the climb, the runs and the ceiling.
+                side = side.stream().map(t -> isSmartThruster(id(b.blocks.get(t.at))) ? new Thrust(t.at, t.dir, t.force, cap,
+                        t.what, t.reversible) : t).toList();
+                double props = 0, over = 0;
+                for (Thrust t : side) {
+                    if (t.dir != best) continue;
+                    double f = t.force * (t.airflow < Double.MAX_VALUE ? p0 : 1);
+                    props += f;
+                    if (t.airflow < Double.MAX_VALUE) over += f / t.airflow;
+                }
+                v = terminal(props, drag + wings.drag(best.getAxis(), p0), 16.5 * lev, over);
+            }
+        }
         double wingLift = wings.up * p0 * v;
         double other = 16.5 * filled * pressure(TAKEOFF_Y + balloonY) + levLift + up * p0;
         double lift0 = other + Math.max(0, wingLift);
@@ -1868,12 +1894,29 @@ final class VehicleCheck {
             if (gyros > 0) damp += iy;
             if (lev > 0 && q > 0) damp = levititeBrake(b, q, damp);
             long still = b.parts.stream().filter(p -> isPropeller(p.id) && Math.abs(rpm.getOrDefault(p.pos, 0f)) < 1e-3).count();
-            if (how == null && still > 0)
+            // A flight computer turns it only when a controller asks: an Angular Velocity Coupler (yaw rate from its
+            // inputs, braked to none without) or a Flight Control Terminal (the bound seat's mouse).
+            boolean fcTurn = fc && b.count("create_flight_control:angular_velocity_coupler") > 0;
+            boolean fcMouse = fc && b.count("create_flight_control:mouse_flight_controller") > 0;
+            // Measured: the book's jet, asked for 17°/s, turned about 8°/s at 28 blocks/s, flat (under 1° of bank).
+            if (fcTurn) out.append(String.format(Locale.ROOT, "- Turns flat and level while its Angular Velocity Coupler's left or "
+                    + "right input is on: it asks the flight computer for up to %.0f°/s (the max rate set in its screen, %.1f rad/s), "
+                    + "and at speed the thrusters manage about half that; with neither on it holds the heading.\n",
+                    Math.toDegrees(couplerTurn(b)), couplerTurn(b)));
+            else if (fcMouse) out.append("- Steered with the mouse from the seat bound to its Flight Control Terminal (pitch, yaw and "
+                    + "automatic bank).\n");
+            else if (fc) faults.add("nothing asks its Flight Control Computer to turn, so it holds its heading: link an Angular "
+                    + "Velocity Coupler to the computer and give it left and right inputs (Redstone Proxy faces mapped to its yaw), "
+                    + "or bind a seat to a Flight Control Terminal");
+            else if (how == null && still > 0)
                 faults.add(still + " of its propellers don't turn (no engine reaches them), so they neither push nor steer: get "
                         + "every propeller turning before judging the steering");
             else turn(q, damp, how, faults, notes, out, "aircraft");
-            if (how != null) steering(b, swivel != null && how.equals(swivel.how()) ? swivel : null, faults, notes, out);
-            throttle(b, side, faults, notes, out);
+            if (fc) jetControls(b, faults, notes, out);
+            else {
+                if (how != null) steering(b, swivel != null && how.equals(swivel.how()) ? swivel : null, faults, notes, out);
+                throttle(b, side, faults, notes, out);
+            }
             if (gyros > 0) notes.add("its Gyroscope keeps it level but also brakes turning");
         }
         if (stress > 0) notes.add(String.format(Locale.ROOT, "its propellers draw about %.0f stress units at these speeds; the "
@@ -1884,7 +1927,7 @@ final class VehicleCheck {
         double pitch = 0;
         for (Thrust t : side) pitch = Math.max(pitch, Math.abs(t.at.getY() + 0.5 - b.cy));
         // Under a balloon the cruise pitch above weighs the thrust line against the balloon's pull; this is for the rest.
-        if (pitch >= 4 && b.count("aeroworks:gyroscope") == 0 && wingLift <= 0 && filled == 0)
+        if (pitch >= 4 && b.count("aeroworks:gyroscope") == 0 && !fc && wingLift <= 0 && filled == 0)
             notes.add(String.format(Locale.ROOT, "its propellers push %.0f blocks off the height of its centre of mass, so it "
                     + "pitches when they run; a Gyroscope or lower propellers fix that", pitch));
     }
@@ -2030,13 +2073,47 @@ final class VehicleCheck {
         }
         if (gyros > 0 && spin == 0) faults.add("its Gyroscope isn't turning, so it holds nothing level: drive it from an engine on "
                 + "board (full strength at " + (int) GYRO_RPM + " RPM, drawing 16 stress units per RPM)");
+        // A Flight Control Computer holds it level through its Smart Vector Thrusters once its Smart Attitude Stabilizer
+        // turns (any speed: linked to a computer it takes a flat 64 stress units).
+        boolean fc = flightComputer(b), held = false;
+        if (fc) for (Part p : b.parts)
+            if (p.id.equals("create_flight_control:attitude_hold")) {
+                if (Math.abs(rpm.getOrDefault(p.pos, 0f)) > 1e-3) held = true;
+                else faults.add("the Smart Attitude Stabilizer at " + xyz(p.pos) + " isn't turning, so the flight computer holds "
+                        + "nothing level: turn a shaft into its bottom from an engine on board (64 stress units)");
+            }
         // Side to side nothing rights a plane: a wing lifts the way it faces however it leans, so the smallest lean
         // tips its lift, it slides toward the low wing and spirals down (a biplane flown without one did, within 20 s).
-        if (gyros == 0 && other < weight) faults.add("nothing holds its wings level side to side: a wing lifts the way it faces "
+        if (gyros == 0 && !fc && other < weight) faults.add("nothing holds its wings level side to side: a wing lifts the way it faces "
                 + "however the plane leans, so the smallest lean grows into a spiral down. It needs an Aeroworks Gyroscope on "
                 + "board, turned from below by an engine on the ship (a Portable Engine's own 32 RPM, through a gearbox under "
-                + "it, holds a small plane level)");
-        double gyro = gyros == 0 ? 0 : spin / gyros;
+                + "it, holds a small plane level), or a Flight Control Computer with a Smart Attitude Stabilizer and Smart "
+                + "Vector Thrusters");
+        // It levels only by swinging and throttling its thrusters, which at cruise push little, so it is judged as a
+        // quarter-strength gyroscope: the book's jet with its wing far ahead of the centre of mass passed as a full one
+        // and looped over on the runway; with the wing over it, it flew level.
+        double gyro = held ? FC_LEVEL : gyros == 0 ? 0 : spin / gyros;
+        // A flight computer holds a nose-up or nose-down trim only by swinging its thrusters, and every swing pushes
+        // forward too: the book's first laid-out jet, wing a little off its balance, sped up past its set speed and
+        // climbed away while holding level. So its wing must balance it fore and aft by itself (judged with nothing
+        // levelling it), and the computer only steadies it.
+        if (held && gyros == 0) {
+            Trial bare = trial(b, w, side, best, v, 0, 0);
+            if (Math.abs(bare.full().trim()) > FC_TRIM || bare.cruise() != null && Math.abs(bare.cruise().trim()) > FC_TRIM) {
+                double fix = 0;
+                for (double d = 1; d <= 6 && fix == 0; d++)
+                    for (double shift : new double[] {-d, d}) {
+                        Trial t = trial(b, w, side, best, v, shift, 0);
+                        if (fix == 0 && Math.abs(t.full().trim()) <= FC_TRIM && (t.cruise() == null || Math.abs(t.cruise().trim()) <= FC_TRIM))
+                            fix = shift;
+                    }
+                faults.add(String.format(Locale.ROOT, "its wing doesn't balance it fore and aft (left to itself it trims %.0f° nose %s), "
+                        + "and its flight computer holds that only by swinging its thrusters, which pushes it faster and faster",
+                        Math.abs(bare.full().trim()), bare.full().trim() > 0 ? "up" : "down")
+                        + (fix == 0 ? "; move the wing over the centre of mass" : String.format(Locale.ROOT, ": with its wing %.0f "
+                        + "block%s further toward the %s it balances", Math.abs(fix), Math.abs(fix) == 1 ? "" : "s", fix > 0 ? "nose" : "tail")));
+            }
+        }
         Trial trial = trial(b, w, side, best, v, 0, gyro);
         out.append(trial.describe());
         if (trial.ok()) return;
@@ -2060,11 +2137,31 @@ final class VehicleCheck {
     }
 
     /**
-     * Rolling drag of one Offroad wheel mount, per block/s and per mass it carries up to its suspension setting (10 as
-     * placed): (0.075 + 0.3 x brake) x 20 x min(load, setting) x speed, from WheelMountBlockEntity; full brake is 5 times
-     * that. Measured: a 40-mass cart on four mounts loses 1.5 blocks/s every second at the default setting.
+     * Smart Vector Thruster push at full: its maxThrust (6000; the small one 2000), in the same units as Create
+     * Propulsion's thrusters (measured: thrust level 1 of 15 pushed a sled like 400). The nozzle swings 30 degrees (the
+     * small one 90), so the computer also steers and levels with it. Lava burns 1000 mB a minute at full, diesel 500,
+     * gasoline 250; a test jet cruising at 28 blocks/s on two burned about 25 mB of lava a minute each.
      */
-    private static final double WHEEL_ROLL = 1.5, WHEEL_SUSPENSION = 10, WHEEL_BRAKE = 5;
+    private static final double SMART_THRUST = 6000, SMART_SMALL_THRUST = 2000;
+    /** A flight computer's levelling, as a share of a full-speed gyroscope's (see the flight trial). */
+    private static final double FC_LEVEL = 0.25;
+    /** How far off level a flight-computer plane may trim by itself, degrees, for the computer to steady it at its set speed. */
+    private static final double FC_TRIM = 2;
+    /** The forward speed a laid-out jet's Velocity Coupler is set to, blocks/s (the coupler's own default is 5). */
+    static final double JET_SPEED = 30;
+    /**
+     * Rolling drag of one Offroad wheel mount with a tire in it, per block/s: (0.075 + 0.3 x brake) x 20 x min(m, S) x
+     * speed, from WheelMountBlockEntity, where m is the whole body's mass felt at the wheel (not its share of the weight,
+     * and not lightened as the wings lift) and S the mount's suspension setting (5 to 180, 10 as placed). So every
+     * wheel on a plane drags 1.5 x S per block/s until it leaves the ground, and full brake (redstone into its top) is 5
+     * times that. Its spring holds up to 260 x min(m, S) before it bottoms out. Measured on a runway: a sled pushed by
+     * 460 on three tired mounts ran 9.1 blocks/s at setting 10 and 16.3 at 5, as this gives (a Grindstone sled kept
+     * speeding up past 50: it barely touches the ground's friction).
+     */
+    private static final double WHEEL_ROLL = 1.5, WHEEL_SUSPENSION = 10, WHEEL_LOWEST = 5, WHEEL_BRAKE = 5;
+    private static final String TIRE_SETTING = "a Tire in each Wheel Mount and each mount's suspension scrolled down to 5 (its lowest; "
+            + "the wheels drag in proportion to it)";
+
     /** Ground runs, blocks: longer than the first is a long field; longer than the second is no use. */
     private static final double RUN_LONG = 60, RUN_BAD = 150;
     /** The height a plane's field is judged at. */
@@ -2109,6 +2206,14 @@ final class VehicleCheck {
         String gear = wheels > 0 ? wheels + " wheel mount" + (wheels == 1 ? "" : "s")
                 : feet.stream().map(p -> p.state.getBlock().getName().getString()).distinct().limit(3).reduce((a, c) -> a + ", " + c).orElse("")
                 + String.format(Locale.ROOT, " (sliding friction %.2f)", mu);
+        long grind = feet.stream().filter(p -> p.id.equals("minecraft:grindstone")).count();
+        if (wheels == 0 && grind > 0) {
+            String why = "it stands on Grindstones, which aren't landing gear: they skid on the ground with no tire, steering or "
+                    + "brakes. Give it Wheel Mounts with a Tire in each (one under the nose, two just behind the centre of mass, each "
+                    + "mount facing sideways so its wheel hangs beside it), suspension scrolled down to 5";
+            if (Drives.canMake(new Drives.Part("offroad:wheel_mount", "landing gear"))) faults.add(why);
+            else notes.add(why.replace("Give it", "Once the player can make them, give it") + "; until then tell the player the Grindstones only stand in for wheels");
+        }
         if (fore0 > 0 || fore1 < 0) {
             faults.add(String.format(Locale.ROOT, "it can't stand on the ground: everything it rests on (%s) is %s its centre of "
                     + "mass, so it tips onto its %s; put landing gear both ahead of and behind the centre of mass (a nose wheel "
@@ -2121,48 +2226,44 @@ final class VehicleCheck {
             return;
         }
         double drag = DAMP * b.m + w.drag(best.getAxis(), p0);
-        double dt = 0.025;
-        // Take-off: from standing, until the wings carry the weight.
-        double u = 0, x = 0, t = 0;
-        boolean stuck = false;
-        while (true) {
-            double lift = other + w.up * p0 * u;
-            if (lift >= weight) break;
-            double load = weight - lift, thrust = 0;
-            for (double[] k : push) thrust += k[1] < Double.MAX_VALUE ? k[0] * Math.max(0, 1 - u / k[1]) : k[0];
-            double roll = wheels > 0 ? wheels * WHEEL_ROLL * Math.min(load / G / wheels, WHEEL_SUSPENSION) * u : mu * load;
-            if (u < 1e-6 && wheels == 0 && thrust <= roll) {
-                stuck = true;
-                break;
-            }
-            double a = (thrust - drag * u - roll) / b.m;
-            u = Math.max(0, u + a * dt);
-            x += u * dt;
-            t += dt;
-            if (t > 60 || a < 1e-4 && t > 2) {
-                stuck = true;
-                break;
-            }
-        }
-        if (stuck) {
-            double tops = u;
+        // Take-off: from standing, until the wings carry the weight. Wheel mounts placed in a model have no setting yet;
+        // the player is told to turn them down to 5, so that is what the run is judged at, with the default for comparison.
+        double setting = wheels > 0 ? suspension(b, mounts) : 0;
+        boolean told = wheels > 0 && Double.isNaN(setting);
+        if (told) setting = WHEEL_LOWEST;
+        if (wheels > 0 && b.m / wheels > 23.6 * Math.min(b.m, setting))
+            faults.add(String.format(Locale.ROOT, "each Wheel Mount carries about %.0f mass, more than its suspension holds at %.0f "
+                    + "(about %.0f): it bottoms out; add a mount or set them higher (each step up adds drag)", b.m / wheels, setting,
+                    23.6 * Math.min(b.m, setting)));
+        double[] run = takeoffRun(b, w, push, p0, other, drag, wheels, mu, setting);
+        double x = run[0], t = run[1];
+        if (run[2] > 0) {
+            double tops = run[3];
+            double[] low = wheels > 0 && setting > WHEEL_LOWEST ? takeoffRun(b, w, push, p0, other, drag, wheels, mu, WHEEL_LOWEST) : null;
             faults.add(String.format(Locale.ROOT, "it never gets off the ground: on its %s it %s, short of the %.1f blocks/s its "
                     + "wings need, because what it stands on drags too hard. %s", gear, tops < 0.1 ? "doesn't move at all"
-                    : String.format(Locale.ROOT, "tops out at %.1f blocks/s", tops), takeoff, wheels > 0 ? "Wheel mounts drag "
-                    + "in proportion to speed and to the weight on them (" + WHEEL_ROLL + " per block/s per mass carried, up to "
-                    + "their suspension setting), so a heavy plane on wheels never reaches flying speed: stand it on Grindstones "
-                    + "instead (they roll almost freely: one under the nose, two just behind the centre of mass)"
-                    : "Stand it on Grindstones (they roll almost freely: one under the nose, two just behind the centre of mass)"));
+                    : String.format(Locale.ROOT, "tops out at %.1f blocks/s", tops), takeoff, wheels == 0
+                    ? "Stand it on Wheel Mounts with Tires instead (one under the nose, two just behind the centre of mass)"
+                    : low != null && low[2] == 0 ? String.format(Locale.ROOT, "Scroll each Wheel Mount's suspension down to 5: "
+                    + "wheels drag in proportion to it, and at 5 it lifts off after about %.0f blocks", low[0])
+                    : "Each Wheel Mount drags " + WHEEL_ROLL + " x its suspension setting per block/s until the plane leaves the "
+                    + "ground, so use as few as stand it (three), set to 5, with more forward thrust or more wing to lift off sooner"));
             return;
+        }
+        if (told) {
+            double[] dflt = takeoffRun(b, w, push, p0, other, drag, wheels, mu, WHEEL_SUSPENSION);
+            notes.add(dflt[2] > 0 ? "it only gets off the ground with " + TIRE_SETTING + ": at the default 10 it never reaches flying speed; "
+                    + "tell the player" : String.format(Locale.ROOT, "its runs assume %s (at the default 10 the take-off run is about %.0f "
+                    + "blocks); tell the player", TIRE_SETTING, dflt[0]));
         }
         // Landing: touching down at take-off speed with the propellers idle, braked or reversed.
         boolean reverse = reverser(b), brakes = wheels > 0;
-        double idle = stop(b, w, p0, other, takeoff, drag, wheels, mu, 0, 1), back = 0, braked = 0;
+        double idle = stop(b, w, p0, other, takeoff, drag, wheels, setting, mu, 0, 1), back = 0, braked = 0;
         if (reverse) {
             for (double[] k : push) back += k[0];
-            back = stop(b, w, p0, other, takeoff, drag, wheels, mu, back, 1);
+            back = stop(b, w, p0, other, takeoff, drag, wheels, setting, mu, back, 1);
         }
-        if (brakes) braked = stop(b, w, p0, other, takeoff, drag, wheels, mu, 0, WHEEL_BRAKE);
+        if (brakes) braked = stop(b, w, p0, other, takeoff, drag, wheels, setting, mu, 0, WHEEL_BRAKE);
         double land = reverse ? back : brakes ? braked : idle;
         out.append(String.format(Locale.ROOT, "- On the ground it stands on %s: from a field at about y %d its take-off run is about %.0f blocks (%.0f s), "
                 + "lifting off at %.1f blocks/s, and after touching down at about %.0f blocks/s it stops in about %.0f blocks %s.\n", gear, (int) GROUND_Y, x, t,
@@ -2175,8 +2276,9 @@ final class VehicleCheck {
         FIGURES.get().put("liftoff", takeoff);
         double field = Math.max(x, land);
         if (field > RUN_BAD) faults.add(String.format(Locale.ROOT, "it needs a field about %.0f blocks long (%.0f to take off, "
-                + "%.0f to stop), too long to be of use. %s", field, x, land, wheels > 0 ? "Wheel mounts drag hard at speed: "
-                + "Grindstones roll almost freely as landing gear, and a Gearshift in each propeller line reverses them to stop"
+                + "%.0f to stop), too long to be of use. %s", field, x, land, wheels > 0 ? "Each Wheel Mount drags "
+                + WHEEL_ROLL + " x its suspension setting per block/s until the plane leaves the ground: three mounts set to 5, "
+                + "more forward thrust or more wing shorten the run, and a Gearshift in each propeller line reverses them to stop"
                 : !reverse && land > x ? "Put a Gearshift in each propeller line, on a lever at the pilot's hand: reversed, the "
                 + "propellers stop it in a few blocks" : "More forward thrust or more wing shortens the run"));
         else if (field > RUN_LONG) notes.add(String.format(Locale.ROOT, "it needs a long field: about %.0f blocks to take off and "
@@ -2187,18 +2289,56 @@ final class VehicleCheck {
                     + "in each propeller line, on a lever at the pilot's hand, turns them backwards as an air brake", idle));
     }
 
+    /** {x, t, stuck 1/0, top speed}: the take-off run from standing with wheel mounts at {@code setting}. */
+    private static double[] takeoffRun(Body b, Wings w, List<double[]> push, double p0, double other, double drag, int wheels,
+            double mu, double setting) {
+        double weight = G * b.m, u = 0, x = 0, t = 0, dt = 0.025;
+        while (true) {
+            double lift = other + w.up * p0 * u;
+            if (lift >= weight) return new double[] {x, t, 0, u};
+            double load = weight - lift, thrust = 0;
+            for (double[] k : push) thrust += k[1] < Double.MAX_VALUE ? k[0] * Math.max(0, 1 - u / k[1]) : k[0];
+            double roll = wheels > 0 ? wheels * WHEEL_ROLL * Math.min(b.m, setting) * u : mu * load;
+            if (u < 1e-6 && wheels == 0 && thrust <= roll) return new double[] {x, t, 1, u};
+            double a = (thrust - drag * u - roll) / b.m;
+            u = Math.max(0, u + a * dt);
+            x += u * dt;
+            t += dt;
+            if (t > 60 || a < 1e-4 && t > 2) return new double[] {x, t, 1, u};
+        }
+    }
+
+    /**
+     * The wheel mounts' suspension setting (their average), read from the world's block entities, or NaN for a model,
+     * whose mounts have none until the player places and sets them.
+     */
+    static double suspension(Body b, List<Part> mounts) {
+        if (!(b.level instanceof net.minecraft.world.level.Level lvl)) return Double.NaN;
+        double sum = 0;
+        int n = 0;
+        for (Part p : mounts) {
+            var be = lvl.getBlockEntity(p.pos);
+            if (be == null) continue;
+            var tag = be.saveWithoutMetadata(lvl.registryAccess());
+            if (!tag.contains("ScrollValue")) continue;
+            sum += tag.getInt("ScrollValue");
+            n++;
+        }
+        return n == 0 ? Double.NaN : sum / n;
+    }
+
     private static boolean touchesBelow(BlockGetter g, Part p) {
         VoxelShape shape = p.state.getCollisionShape(g, p.pos);
         return !shape.isEmpty() && shape.min(Direction.Axis.Y) < 0.01;
     }
 
     /** The run to stop from {@code u0}, blocks: drag, the ground's friction (wheel mounts at {@code brake} times) and reverse push. */
-    private static double stop(Body b, Wings w, double p0, double other, double u0, double drag, int wheels, double mu,
-            double back, double brake) {
+    private static double stop(Body b, Wings w, double p0, double other, double u0, double drag, int wheels, double setting,
+            double mu, double back, double brake) {
         double weight = G * b.m, u = u0, x = 0, dt = 0.025;
         for (int i = 0; i < 40 * 120 && u > 0.2; i++) {
             double load = Math.max(0, weight - other - w.up * p0 * u);
-            double roll = wheels > 0 ? brake * wheels * WHEEL_ROLL * Math.min(load / G / wheels, WHEEL_SUSPENSION) * u : mu * load;
+            double roll = wheels > 0 ? brake * wheels * WHEEL_ROLL * Math.min(b.m, setting) * u : mu * load;
             u = Math.max(0, u - (drag * u + roll + back) / b.m * dt);
             x += u * dt;
         }
@@ -2240,7 +2380,7 @@ final class VehicleCheck {
     }
 
     /** How it flies at full power, and at the power that holds its height (cruise; null when full power can't). */
-    private record Trial(Flight full, Flight cruise) {
+    private record Trial(Flight full, Flight cruise, boolean onOff, boolean coupler) {
         boolean ok() {
             return !full.flipped() && full.swing() <= 15 && full.trim() > -12 && (cruise == null ? full.climb() > -1
                     : !cruise.flipped() && Math.abs(cruise.trim()) <= 12 && cruise.swing() <= 10);
@@ -2248,9 +2388,11 @@ final class VehicleCheck {
 
         String describe() {
             String text = full.describe("at full power");
-            if (cruise != null && !full.flipped()) text += cruise.describe(String.format(Locale.ROOT, "with %.0f%% of its thrust "
-                    + "(where it holds its height; Solid Fuel Thrusters are only on or off, so that means running them part of the "
-                    + "time)", cruise.power() * 100));
+            if (cruise != null && !full.flipped() && coupler) text += cruise.describe(String.format(Locale.ROOT, "with its Velocity "
+                    + "Coupler set to about %.0f blocks/s (where it holds its height)", cruise.speed()));
+            else if (cruise != null && !full.flipped()) text += cruise.describe(String.format(Locale.ROOT, "with %.0f%% of its thrust "
+                    + "(where it holds its height%s)", cruise.power() * 100, onOff ? "; Solid Fuel Thrusters are only on or off, "
+                    + "so that means running them part of the time" : ""));
             return text;
         }
 
@@ -2262,7 +2404,9 @@ final class VehicleCheck {
 
     private static Trial trial(Body b, Wings w, List<Thrust> side, Direction best, double v, double shift, double gyro) {
         Flight full = fly(b, w, side, best, v, shift, gyro, 1);
-        if (full.flipped() || full.climb() <= 0) return new Trial(full, null);
+        boolean onOff = side.stream().anyMatch(t -> t.what().contains("Solid Fuel"));
+        boolean coupler = flightComputer(b) && b.count("create_flight_control:velocity_coupler") > 0;
+        if (full.flipped() || full.climb() <= 0) return new Trial(full, null, onOff, coupler);
         double lo = 0, hi = 1;
         Flight cruise = full;
         for (int i = 0; i < 8; i++) {
@@ -2273,7 +2417,7 @@ final class VehicleCheck {
                 cruise = f;
             } else lo = mid;
         }
-        return new Trial(full, cruise);
+        return new Trial(full, cruise, onOff, coupler);
     }
 
     /** Aeroworks' gyroscope: full strength at this RPM, a critically damped pull back to level (omega 3, damping 0.9). */
@@ -2510,9 +2654,9 @@ final class VehicleCheck {
         a /= sum;
         l /= sum;
         v /= sum;
-        if (b.count("aeroworks:gyroscope") > 0) {
-            out.append(String.format(Locale.ROOT, "- Its lift centres %.1f blocks above its centre of mass; its Gyroscope holds it "
-                    + "level.\n", v));
+        if (b.count("aeroworks:gyroscope") > 0 || flightComputer(b)) {
+            out.append(String.format(Locale.ROOT, "- Its lift centres %.1f blocks above its centre of mass; its %s holds it "
+                    + "level.\n", v, b.count("aeroworks:gyroscope") > 0 ? "Gyroscope" : "flight computer"));
             return Double.NaN;
         }
         if (v <= 0.25) {
@@ -2782,6 +2926,13 @@ final class VehicleCheck {
     /** One propeller's or thruster's push, or null. */
     private static Thrust airThrust(Body b, Part p, Map<BlockPos, Float> rpm, List<String> faults) {
         Direction f = facing(p.state);
+        if (isSmartThruster(p.id)) {
+            // It points its nozzle the way it faces and pushes the other way (a south-facing one flew a jet north).
+            if (f == null) return null;
+            boolean small = p.id.endsWith("_small");
+            return new Thrust(p.pos, f.getOpposite(), small ? SMART_SMALL_THRUST : SMART_THRUST, Double.MAX_VALUE,
+                    small ? "Small Smart Vector Thruster" : "Smart Vector Thruster", false);
+        }
         if (isThruster(p.id)) {
             if (f == null) return null;
             double base = switch (p.id) {
@@ -2964,9 +3115,9 @@ final class VehicleCheck {
                     .append(" (its own small glue box must hold the part it swings).\n");
             return;
         }
-        if (b.count("aeroworks:control_desk") + b.count("aeroworks:control_stand") > 0) {
-            out.append("- Steered from its Aeroworks console: a Wheel Module's Left and Right go out on two Redstone Link frequencies, "
-                    + "each to the links that cut or slow that side.\n");
+        if (consoles(b) > 0) {
+            out.append("- Steered from its Aeroworks console: its Yoke Module's Turn Left and Turn Right (or a Wheel Module's Left and "
+                    + "Right) go out on two Redstone Link frequencies, each to the links that cut or slow that side.\n");
             return;
         }
         List<BlockPos> wheels = new ArrayList<>();
@@ -2982,7 +3133,9 @@ final class VehicleCheck {
         }
         boolean makeable = Drives.canMake(new Drives.Part("simulated:steering_wheel", "steers"))
                 && Drives.canMake(new Drives.Part("minecraft:comparator", "reads the wheel"));
-        String fix = "steer it with one Steering Wheel at the helm instead: a comparator against each side of the wheel (its back to "
+        String fix = "steer it from an Aeroworks Control Stand at the helm instead (on an aircraft above all: a Yoke Module sends "
+                + "Turn Left and Turn Right on two Redstone Link frequencies, each to the links that slow that side), or with one "
+                + "Steering Wheel: a comparator against each side of the wheel (its back to "
                 + "the wheel) lights only while the wheel is turned one way (the other side's for the other way), so wire or Redstone "
                 + "Link each one to " + (transmission() ? "that side's Analog Transmission (stronger the further the wheel turns, so a "
                 + "small turn slows that side a little and a full turn stops it; a transmission takes the stronger of its throttle's "
@@ -3080,7 +3233,7 @@ final class VehicleCheck {
 
     /** Whether the helm can run each side's propellers on its own: comparators reading a wheel, or an Aeroworks console. */
     private static boolean sideControls(Body b) {
-        if (b.count("aeroworks:control_desk") + b.count("aeroworks:control_stand") > 0) return true;
+        if (consoles(b) > 0) return true;
         for (Part p : b.parts) {
             if (!p.id.equals("simulated:steering_wheel")) continue;
             Direction f = facing(p.state);
@@ -3344,7 +3497,8 @@ final class VehicleCheck {
     private static void land(Body b, Map<BlockPos, Float> rpm, StringBuilder out, List<String> faults, List<String> notes) {
         List<Part> mounts = b.parts.stream().filter(p -> p.id.equals("offroad:wheel_mount")).toList();
         int n = mounts.size();
-        double k = Math.min(b.m / n, 10), perWheel = b.m / n;
+        double setting = suspension(b, mounts);
+        double k = Math.min(b.m, Double.isNaN(setting) ? WHEEL_SUSPENSION : setting), perWheel = b.m / n;
         double drive = 0;
         int driven = 0;
         for (Part p : mounts) {
@@ -3358,8 +3512,8 @@ final class VehicleCheck {
                 driven, perWheel));
         if (n < 3) faults.add("it has " + n + " wheel mount" + (n == 1 ? "" : "s") + "; it needs at least 3 (better 4) to stand");
         if (perWheel > 23.6 * k) faults.add(String.format(Locale.ROOT, "each wheel carries about %.0f mass, more than its "
-                + "suspension holds at the default setting (about %.0f): it bottoms out; add wheels, or raise the mounts' "
-                + "suspension setting", perWheel, 23.6 * k));
+                + "suspension holds at %s (about %.0f): it bottoms out; add wheels, or raise the mounts' suspension setting",
+                perWheel, Double.isNaN(setting) ? "the default setting" : "its setting", 23.6 * k));
         if (driven == 0) {
             faults.add("no wheel mount is turned: drive at least two with a shaft from an engine on board");
             return;
@@ -3381,7 +3535,9 @@ final class VehicleCheck {
     private static void turn(double torque, double damping, String how, List<String> faults, List<String> notes, StringBuilder out, String what) {
         if (torque <= 0 || how == null) {
             faults.add("nothing turns it: it can only go straight. " + switch (what) {
-                case "aircraft" -> "Steer it with one Steering Wheel at the helm: its cog turning a Swivel Bearing under a "
+                case "aircraft" -> "Steer it from an Aeroworks Control Stand at the helm, its Yoke Module sending Turn Left and "
+                        + "Turn Right on two Redstone Link frequencies to the links that slow that side's propeller line through an "
+                        + "Analog Transmission, or with one Steering Wheel: its cog turning a Swivel Bearing under a "
                         + "propeller at the stern, or a propeller on each side with a comparator at each side of the wheel (its back "
                         + "against the wheel, pointing away) slowing that side's line through an Analog Transmission, or cutting it "
                         + "through a Clutch; rudders work only in water";
@@ -3506,10 +3662,17 @@ final class VehicleCheck {
         return false;
     }
 
+    /** Aeroworks consoles (stands and desks, plain or copycat): their modules send on Redstone Link frequencies. */
+    private static long consoles(Body b) {
+        return b.count("aeroworks:control_desk") + b.count("aeroworks:control_stand") + b.count("aeroworks:copycat_control_desk")
+                + b.count("aeroworks:copycat_control_stand");
+    }
+
     /** Controls a player has to stand at and use by hand, from the vehicle itself. */
     static boolean isControl(String id) {
         return id.equals("simulated:steering_wheel") || id.equals("simulated:throttle_lever") || id.equals("simulated:linked_typewriter")
-                || id.equals("minecraft:lever") || id.equals("create_submarine:pump_controller");
+                || id.equals("minecraft:lever") || id.equals("create_submarine:pump_controller") || id.equals("aeroworks:control_stand")
+                || id.equals("aeroworks:control_desk") || id.equals("aeroworks:copycat_control_stand") || id.equals("aeroworks:copycat_control_desk");
     }
 
     /**
@@ -3607,6 +3770,79 @@ final class VehicleCheck {
     private static boolean isPropeller(String id) {
         return id.equals("aeronautics:propeller_bearing") || id.equals("aeronautics:gyroscopic_propeller_bearing")
                 || id.equals("aeronautics:wooden_propeller") || id.equals("aeronautics:andesite_propeller") || id.equals("aeronautics:smart_propeller");
+    }
+
+    /** Create: Flight Control's Smart Vector Thrusters (the big one and the small pan-tilt one), not the nozzle item. */
+    static boolean isSmartThruster(String id) {
+        return id.equals("create_flight_control:smart_vector_thruster") || id.equals("create_flight_control:smart_vector_thruster_small");
+    }
+
+    /**
+     * A Flight Control Computer flying it: one on board with a Smart Attitude Stabilizer and Smart Vector Thrusters,
+     * which it swings and throttles to hold the stabilizer's attitude (measured: a 21-wide test jet held level within
+     * 1.5 degrees at 28 to 47 blocks/s with the Medium preset; at the default Weak preset it sagged 12 to 27 degrees).
+     */
+    static boolean flightComputer(Body b) {
+        return b.count("create_flight_control:flight_control_computer") > 0 && b.count("create_flight_control:attitude_hold") > 0
+                && b.parts.stream().anyMatch(p -> isSmartThruster(p.id));
+    }
+
+    /** The forward speed its Velocity Coupler holds: the setting in the world, JET_SPEED in a model; 0 with none. */
+    private static double couplerSpeed(Body b) {
+        double best = 0;
+        for (Part p : b.parts) {
+            if (!p.id.equals("create_flight_control:velocity_coupler")) continue;
+            // A model's blocks have no block entities (its cells aren't in the world): the laid-out setting.
+            var be = b.level instanceof net.minecraft.world.level.Level lvl ? lvl.getBlockEntity(p.pos) : null;
+            if (be == null || !net.minecraft.core.registries.BuiltInRegistries.BLOCK_ENTITY_TYPE
+                    .getKey(be.getType()).toString().equals(p.id)) return JET_SPEED;
+            var lvl = (net.minecraft.world.level.Level) b.level;
+            var tag = be.saveWithoutMetadata(lvl.registryAccess());
+            for (String k : new String[] {"maxVzNeg", "maxVzPos", "maxVxNeg", "maxVxPos"}) best = Math.max(best, tag.getDouble(k));
+        }
+        return best;
+    }
+
+    /** The yaw rate its Angular Velocity Coupler allows, rad/s: the setting in the world, 0.3 in a model. */
+    private static double couplerTurn(Body b) {
+        double best = 0;
+        for (Part p : b.parts) {
+            if (!p.id.equals("create_flight_control:angular_velocity_coupler")) continue;
+            var be = b.level instanceof net.minecraft.world.level.Level lvl ? lvl.getBlockEntity(p.pos) : null;
+            if (be == null || !net.minecraft.core.registries.BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(be.getType()).toString().equals(p.id))
+                return 0.3;
+            var lvl = (net.minecraft.world.level.Level) b.level;
+            var tag = be.saveWithoutMetadata(lvl.registryAccess());
+            best = Math.max(best, Math.max(tag.getDouble("maxWyPos"), tag.getDouble("maxWyNeg")));
+        }
+        return best;
+    }
+
+    /**
+     * How the crew flies a flight-computer plane: the couplers take their inputs from Redstone Proxy faces, which a
+     * console's Redstone Links feed, and nothing is linked until the player does it with the Tool Gun.
+     */
+    private static void jetControls(Body b, List<String> faults, List<String> notes, StringBuilder out) {
+        boolean proxy = b.count("create_flight_control:flight_control_redstone_proxy") > 0;
+        if (b.count("create_flight_control:velocity_coupler") > 0)
+            out.append("- Throttle: its Velocity Coupler, through the flight computer: while its forward input is on, the "
+                    + "thrusters hold the forward speed set in its screen; off, they stop pushing and it slows.\n");
+        if (!proxy && b.count("create_flight_control:mouse_flight_controller") == 0)
+            faults.add("nothing at the helm reaches its couplers: put a Flight Control Redstone Proxy on board, link the couplers "
+                    + "to it with the Tool Gun and map its faces (Forward Velocity, yaw left and right) to Redstone Link receivers "
+                    + "the console's controls send to");
+        notes.add("its flight computer works only once the player links it with the Flight Control Tool Gun (select each Smart "
+                + "Vector Thruster, the Smart Attitude Stabilizer and each coupler, then right-click the computer; select each "
+                + "coupler, then right-click the Redstone Proxy), opens the computer empty-handed, sets Default ON and presses "
+                + "Apply Thrust; a model can't hold those links, so tell the player each one");
+        notes.add("each Smart Vector Thruster needs a Smart Vector Thruster Nozzle installed (right-click it with one) and fuel: "
+                + "lava, or TFMG diesel, gasoline or kerosene (two to four times as long a burn), piped into its sides or from a Fluid Tank within 2 blocks linked to it with the "
+                + "Tool Gun (lava burns 1000 mB a minute at full thrust; cruising takes a few percent "
+                + "of that)");
+        notes.add("its Smart Attitude Stabilizer should be set to Level (no yaw hold) with the Medium preset (P 50, D 10): at the "
+                + "Weak preset it sags many degrees nose down at speed");
+        notes.add("assemble it with the engine that turns the controllers cold, and light it after: assembled with that shaft "
+                + "turning, the stabilizer and a coupler went missing from the ship");
     }
 
     private static boolean isThruster(String id) {

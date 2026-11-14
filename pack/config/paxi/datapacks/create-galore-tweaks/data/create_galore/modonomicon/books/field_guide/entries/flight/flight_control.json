@@ -50,7 +50,7 @@
         "item": "create_flight_control:attitude_hold"
       },
       "title": "Smart Attitude Stabilizer",
-      "text": "Modes: Level, Level plus Heading, and Hold Attitude. Needs shaft [#](2E5AAC)[stress](entry://create_basics/stress)[#]() from below and a linked computer."
+      "text": "Holds the craft level (Level also holds the heading). Use the **Medium** preset on a plane: Weak lets the nose sag. Needs a turning shaft below and a linked computer."
     },
     {
       "type": "modonomicon:spotlight",
@@ -84,7 +84,17 @@
         "item": "create_flight_control:smart_vector_thruster"
       },
       "title": "Smart Vector Thruster",
-      "text": "A thruster whose nozzle swings inside a cone to push in the direction the computer asks for."
+      "text": "Swings its nozzle inside a cone to push where the computer asks, away from the face it points. Needs a Nozzle item in it and fuel piped into its sides: lava, diesel, gasoline or kerosene."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "A small jet",
+      "text": "Two Smart Vector Thrusters either side of the tail, each with a Fluid Tank within 2 blocks, linked to one computer. A Stabilizer holds it level, a **Velocity Coupler** holds the cruising speed you set and an **Angular Velocity Coupler** turns it flat.\\\n\\\nWings carry the weight: a jet without them can't hover."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Wiring a jet",
+      "text": "Each controller draws 64 SU from a shaft below it. Assemble with that engine stopped, then start it: controllers spun up during assembly drop off.\\\n\\\nLink a Redstone Proxy and map its faces to the couplers: a Control Stand's yoke turns it, a latched lever is the throttle."
     },
     {
       "type": "modonomicon:text",

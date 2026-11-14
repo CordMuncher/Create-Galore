@@ -1,0 +1,63 @@
+{
+  "title": "A two-seat jet laid out from build_model plane engine jet flies on its flight computer: Smart Vector Thrusters at the tail, stabilizer and couplers, held to its set speed, no gyroscope, no PROBLEM",
+  "from": "2026-11-13 report (pack 0.6.82): the book's thruster plane had a huge gyroscope tower, no Flight Control Computer, a ship's wheel and bare-frame wings",
+  "roots": [
+    "R3",
+    "R4"
+  ],
+  "kind": "model",
+  "model": {
+    "title": "Two-seat jet",
+    "size_x": 0,
+    "size_y": 0,
+    "size_z": 0,
+    "from_world": [],
+    "from_draft": 0,
+    "move": [],
+    "palette": [],
+    "layers": [],
+    "blocks": [],
+    "labels": [],
+    "caption": "",
+    "draft": false,
+    "goal": "",
+    "shows_a_fault": false,
+    "for_later": false,
+    "speeds": [],
+    "airship": [],
+    "plane": [
+      {
+        "seats": 2,
+        "wood": "spruce",
+        "colour": "white",
+        "engine": "jet"
+      }
+    ],
+    "open_by_request": true,
+    "new_by_request": true,
+    "part_of_vehicle": false
+  },
+  "expect": {
+    "built": true,
+    "has": [
+      "Laid out by the server from plane",
+      "Smart Vector Thrusters",
+      "either side of the tail",
+      "Flight Control Computer",
+      "Its Velocity Coupler holds it at 30",
+      "Turns flat and level",
+      "Flight Control Tool Gun",
+      "Medium preset",
+      "engine cold",
+      "three Wheel Mounts",
+      "Nothing here stops it working"
+    ],
+    "lacks": [
+      "PROBLEM",
+      "none did both",
+      "Gyroscope at",
+      "stands on Grindstones",
+      "a Steering Wheel at 1"
+    ]
+  }
+}

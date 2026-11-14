@@ -1,5 +1,5 @@
 {
-  "title": "A sail-winged monoplane, which can't hold its height here, is refused with the reason instead of a plane that falls",
+  "title": "A sail-winged monoplane, which can't get off the ground on wheels, is refused with the reason instead of a plane that falls",
   "from": "2026-11-09 report (pack 0.6.75): the book's planes were one preset; the player wants it to design from the mods' rules",
   "roots": [
     "R3",
@@ -44,7 +44,7 @@
     "built": false,
     "has": [
       "no plane layout passed the vehicle check",
-      "use wing_block copycat_wing, or two wings"
+      "use wing_block copycat_wing"
     ],
     "lacks": [
       "Laid out by the server from plane"

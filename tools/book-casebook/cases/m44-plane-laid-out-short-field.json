@@ -1,5 +1,5 @@
 {
-  "title": "A small two-seat plane laid out from build_model plane flies from a short field: grindstone gear, reverse thrust, no PROBLEM",
+  "title": "A small two-seat plane laid out from build_model plane flies from a short field: tyred wheel mounts, a control stand, reverse thrust, no PROBLEM",
   "from": "2026-11-06 report (pack 0.6.72): asked for a basic two-seat plane that needs no long runway, the book drew a giant 272-sail biplane, could not finish it and left the pilot's view to the player",
   "roots": [
     "R3",
@@ -42,14 +42,19 @@
       "Laid out by the server from plane",
       "for two",
       "take-off run is about",
-      "Grindstone",
+      "three Wheel Mounts",
       "with its propellers reversed",
-      "Redstone Link frequencies",
-      "Nothing here stops it working"
+      "Redstone Link frequency",
+      "Nothing here stops it working",
+      "Aeroworks Control Stand",
+      "Yoke Module's Turn Left"
     ],
     "lacks": [
       "PROBLEM",
-      "none did both"
+      "none did both",
+      "stands on Grindstones",
+      "a Steering Wheel at 1",
+      "Solid Fuel Thrusters are only on or off"
     ]
   }
 }

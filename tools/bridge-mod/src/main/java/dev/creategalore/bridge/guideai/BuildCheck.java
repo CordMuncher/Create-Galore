@@ -245,7 +245,9 @@ final class BuildCheck {
                 notes.add("Not turning (no source reaches it): " + String.join("; ", idle));
                 // A wheel mount rolls free unturned (a plane's or a trailer's wheels); the vehicle check says when a car
                 // needs its wheels driven.
-                if (idle.stream().anyMatch(s -> !s.contains("create:shaft") && !s.contains("cogwheel") && !s.contains("wheel_mount")))
+                // A Flight Control Computer is a kinetic block that works without turning.
+                if (idle.stream().anyMatch(s -> !s.contains("create:shaft") && !s.contains("cogwheel") && !s.contains("wheel_mount")
+                        && !s.contains("flight_control_computer")))
                     faults.add("rotation never reaches " + String.join("; ", idle));
             }
         }

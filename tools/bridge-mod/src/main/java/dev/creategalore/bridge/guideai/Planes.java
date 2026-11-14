@@ -19,17 +19,18 @@ import net.minecraft.world.level.block.state.BlockState;
  * Engines side by side behind the seats, each geared up to 256 RPM through a Gearshift and a cog ladder out along its
  * wing to an Analog Transmission and two Wooden Propellers on the wing's leading edge (four in all, pushing in line
  * with the centre of mass); two more engines, one on the other, under an Aeroworks Gyroscope at 256 RPM, which keeps
- * the wings level; and Grindstones
- * for landing gear (one under the nose, two just behind the centre of mass), which roll almost freely where wheel
- * mounts drag hard. One Steering Wheel steers by slowing one side's propellers (a comparator each side of it, by
- * Redstone Links to that side's transmission); a Throttle Lever slows both; a lever reverses the propellers through the
- * Gearshifts, which stops it in a few blocks after landing. Wings of several spans and chords, one deck or two, at a
+ * the wings level; and Offroad Wheel Mounts
+ * for landing gear (one under the nose, two just behind the centre of mass), each facing sideways with its tire beside
+ * it and its suspension turned down to 5, since a mount drags in proportion to that setting. An Aeroworks Control Stand
+ * is the cockpit: its Yoke steers by slowing one side's propellers (Left and Right on Redstone Links to that side's
+ * transmission), its Throttle Quadrant slows both and reverses the propellers through the Gearshifts, which stops it in
+ * a few blocks after landing. Wings of several spans and chords, one deck or two, at a
  * few places along the fuselage, are each judged with the vehicle check itself (take-off and landing runs, flight,
  * balance, steering, the pilot's view and reach, boarding), and the smallest that passes with a short run is kept.
  */
 final class Planes {
     /** Take-off run wished for, blocks: the smallest wing that needs no more than this wins; else the shortest run. */
-    private static final double SHORT_RUN = 40;
+    private static final double SHORT_RUN = 50;
     /**
      * Ceiling wished for, y: a plane that can't climb over hills is of little use (y 105 clears the trees and most hills; mountains
      * need more). Four Wooden Propellers on two Portable Engines push 1024 at most, so the ceiling comes from wing for the
@@ -55,7 +56,7 @@ final class Planes {
     }
 
     /** What the player asked for. */
-    record Spec(int seats, String wood, String colour, int wings, boolean copycat, int span, int chord, boolean round) {
+    record Spec(int seats, String wood, String colour, int wings, boolean copycat, int span, int chord, boolean round, boolean jet) {
     }
 
     /** One wing layout: span either side of the fuselage, chord, the row its leading edge is at, and a lower wing too. */
@@ -73,12 +74,13 @@ final class Planes {
         o.addProperty("type", "object");
         JsonObject p = new JsonObject();
         p.add("seats", WorldTools.prop("integer", "1 or 2."));
-        p.add("wood", WorldTools.prop("string", "Body wood."));
-        p.add("colour", WorldTools.prop("string", "Wing dye."));
+        p.add("wood", WorldTools.prop("string", "Wood."));
+        p.add("colour", WorldTools.prop("string", "Dye."));
         p.add("wings", WorldTools.prop("integer", "1, 2, 0."));
-        p.add("wing_block", WorldTools.prop("string", "sail or copycat_wing."));
+        p.add("wing_block", WorldTools.prop("string", "sail/copycat_wing."));
         p.add("span", WorldTools.prop("integer", "0 auto."));
         p.add("tips", WorldTools.prop("string", "square/round."));
+        p.add("engine", WorldTools.prop("string", "prop/jet."));
         o.add("properties", p);
         JsonArray req = new JsonArray();
         p.keySet().forEach(req::add);
@@ -101,6 +103,8 @@ final class Planes {
         int wings = Diagrams.intOr(o, "wings", 0), span = Diagrams.intOr(o, "span", 0), chord = Diagrams.intOr(o, "chord", 0);
         String block = GuideText.string(o, "wing_block").strip().toLowerCase(Locale.ROOT).replace("createpropulsion:", "");
         String tips = GuideText.string(o, "tips").strip().toLowerCase(Locale.ROOT);
+        String engine = GuideText.string(o, "engine").strip().toLowerCase(Locale.ROOT);
+        if (!engine.isEmpty() && !engine.equals("prop") && !engine.equals("jet")) problems.add("plane engine must be prop or jet");
         if (wings < 0 || wings > 2) problems.add("plane wings must be 1, 2 or 0 (either)");
         if (!block.isEmpty() && !block.equals("sail") && !block.startsWith("copycat_wing"))
             problems.add("plane wing_block must be sail or copycat_wing");
@@ -110,8 +114,9 @@ final class Planes {
         if (!tips.isEmpty() && !tips.equals("square") && !tips.equals("round")) problems.add("plane tips must be square or round");
         if (!Airships.WOODS.contains(wood)) problems.add("plane wood must be one of " + String.join(", ", Airships.WOODS));
         if (!Airships.COLOURS.contains(colour)) problems.add("plane colour must be one of " + String.join(", ", Airships.COLOURS));
-        return new Spec(seats, wood, colour, wings, block.startsWith("copycat"), span == 0 ? 0 : span | 1, chord,
-                tips.equals("round"));
+        // Copycat Wings unless sails were asked for: on wheel gear only they lift a plane off before the wheels' drag wins.
+        return new Spec(seats, wood, colour, wings, !block.equals("sail"), span == 0 ? 0 : span | 1, chord,
+                tips.equals("round"), engine.equals("jet"));
     }
 
     // ---------- the search ----------
@@ -174,8 +179,9 @@ final class Planes {
         }
         if (best == null) best = nearest;
         if (best == null) {
-            String hint = spec.wings() == 1 && !spec.copycat() ? "; sails can't carry a monoplane here (a single sail wing wide "
-                    + "enough to lift it drags too much to hold its height): use wing_block copycat_wing, or two wings"
+            String hint = !spec.copycat() ? "; sail wings can't get this plane off the ground on wheels: every Wheel Mount drags "
+                    + "in proportion to speed until the plane lifts, and a sail wing big enough to lift it sooner adds more weight and "
+                    + "drag than lift (the widest sail biplane topped out short of its take-off speed); use wing_block copycat_wing"
                     : spec.span() != 0 ? "; try span 0 so the server can pick a wider wing" : "";
             problems.add("no plane layout passed the vehicle check" + (why == null ? "" : " (the smallest: " + why + ")") + hint);
             return null;
@@ -189,7 +195,8 @@ final class Planes {
     private static String parts(Spec spec, Map<String, BlockState> out) {
         String w = spec.wood();
         Map<String, String> raw = new LinkedHashMap<>();
-        raw.put("gear", "minecraft:grindstone[face=floor,facing=north]");
+        raw.put("gearEast", "offroad:wheel_mount[facing=east]");
+        raw.put("gearWest", "offroad:wheel_mount[facing=west]");
         raw.put("slabTop", "minecraft:" + w + "_slab[type=top]");
         raw.put("slab", "minecraft:" + w + "_slab[type=bottom]");
         raw.put("planks", "minecraft:" + w + "_planks");
@@ -206,11 +213,7 @@ final class Planes {
         raw.put("cogEnc", "create:andesite_encased_cogwheel[axis=x,top_shaft=true,bottom_shaft=true]");
         raw.put("shaftEnc", "create:andesite_encased_shaft[axis=x]");
         raw.put("pane", "minecraft:glass_pane[east=true,west=true]");
-        raw.put("wheel", "simulated:steering_wheel[facing=south]");
-        raw.put("compWest", "minecraft:comparator[facing=east]");
-        raw.put("compEast", "minecraft:comparator[facing=west]");
-        raw.put("throttle", "simulated:throttle_lever[facing=south,inverted=true]");
-        raw.put("lever", "minecraft:lever[face=floor,facing=south]");
+        raw.put("stand", "aeroworks:control_stand[facing=north]");
         raw.put("seat", "create:" + spec.colour() + "_seat");
         raw.put("engineWest", "simulated:red_portable_engine[facing=west]");
         raw.put("engineEast", "simulated:red_portable_engine[facing=east]");
@@ -237,12 +240,22 @@ final class Planes {
         raw.put("linkInWest", "create:redstone_link[facing=west,receiver=true]");
         raw.put("linkInEast", "create:redstone_link[facing=east,receiver=true]");
         raw.put("linkDown", "create:redstone_link[facing=down,receiver=true]");
-        raw.put("linkOutWest", "create:redstone_link[facing=west,receiver=false]");
-        raw.put("linkOutEast", "create:redstone_link[facing=east,receiver=false]");
         raw.put("sail", spec.copycat() ? "createpropulsion:copycat_wing_8[facing=up]" : "create:" + spec.colour() + "_sail[facing=up]");
         raw.put("fin", "simulated:" + spec.colour() + "_symmetric_sail[axis=x]");
         raw.put("stabiliser", "simulated:white_symmetric_sail[axis=y]");
         raw.put("assembler", "simulated:physics_assembler[facing=north]");
+        if (spec.jet()) {
+            raw.put("thruster", "create_flight_control:smart_vector_thruster[facing=south]");
+            raw.put("tank", "create:fluid_tank");
+            raw.put("fcc", "create_flight_control:flight_control_computer");
+            raw.put("stabilizer", "create_flight_control:attitude_hold");
+            raw.put("speedCoupler", "create_flight_control:velocity_coupler");
+            raw.put("turnCoupler", "create_flight_control:angular_velocity_coupler");
+            raw.put("proxy", "create_flight_control:flight_control_redstone_proxy[facing=north]");
+            raw.put("gearboxZ", "create:gearbox[axis=z]");
+            raw.put("linkWest", "create:redstone_link[facing=west,receiver=true]");
+            raw.put("linkEast", "create:redstone_link[facing=east,receiver=true]");
+        }
         for (Map.Entry<String, String> e : raw.entrySet()) {
             BlockState s = Models.state(e.getValue());
             // An undyed sail or seat where the colour has none.
@@ -276,17 +289,14 @@ final class Planes {
             c.put(new BlockPos(x, 2, 1), p.get("planks"));
             c.put(new BlockPos(x, 3, 1), p.get("pane"));
         }
-        // The dash: the wheel ahead of the pilot, a comparator each side of it (the cockpit's sides there), the throttle
-        // and the reverse lever by the seat, and the senders for the links outside them.
-        c.put(new BlockPos(0, 2, 2), p.get("wheel"));
-        c.put(new BlockPos(-1, 2, 2), p.get("compWest"));
-        c.put(new BlockPos(1, 2, 2), p.get("compEast"));
-        c.put(new BlockPos(-1, 2, 3), p.get("throttle"));
-        c.put(new BlockPos(1, 2, 3), p.get("lever"));
-        c.put(new BlockPos(-2, 2, 2), p.get("linkOutWest"));
-        c.put(new BlockPos(-2, 2, 3), p.get("linkOutWest"));
-        c.put(new BlockPos(2, 2, 2), p.get("linkOutEast"));
-        c.put(new BlockPos(2, 2, 3), p.get("linkOutEast"));
+        // The dash: an Aeroworks Control Stand ahead of the pilot, as in a real cockpit. Its Yoke Module sends Left and
+        // Right, its Throttle Quadrant the throttle and the reverse, each on its own Redstone Link frequency straight to
+        // the receivers at the transmissions and Gearshifts, so the cockpit needs no wiring of its own.
+        c.put(new BlockPos(0, 2, 2), p.get("stand"));
+        for (int z = 2; z <= 3; z++) {
+            c.put(new BlockPos(-1, 2, z), p.get("wallW"));
+            c.put(new BlockPos(1, 2, z), p.get("wallE"));
+        }
         c.put(new BlockPos(0, 2, 3), p.get("seat"));
         if (spec.seats() > 1) c.put(new BlockPos(0, 2, 5), p.get("seat"));
         // The cockpit's sides: planks, with a gap on the left at the step in, a ladder up the side below it.
@@ -297,16 +307,23 @@ final class Planes {
         // The ladder hangs on a plank (a stair's side is too narrow to hold one).
         c.put(new BlockPos(-1, 1, STEP), p.get("planks"));
         c.put(new BlockPos(-2, 1, STEP), p.get("ladder"));
-        // Landing gear: a Grindstone under the nose and two under the sides just behind the centre of mass, each right
-        // under a plank so it is set into the body.
-        c.put(new BlockPos(0, 0, 1), p.get("gear"));
-        for (int x : new int[] {-1, 1}) c.put(new BlockPos(x, 0, GEAR), p.get("gear"));
+        // Landing gear: a Wheel Mount under the nose and one under each side just behind the centre of mass, set into the
+        // body's underside. A mount holds its tire on the side it faces, in the cell beside it, so each faces out where
+        // that cell is open (the nose one to the right, the mains away from the body).
+        c.put(new BlockPos(0, 0, 1), p.get("gearEast"));
+        c.put(new BlockPos(-1, 0, GEAR), p.get("gearWest"));
+        c.put(new BlockPos(1, 0, GEAR), p.get("gearEast"));
         // Engines behind the seats, each reached from the cockpit to refuel. The side two drive the propellers; the
         // middle two, one on the other, each turn a gearbox, and the two gearboxes share one shaft up to the Gyroscope
         // through a tower of encased cogwheels stepping large to small three times, 32 up to 256 RPM. Aeroworks'
         // gyroscope works in proportion to its RPM and only reaches full strength at 256: at an engine's bare 32 this
         // plane flew banked 8 degrees, at 128 still a few, at 256 level. At 256 it takes 4096 stress units (16 per RPM),
         // both engines' worth. (Engines facing each other through one gearbox would leave the back one out of reach.)
+        if (spec.jet()) {
+            jet(w, c, p);
+            wingAndTail(spec, w, c, p);
+            return c;
+        }
         c.put(new BlockPos(-1, 3, 7), p.get("engineWest"));
         c.put(new BlockPos(1, 3, 7), p.get("engineEast"));
         c.put(new BlockPos(0, 2, 6), p.get("engineSouth"));
@@ -357,6 +374,12 @@ final class Planes {
                 } else c.put(new BlockPos(x * s, 2, 3), p.get("shaftEnc"));
             }
         }
+        wingAndTail(spec, w, c, p);
+        return c;
+    }
+
+    /** The wing (one deck or two) and the tail, joined at the wing's root to the body. */
+    private static void wingAndTail(Spec spec, Wing w, Map<BlockPos, BlockState> c, Map<String, BlockState> p) {
         // The wing, level with the drive line and the centre of mass, joined at its root to the body and the casings.
         // Sails join the blocks beside them at their middle, so the wing meets the body along its root.
         // A biplane's wings are above and below the drive line instead, the upper one joined to the casings' tops
@@ -374,7 +397,48 @@ final class Planes {
         // Tail: a flat stabiliser either side of its end and an upright fin on it.
         for (int x = -3; x <= 3; x++) if (x != 0) c.put(new BlockPos(x, 2, TAIL), p.get("stabiliser"));
         for (int y = 3; y <= 4; y++) c.put(new BlockPos(0, y, TAIL), p.get("fin"));
-        return c;
+    }
+
+    /**
+     * Where a jet's two Smart Vector Thrusters stand: either side of the tail boom, just ahead of the stabiliser. The
+     * computer pitches the plane by swinging them up or down, so they go far from the centre of mass: on the wing's
+     * trailing edge, a block or so behind it, holding level took so much thrust that the plane ran away past its set
+     * speed and climbed off.
+     */
+    private static BlockPos thrusterAt(Wing w, int side) {
+        return new BlockPos(side, 2, TAIL - 1);
+    }
+
+    /**
+     * A jet's works, in place of the propeller drive and gyroscope: one Portable Engine behind the seats turns a gearbox
+     * tower whose top shafts turn the three controllers in a row (a Smart Attitude Stabilizer between a Velocity Coupler
+     * and an Angular Velocity Coupler; linked to a computer each takes a flat 64 stress units at any speed). The Flight
+     * Control Computer sits on the Physics Assembler and a Redstone Proxy behind the stabilizer, with Redstone Link
+     * receivers on its west, east and top faces for the console's yaw left, yaw right and forward. Two Smart Vector
+     * Thrusters, nozzles aft, stand on the wing's trailing edge either side of the body, each with a one-block Fluid Tank
+     * beside it (a tank links to a thruster within 2 blocks). Measured: this arrangement on a 21-wide test wing held level
+     * within 1.5 degrees at 28 blocks/s, turned 15 degrees a second flat and burned about 25 mB of lava a minute a side.
+     */
+    private static void jet(Wing w, Map<BlockPos, BlockState> c, Map<String, BlockState> p) {
+        c.put(new BlockPos(0, 2, 6), p.get("engineSouth"));
+        c.put(new BlockPos(0, 2, 7), p.get("gearboxX"));
+        c.put(new BlockPos(0, 3, 7), p.get("gearboxZ"));
+        c.put(new BlockPos(-1, 3, 7), p.get("gearboxZ"));
+        c.put(new BlockPos(1, 3, 7), p.get("gearboxZ"));
+        c.put(new BlockPos(-1, 4, 7), p.get("speedCoupler"));
+        c.put(new BlockPos(0, 4, 7), p.get("stabilizer"));
+        c.put(new BlockPos(1, 4, 7), p.get("turnCoupler"));
+        c.put(new BlockPos(0, 2, 8), p.get("assembler"));
+        c.put(new BlockPos(0, 3, 8), p.get("fcc"));
+        c.put(new BlockPos(0, 4, 8), p.get("proxy"));
+        c.put(new BlockPos(-1, 4, 8), p.get("linkWest"));
+        c.put(new BlockPos(1, 4, 8), p.get("linkEast"));
+        c.put(new BlockPos(0, 5, 8), p.get("linkUp"));
+        for (int s : new int[] {-1, 1}) {
+            BlockPos t = thrusterAt(w, s);
+            c.put(t, p.get("thruster"));
+            c.put(t.offset(s, 0, 0), p.get("tank"));
+        }
     }
 
     /** What was asked for, as the start of "why this one". */
@@ -413,6 +477,44 @@ final class Planes {
 
     // ---------- the result ----------
 
+    /** A jet's drive, cockpit and how to fly it, for finish(). */
+    private static void jetText(StringBuilder s, Wing w, java.util.function.Function<BlockPos, String> at) {
+        BlockPos left = thrusterAt(w, -1), right = thrusterAt(w, 1);
+        s.append(String.format(Locale.ROOT, "- Drive: two Smart Vector Thrusters (Create: Flight Control) either side of the tail "
+                + "boom (%s and %s), nozzles aft, each with a Smart Vector Thruster Nozzle installed "
+                + "(right-click it with one) and a Fluid Tank beside it (%s and %s) filled with lava buckets (or TFMG diesel, "
+                + "gasoline or kerosene, which last longer). Each pushes up to 6000, far more than this plane needs, and swings "
+                + "its nozzle to steer and level it. A Flight Control Computer (%s, on the Physics Assembler) decides how hard "
+                + "each pushes and where it points, from three controllers in a row behind the cockpit: a Velocity Coupler "
+                + "(%s, the speed), a Smart Attitude Stabilizer (%s, keeps it level) and an Angular Velocity Coupler (%s, the "
+                + "turns). One Portable Engine behind the seats turns a gearbox tower into their bottom shafts (each takes "
+                + "only 64 stress units). No gyroscope: the computer levels it.\n", at.apply(left), at.apply(right),
+                at.apply(left.offset(-1, 0, 0)), at.apply(right.offset(1, 0, 0)), at.apply(new BlockPos(0, 3, 8)),
+                at.apply(new BlockPos(-1, 4, 7)), at.apply(new BlockPos(0, 4, 7)), at.apply(new BlockPos(1, 4, 7))));
+        s.append(String.format(Locale.ROOT, "- Linking (the model can't hold links; tell the player each step, all with the "
+                + "Flight Control Tool Gun): select a thruster, right-click the computer; the same for the other thruster, the "
+                + "stabilizer and both couplers. Select each tank, right-click its thruster. Select each coupler, right-click "
+                + "the Redstone Proxy (%s). Then empty-handed: open the proxy and map the face with the receiver on its west "
+                + "side to the Angular Velocity Coupler's yaw left, the east one to its yaw right and the top one to the "
+                + "Velocity Coupler's Forward Velocity; open the Velocity Coupler and set its forward max speed to %.0f; open "
+                + "the Angular Velocity Coupler and set its yaw rate to 0.3; open the stabilizer and pick Level (no yaw) and "
+                + "the Medium preset (Weak lets it sag nose down at speed); open the computer, set Default ON and press Apply "
+                + "Thrust.\n", at.apply(new BlockPos(0, 4, 8)), VehicleCheck.JET_SPEED));
+        s.append(String.format(Locale.ROOT, "- Cockpit: an Aeroworks Control Stand at %s in front of the pilot's seat. Mount a "
+                + "Yoke Module and a Throttle Quadrant on it, then Shift + right-click the stand to bind them and give each "
+                + "control its Redstone Link frequency (the same two items as on the receivers): the yoke's Turn Left Stick + "
+                + "Redstone (the receiver at %s), its Turn Right Redstone + Stick (%s); one throttle lever's Forward Redstone "
+                + "+ Redstone (%s, on top of the proxy); latch it so it stays where it is set. Right-click the stand with an "
+                + "empty hand to take the controls.\n", at.apply(new BlockPos(0, 2, 2)), at.apply(new BlockPos(-1, 4, 8)),
+                at.apply(new BlockPos(1, 4, 8)), at.apply(new BlockPos(0, 5, 8))));
+        s.append("- Flying it: build it on open flat ground or a runway pointed into the open, glue it all with Super Glue and "
+                + "use the Physics Assembler at " + at.apply(new BlockPos(0, 2, 8)) + " with the engine cold (assembled with "
+                + "its shaft turning, controllers went missing), then do the linking above; light the engine, sit in the front seat, take the controls and push the throttle lever forward: the thrusters bring it "
+                + "up to its set speed, it lifts and climbs level by itself. The yoke turns it flat and level (about 8° a "
+                + "second at speed), and with the yoke centred it holds its heading. To come down, pull the throttle back: the thrusters stop, it slows and "
+                + "sinks; push it forward again to level out. Once down, leave it back and it rolls to a stop.\n");
+    }
+
     private static Airships.Layout finish(Spec spec, Try t) {
         // The cells start at 0 already; the layout's own frame had the fuselage's middle at x 0.
         Map<BlockPos, BlockState> out = t.cells;
@@ -440,7 +542,8 @@ final class Planes {
                 + "half again as much as a sail for the same weight, which is why this plane is smaller than a sail-winged one. "
                 + "Use any block on a placed wing to give it that block's look (white wool or concrete for a classic wing); "
                 + "the look doesn't change its weight.\n");
-        s.append("- Drive: two Portable Engines behind the seats, each through a Gearshift and encased cogwheels stepping large "
+        if (spec.jet()) jetText(s, w, at);
+        else s.append("- Drive: two Portable Engines behind the seats, each through a Gearshift and encased cogwheels stepping large "
                 + "to small three times (32 up to 256 RPM, a casing in each step's corner) down to its wing's root, then an "
                 + "Analog Transmission and an encased shaft along the leading edge to two Wooden Propellers, all four pushing forward at the height of the centre of mass. The inner two have "
                 + "their blades reversed (as the model shows) because they turn the other way round from the outer two; if a "
@@ -448,32 +551,35 @@ final class Planes {
                 + "each turning a gearbox on one shaft, turn the Gyroscope through three large-to-small steps (256 RPM: a gyroscope "
                 + "works in proportion to its RPM, full at 256, and takes 16 stress units per RPM, both engines' worth; slower, "
                 + "the plane flies banked), which keeps the wings level; nothing else does in the air.\n");
-        s.append("- Landing gear: Grindstones, one under the nose and two just behind the centre of mass (they roll almost "
-                + "freely; wheel mounts drag so hard at speed that a plane on them needs a far longer field). Board on the "
-                + "left: a ladder on the plank there leads up to the gap in the cockpit's side.\n");
-        s.append(String.format(Locale.ROOT, "- Controls, all within the pilot's reach: the Steering Wheel at %s steers by "
-                        + "slowing one side's propellers (the comparator each side of it sends that side's Redstone Link); the "
-                        + "Throttle Lever at %s sets both transmissions (pushed fully forward is flat out, pulled back the propellers stop); the lever at %s reverses the "
-                        + "propellers through the Gearshifts, as a brake after landing. Redstone Link frequencies (two items "
-                        + "in each link's slots, the same on the sender and its receivers): throttle Redstone + Redstone (sender "
-                        + "%s, receivers on both transmissions' backs %s and %s); left side Stick + Redstone (%s to %s); right "
-                        + "side Redstone + Stick (%s to %s); reverse Stick + Stick (%s to the links on top of both Gearshifts, %s "
-                        + "and %s).\n", at.apply(new BlockPos(0, 2, 2)), at.apply(new BlockPos(-1, 2, 3)),
-                at.apply(new BlockPos(1, 2, 3)), at.apply(new BlockPos(-2, 2, 3)), at.apply(new BlockPos(-6, 2, 5)),
-                at.apply(new BlockPos(6, 2, 5)), at.apply(new BlockPos(-2, 2, 2)), at.apply(new BlockPos(-7, 2, 4)),
-                at.apply(new BlockPos(2, 2, 2)), at.apply(new BlockPos(7, 2, 4)), at.apply(new BlockPos(2, 2, 3)),
+        s.append(String.format(Locale.ROOT, "- Landing gear: three Wheel Mounts, one under the nose (%s) and two just behind "
+                + "the centre of mass (%s and %s), each facing sideways: put a Tire in each (right-click the mount's open side "
+                + "with it) and scroll each mount's suspension down to 5, its lowest. A wheel drags in proportion to that "
+                + "setting until the plane lifts off; at the default 10 the run is far longer. Board on the left: a ladder on "
+                + "the plank there leads up to the gap in the cockpit's side.\n", at.apply(new BlockPos(0, 0, 1)),
+                at.apply(new BlockPos(-1, 0, GEAR)), at.apply(new BlockPos(1, 0, GEAR))));
+        if (!spec.jet()) s.append(String.format(Locale.ROOT, "- Cockpit: an Aeroworks Control Stand at %s in front of the pilot's seat. Mount a "
+                        + "Yoke Module and a Throttle Quadrant on it, then Shift + right-click the stand to bind them and give each "
+                        + "control its Redstone Link frequency (the same two items as on the receivers): the yoke's Turn Left "
+                        + "Stick + Redstone (the receiver at %s slows the left propellers), its Turn Right Redstone + Stick (%s, "
+                        + "the right ones); one throttle lever's Back Redstone + Redstone (receivers on both transmissions' backs, "
+                        + "%s and %s: pulled back the propellers stop, fully forward they run flat out; latch it so it stays "
+                        + "where it is set); a second throttle lever's Back Stick + Stick (the links on top of both Gearshifts, %s "
+                        + "and %s: pulled back the propellers turn backwards, as a brake after landing). Right-click the stand with "
+                        + "an empty hand to take the controls.\n", at.apply(new BlockPos(0, 2, 2)), at.apply(new BlockPos(-7, 2, 4)),
+                at.apply(new BlockPos(7, 2, 4)), at.apply(new BlockPos(-6, 2, 5)), at.apply(new BlockPos(6, 2, 5)),
                 at.apply(new BlockPos(-2, 4, 7)), at.apply(new BlockPos(2, 4, 7))));
         s.append(String.format(Locale.ROOT, "- Worked out: from a field at about y 70 it lifts off at about %.0f blocks/s after a run of about %.0f blocks, "
-                        + "tops out near %.0f blocks/s, ceiling about y %.0f; after touching down, reversing the propellers stops "
+                        + "tops out near %.0f blocks/s, ceiling about y %.0f; after touching down, %s stops "
                         + "it in about %.0f blocks (the full check below has the exact figures).\n", f.getOrDefault("liftoff", 0.0),
-                f.getOrDefault("run", 0.0), f.getOrDefault("top", 0.0), f.getOrDefault("ceiling", 0.0), f.getOrDefault("stop", 0.0)));
-        s.append("- Flying it: build it on open flat ground or a runway pointed into the open, glue it all with Super Glue and "
+                f.getOrDefault("run", 0.0), f.getOrDefault("top", 0.0), f.getOrDefault("ceiling", 0.0),
+                spec.jet() ? "rolling on its wheels" : "reversing the propellers", f.getOrDefault("stop", 0.0)));
+        if (!spec.jet()) s.append("- Flying it: build it on open flat ground or a runway pointed into the open, glue it all with Super Glue and "
                 + "use the Physics Assembler at " + at.apply(new BlockPos(0, 2, 8)) + "; light all four engines, sit in the front "
-                + "seat and push the throttle fully forward: it rolls, lifts and climbs by itself. Turn the wheel only a little at a "
-                + "time: full wheel stops one side, which turns it hard and loses speed. To land, ease the throttle back to sink, and "
-                + "once it is down flip the reverse lever, then off again when it has stopped.\n");
+                + "seat, take the controls and push the throttle fully forward: it rolls, lifts and climbs by itself. Turn the yoke "
+                + "only a little at a time: full yoke stops one side, which turns it hard and loses speed. To land, ease the throttle "
+                + "back to sink, and once it is down pull the reverse lever back, then forward again when it has stopped.\n");
         boolean met = t.run() <= SHORT_RUN && t.ceiling() >= CEILING;
-        s.append(String.format(Locale.ROOT, "- Why this one: " + choices(spec) + "wings %d to %d blocks across, 3 to 6 deep, at "
+        if (!spec.jet()) s.append(String.format(Locale.ROOT, "- Why this one: " + choices(spec) + "wings %d to %d blocks across, 3 to 6 deep, at "
                 + "five places along the fuselage were each judged with the vehicle check (flight, balance, take-off and landing "
                 + "runs, steering, the pilot's view and reach, boarding), and this is the smallest that passes with a take-off "
                 + "run of %.0f blocks or less and a ceiling of y %.0f or more%s. Its two drive engines give all the push it "
@@ -482,6 +588,13 @@ final class Planes {
                 + "(from_draft): they set its balance; light trim (paint, a pane, a banner) changes little; check every version.\n",
                 2 * MIN_HALF + 1, 2 * MAX_HALF + 1, SHORT_RUN, CEILING, met ? "" : String.format(Locale.ROOT, " (none did both, so this is the one that climbs "
                         + "highest, run %.0f blocks, ceiling y %.0f: tell the player)", t.run(), t.ceiling())));
+        else s.append(String.format(Locale.ROOT, "- Why this one: " + choices(spec) + "wings %d to %d blocks across at five places "
+                + "along the fuselage were each judged with the vehicle check, and this is the smallest that passes with a take-off "
+                + "run of %.0f blocks or less and a ceiling of y %.0f or more%s. Its two thrusters could push it far faster; its "
+                + "speed is what the Velocity Coupler asks for, and more speed means more lift, so it climbs faster. Keep the "
+                + "thrusters, gear and wing where they are when you revise it (from_draft); check every version.\n",
+                2 * MIN_HALF + 1, 2 * MAX_HALF + 1, SHORT_RUN, CEILING, met ? "" : String.format(Locale.ROOT, " (none did both, so "
+                        + "this is the one that climbs highest, run %.0f blocks, ceiling y %.0f: tell the player)", t.run(), t.ceiling())));
         s.append("- Open cockpit: above y 128 the wind chills whoever is aboard and above y 192 it freezes them, so tell the "
                 + "player to sew Windproof Lining onto each armour piece before climbing high.\n");
         return new Airships.Layout(out, sx, sy, sz, Map.of(), s.toString());

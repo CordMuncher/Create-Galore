@@ -95,17 +95,17 @@
     {
       "type": "modonomicon:text",
       "title": "A plane that flies",
-      "text": "[#](FFFFFF)[#]() **In depth.** A 15-block biplane 21 wide on Copycat Wings (8m) with a closed wooden body. Two Portable Engines behind the seats are geared to 256 RPM down to the wings' roots and out along them to four Wooden Propellers on the leading edge; two more engines, stacked behind the passenger, turn a Gyroscope at 256 RPM. It lifts off within 40 blocks, cruises near 17.5 blocks a second dead level and climbs past y 116. On sails it needs 27 across and cruises near 14."
+      "text": "[#](FFFFFF)[#]() **In depth.** A 15-block biplane 21 wide on Copycat Wings (8m) with a closed wooden body. Two Portable Engines behind the seats are geared to 256 RPM down to the wings' roots and out along them to four Wooden Propellers on the leading edge; two more engines, stacked behind the passenger, turn a Gyroscope at 256 RPM. On three Wheel Mounts set to 5 it lifts off after about 60 blocks from a field near y 70, then climbs dead level at about 16 blocks a second past y 140. From a field near y 150 the thin air keeps it on the ground. On sails it needs 27 across and cruises near 14."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "A Steering Wheel at the seat steers it: a comparator at each side of the wheel slows one side's Analog Transmission while it is turned that way. Turn it briefly and back, since held over it spins and sinks. A Throttle Lever sets the speed through the same transmissions."
+      "text": "A Control Stand at the seat flies it. Its Yoke Module's Turn Left and Turn Right each send a Redstone Link signal that slows one side's Analog Transmission. Turn a little at a time, since full yoke stops one side and it spins and sinks. A Throttle Quadrant lever sets the speed through the same transmissions, and a second one reverses the propellers through Gearshifts after landing."
     },
     {
       "type": "modonomicon:text",
       "title": "Landing gear",
-      "text": "**Grindstones** roll almost freely as a plane's landing gear: one under the nose, two just behind the centre of mass. Offroad wheel mounts drag harder the faster they roll and the more weight they carry, so a plane on wheels needs far more wing and a long field. Planks and most blocks barely slide."
+      "text": "**Wheel Mounts** with a Tire are a plane's landing gear: one under the nose, two just behind the centre of mass, each facing sideways. A wheel drags harder the faster it rolls, so scroll each mount's suspension down to 5, its lowest: that halves the drag. Redstone into a mount's top brakes it. Planks and most blocks barely slide."
     },
     {
       "type": "modonomicon:text",
