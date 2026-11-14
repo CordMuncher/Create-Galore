@@ -325,7 +325,11 @@ vec4 shade_water(vec4 base, out float reflected, out vec3 n, out float soft) {
         face = -face;
     }
     WaterSurface surface;
-    if (abs(face.y) > 0.5) {
+    // White water: how much of a side is broken up and full of air (0..1), and its colour.
+    float white = 0.0;
+    vec3 white_color = vec3(1.0);
+    bool side = abs(face.y) <= 0.5;
+    if (!side) {
         float open = smoothstep(0.5, 0.95, levels.y);
         float rain = g_water.x * smoothstep(0.8, 0.9, levels.y);
         float footprint;
@@ -348,6 +352,24 @@ vec4 shade_water(vec4 base, out float reflected, out vec3 n, out float soft) {
         surface.n = face;
         surface.cos_v = max(dot(face, to_eye), 0.0);
         surface.fresnel = fresnel_dielectric(surface.cos_v, inside ? 1.0 / water_ior : water_ior);
+        // A side in the open air is falling water, white with the air in it: all of it somewhat, in the water's own
+        // colour, and the most (and whitest) where the game's flowing texture is bright, its streaks, which run down
+        // the fall (the texture's grey without the biome's tint, from its darkest to its brightest). A side behind a
+        // pane (the sea through a window, a tank) is clear but for the streaks.
+        float grey = luminance(base.rgb) / max(luminance(v_color.rgb), 0.05);
+        float streak = smoothstep(0.64, 0.84, grey);
+        white = mix(0.5, 0.85, streak);
+#if defined PROGRAM_WATER
+        ivec3 beside = ivec3(floor(vox_pos(v_scene_pos) + face * 0.05));
+        if (grid_live() && vox_in_box(beside, 0) && (vox_word(beside) & VOX_ENTRY) != 0u) {
+            white = 0.5 * streak;
+        }
+#endif
+        // Its colour: the pale blue-green of light scattered in water, a third of the way to the biome's own.
+        vec3 tint = srgb_to_linear(v_color.rgb);
+        vec3 pale = mix(vec3(0.55, 0.9, 1.0), tint / max(max3(tint), 0.05), 0.3);
+        white_color = mix(vec3(1.0), pale, mix(0.5, 0.2, streak));
+        surface.fresnel *= 1.0 - white; // broken water is no mirror
     }
     n = surface.n;
     soft = surface.soft;
@@ -406,6 +428,17 @@ vec4 shade_water(vec4 base, out float reflected, out vec3 n, out float soft) {
     }
 #endif
     float thickness = distance_under(at, depth_under, here, 64.0);
+#if defined PROGRAM_WATER
+    if (side && !inside && grid_live()) {
+        // Behind a side there may be one block of water (a fall standing free), a whole sea (through a window), or a
+        // fall, then air, then the sea: the block copy says how much water the look crosses on its way to what
+        // stands behind, where it knows. What stands far behind a thin fall doesn't make it a deep one.
+        float wet = water_crossed(vox_pos(v_scene_pos) - face * 0.05, -to_eye, thickness, 48);
+        if (wet > 0.0) {
+            thickness = min(thickness, wet);
+        }
+    }
+#endif
     vec3 extinction = water_view_extinction(v_color.rgb);
     // At least a block or two of it (more in the dark), so even a shallow edge reads as water; none when you are in
     // it (program/fog.fsh has that water).
@@ -413,6 +446,11 @@ vec4 shade_water(vec4 base, out float reflected, out vec3 n, out float soft) {
     float depth = inside ? 0.0 : max(thickness, mix(2.0, 1.0, lit));
     vec3 through;
     vec3 glow = water_body(light_here, extinction, depth, cos_v, through) + crests;
+    if (white > 0.0) {
+        // White water scatters the light on it like foam, and hides that much of what is behind it.
+        glow += 0.7 * white_color * light_here * white;
+        through *= 1.0 - white;
+    }
 
 #if DEBUG_VIEW == 15
     // The water's own: red your feet are in water, green eighths of the seconds since you last went in or out (to

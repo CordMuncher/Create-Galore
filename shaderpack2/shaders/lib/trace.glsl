@@ -17,14 +17,15 @@
 // - cone_visibility: how much of a light gets past, softly, from the narrowest gap the ray squeezes through
 //   (measured exactly against the blocks beside it) against how wide the cone is there (one ray, no extra samples),
 //   and the share of see-through pixels it crosses (blurred as wide as the cone is there);
-// - see_through_tint: a walk block by block to the first see-through block (stained glass, water), whose colour
-//   tints the light.
+// - see_through_tint: a walk block by block for what tints the light: the first stained glass's colour, and water
+//   by how far the light went through it.
 
 #if !defined LIB_TRACE
 #define LIB_TRACE
 
 #include "/lib/voxel.glsl"
 #include "/lib/blocks.glsl"
+#include "/lib/water_color.glsl"
 
 layout(r32ui) uniform uimage3D cg_vox_img;
 layout(rgba8) uniform image3D cg_sdf_img;
@@ -99,6 +100,14 @@ float box_exit(vec3 p, vec3 inv_dir, vec3 lo, vec3 hi) {
 
 vec3 safe_inverse(vec3 dir) {
     return 1.0 / mix(dir, vec3(1e-6), lessThan(abs(dir), vec3(1e-6)));
+}
+
+// For a walk block by block from p (in cell) along dir: how far the first boundary is on each axis; never, on an
+// axis the ray doesn't move along. (safe_inverse gives such an axis a large positive inverse whatever its sign, which
+// for one a hair's breadth negative put the boundary a long way behind the start: a length of minus half a million
+// blocks for whoever added the stretches up.)
+vec3 first_boundaries(vec3 p, ivec3 cell, vec3 dir, vec3 inv_dir) {
+    return mix((vec3(cell) + step(0.0, dir) - p) * inv_dir, vec3(1e30), lessThan(abs(dir), vec3(1e-6)));
 }
 
 // Where a ray from o enters a box, between t0 and t1, and the face it enters by; false when it doesn't. A box that
@@ -790,41 +799,56 @@ float cone_visibility(vec3 p, vec3 dir, float dist, float width_start, float wid
     return smoothstep(0.0, 1.0, clamp(visible, 0.0, 1.0)) * through;
 }
 
-// The colour of the first see-through block (glass, water) between p and a point dist away along dir, walking the
-// blocks one by one; white when there is none. The walk starts outside p's own block.
+// What the see-through blocks between p and a point dist away along dir do to a light's colour, walking the blocks
+// one by one; white when there are none.
+// - Glass (any see-through block that isn't water): the first one's colour tints the light. The walk for it starts
+//   outside p's own block and stops short of the light's.
+// - Water soaks the light up by how far it went through it, red first (lib/water_color.glsl), as it does the sun's,
+//   counted over the whole way from p to the light. That changes smoothly as p or the light moves: taking the first
+//   water block's colour whole made a lamp's light under water orange within a block and a half of it and deep blue
+//   past that, and the per-pixel light's rays (each aimed a little differently) fell either side of that step, a
+//   speckle that never settled.
 vec3 see_through_tint(vec3 p, vec3 dir, float dist) {
     ivec3 cell = ivec3(floor(p));
     ivec3 step_dir = ivec3(sign(dir));
     vec3 inv_dir = safe_inverse(dir);
-    vec3 next = (vec3(cell) + step(0.0, dir) - p) * inv_dir; // to the next boundary on each axis
+    vec3 next = first_boundaries(p, cell, dir, inv_dir);
     vec3 delta = abs(inv_dir);
     float end = dist - 0.5;
+    vec3 tint = vec3(1.0);
+    bool tinted = false;
+    float wet = 0.0;
+    float t = 0.0;
     for (int i = 0; i < 64; i++) {
-        float t;
-        if (next.x < next.y && next.x < next.z) {
-            t = next.x;
-            next.x += delta.x;
-            cell.x += step_dir.x;
-        } else if (next.y < next.z) {
-            t = next.y;
-            next.y += delta.y;
-            cell.y += step_dir.y;
-        } else {
-            t = next.z;
-            next.z += delta.z;
-            cell.z += step_dir.z;
-        }
-        if (t >= end || !vox_in_box(cell, 0)) {
+        if (!vox_in_box(cell, 0)) {
             break;
         }
         uint word = vox_word(cell);
-        if ((word & VOX_SEE) != 0u) {
+        float t_out = clamp(min3(next), t, dist);
+        if ((word & VOX_WATER) != 0u) {
+            wet += t_out - t;
+        } else if ((word & VOX_SEE) != 0u && !tinted && i > 0 && t < end) {
             vec4 c = vox_color(cell);
             vec3 hue = c.rgb / max(max3(c.rgb), 0.05);
-            return mix(vec3(1.0), hue, clamp(c.a * 1.5, 0.0, 1.0)) * mix(1.0, max3(c.rgb), 0.5);
+            tint = mix(vec3(1.0), hue, clamp(c.a * 1.5, 0.0, 1.0)) * mix(1.0, max3(c.rgb), 0.5);
+            tinted = true;
         }
+        if (t_out >= dist) {
+            break;
+        }
+        if (next.x < next.y && next.x < next.z) {
+            next.x += delta.x;
+            cell.x += step_dir.x;
+        } else if (next.y < next.z) {
+            next.y += delta.y;
+            cell.y += step_dir.y;
+        } else {
+            next.z += delta.z;
+            cell.z += step_dir.z;
+        }
+        t = t_out;
     }
-    return vec3(1.0);
+    return tint * exp(-water_extinction * wet);
 }
 
 // How high water stands in a cell, in blocks (0..1), for the corners of the surfaces round it: a full block where
@@ -909,7 +933,7 @@ float water_path(vec3 p, vec3 dir, int max_steps) {
     }
     ivec3 step_dir = ivec3(sign(dir));
     vec3 inv_dir = safe_inverse(dir);
-    vec3 next = (vec3(cell) + step(0.0, dir) - p) * inv_dir;
+    vec3 next = first_boundaries(p, cell, dir, inv_dir);
     vec3 delta = abs(inv_dir);
     float t_in = 0.0;
     for (int i = 0; i < max_steps; i++) {
@@ -946,6 +970,49 @@ float water_path(vec3 p, vec3 dir, int max_steps) {
         }
     }
     return -1.0;
+}
+
+// How much water a ray from p (vox_pos space) crosses on its way to a point dist away along dir, walking the blocks
+// one by one, every water block taken as full: what a look through the side of a fall has between it and what stands
+// behind (a block of falling water, then air, then perhaps the sea). 0 when p isn't in water the copy knows; where the
+// walk leaves the copy or runs out of steps in water, the rest of the way counts as water.
+float water_crossed(vec3 p, vec3 dir, float dist, int max_steps) {
+    ivec3 cell = ivec3(floor(p));
+    if (!vox_in_box(cell, 0) || (vox_word(cell) & VOX_WATER) == 0u) {
+        return 0.0;
+    }
+    ivec3 step_dir = ivec3(sign(dir));
+    vec3 inv_dir = safe_inverse(dir);
+    vec3 next = first_boundaries(p, cell, dir, inv_dir);
+    vec3 delta = abs(inv_dir);
+    float wet = 0.0;
+    float t = 0.0;
+    bool in_water = true;
+    for (int i = 0; i < max_steps; i++) {
+        float t_out = clamp(min3(next), t, dist);
+        if (in_water) {
+            wet += t_out - t;
+        }
+        t = t_out;
+        if (t >= dist) {
+            return wet;
+        }
+        if (next.x < next.y && next.x < next.z) {
+            next.x += delta.x;
+            cell.x += step_dir.x;
+        } else if (next.y < next.z) {
+            next.y += delta.y;
+            cell.y += step_dir.y;
+        } else {
+            next.z += delta.z;
+            cell.z += step_dir.z;
+        }
+        if (!vox_in_box(cell, 0)) {
+            break;
+        }
+        in_water = (vox_word(cell) & VOX_WATER) != 0u;
+    }
+    return in_water ? wet + dist - t : wet;
 }
 
 // The direction a surface near a cell faces, from how the distance field grows around it; zero in the open.

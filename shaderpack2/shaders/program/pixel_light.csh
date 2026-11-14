@@ -80,7 +80,7 @@ vec3 light_from(vec3 p, vec3 start, vec3 n, vec3 v, float smoothness, bool thin,
     }
     vec3 aim = to + jitter * radius - p;
     float aim_d = length(aim);
-    c *= visible * see_through_tint(p, aim / aim_d, aim_d);
+    c *= visible * see_through_tint(p, aim / max(aim_d, 1e-4), aim_d);
 #ifdef LIGHT_SPECULAR
     spec += c * ggx_specular(n, v, dir, smoothness, 0.04);
 #endif

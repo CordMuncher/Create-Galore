@@ -17,7 +17,8 @@ pack (`shaderpack/`) stays as a research build; the two share only the DLSS hand
   changes, never what the camera sees. Each block comes with its shape as it is drawn (up to twelve boxes, to the
   16th), its colour and its light. The box moves 8 blocks at a time and each block keeps its place in it, so a ray
   between two points gives the same answer wherever you stand. Plants and flat layers (carpets, snow, barnacles,
-  pressure plates) let light through; stained glass and water tint it. Cut-out faces let light through their clear
+  pressure plates) let light through; stained glass tints it, and water dims it red first by how far it goes through
+  it, as it does the sun's. Cut-out faces let light through their clear
   pixels and stop it at the rest: a trapdoor's windows, a grate's slots, the gaps between iron bars, the clear middle of
   glass inside its frame, the gaps in leaves. The Bridge (1.167.0 and later) reads each face's texture once into
   16 x 16 masks, and a ray reads the pixels it crosses, blurred as wide as its cone is there; with an older Bridge,
@@ -135,6 +136,10 @@ pack (`shaderpack/`) stays as a research build; the two share only the DLSS hand
     with depth as the small ripples blur out; the brightest lines roll off softly and the net loses its contrast
     with depth. Once per 2 x 2 pixels. The sun reaches under water along the water in the block copy, so a dock's
     shade stays on the floor under it.
+  - **Falling water**: the side of a fall or a stream's edge is white water, pale in the water's own colour with the
+    game's own streaks running down it, as thick as the fall is (what stands far behind a thin fall doesn't make
+    it a deep one, and a sea behind it shows as sea); a side behind a pane (the sea through a window, a tank) stays
+    clear.
   - **Under water**: the water's own fog, light shafts from the sun shaded by what stands over it (option Light
     Shafts), and the surface seen from below.
   - Distant Horizons' water uses the same waves, colour, floor and sky with clouds, so a sea looks the same across
@@ -210,7 +215,10 @@ cloud and water code in a stand-in for Iris) in a second or two a view, at any t
 about a frame a second, so slow but exact): `setup.sh` once, `launch.sh WORLD`, `sync.sh` to copy the pack in
 (`FREEZE=` holds the water's clock for stills), `view.sh OUT.png X Y Z YAW PITCH` for a picture from a spot,
 `motion.sh` for pictures while the camera turns or flies, `cmd.sh` and `key.sh` for commands and keys. The Bridge's
-cost meter (F10) works in it, so a change's cost per pass can be compared before and after.
+cost meter (F10) works in it, so a change's cost per pass can be compared before and after. The bad frame mark
+(`lib/bad_frame.glsl`, a small square at the middle of the left edge) counts frames, so at the rig's pace it stays
+up for about two and a half minutes: look for it in every picture, a red one means a pass wrote an infinite or
+not-a-number value into the lit scene.
 
 `tools/gpu_stats.py` says what a graphics card's compiler makes of each compute program (registers, spills,
 instructions), without a card.
