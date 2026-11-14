@@ -5,6 +5,18 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.89
+
+### Added
+- Create Galore Bridge 1.194.0.
+- **More groundwork for future shader packs: Winds & Weather's weather for the sky.** Winds & Weather draws its weather regions' clouds in place of Minecraft's, and a shader pack that draws its own clouds switches those off, so its sky knew nothing of the mod's weather. A pack can now ask the Bridge for a map of that weather far round the player, 10 kilometres across: how much cloud the mod has at each place, how dark it is and how heaped. With it a pack's own clouds can clear where the mod's weather is fair and close over its fronts and storms, so weather shows coming from afar. Shader packs that don't ask for it, Photon and the others, are not affected.
+
+### Fixed
+- Nothing.
+
+### Removed
+- Nothing.
+
 ## 0.6.88
 
 ### Added
