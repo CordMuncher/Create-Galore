@@ -13,7 +13,8 @@
 // - the sky's: the air's own, pulled towards grey (sky_saturation, more by day, with a touch of warmth), brighter
 //   and warmer as the sun sinks (the air alone dims too fast for the look) and on its own scale at night: about
 //   0.28, 0.38, 0.53 facing up at noon, 0.023, 0.04, 0.075 under a full moon;
-// - in rain the sun is mostly gone and the sky goes grey.
+// - in rain the sun is mostly gone and the sky goes grey; under a closed sky of the Winds & Weather mod's weather
+//   (lib/weather.glsl) the sky's light goes grey too.
 // So sunlit and shaded parts differ in colour as well as in brightness: warm in the sun, blue in the shade (see
 // lib/lighting.glsl for how they mix).
 
@@ -25,6 +26,7 @@
 #include "/lib/bad_frame.glsl"
 #include "/lib/sky.glsl"
 #include "/lib/trace.glsl"
+#include "/lib/weather.glsl"
 
 layout(local_size_x = 64) in;
 const ivec3 workGroups = ivec3(1, 1, 1);
@@ -139,6 +141,16 @@ void main() {
     vec3 moon_now = moon_light * NIGHT_BRIGHTNESS * (0.35 + 0.65 * g_moon_dir.w); // a new moon gives a third
     vec3 light_color = through * (by_sun ? mix(sun_low, sun_high, noon) : moon_now);
     float rain = rainStrength;
+    // How far the Winds & Weather mod's weather closes the sky over you (lib/weather.glsl; 0 without its map), eased
+    // over ten seconds, and only while you are under the clouds: the sun is the cloud shadows' business, the sky's
+    // light goes grey as in rain (but no darker: a dry deck is bright).
+    vec4 water_was = imageLoad(cg_globals_img, ivec2(9, 0));
+    float closed_target = weather_closed(vec2(0.0))
+            * (1.0 - smoothstep(cloud_bottom(), cloud_bottom() + 60.0, cameraPosition.y));
+    float closed_step = frameTime / 10.0;
+    float closed_was = clamp(water_was.z, 0.0, 1.0);
+    float closed = clamp(closed_was + clamp(closed_target - closed_was, -closed_step, closed_step), 0.0, 1.0);
+    float grey = max(rain, closed);
     light_color = mix(light_color, vec3(luminance(light_color)), 0.6 * rain) * mix(1.0, 0.08, rain);
     g_light_dir = vec4(light, by_sun ? 1.0 : 0.0);
     g_light_color = vec4(light_color * rise, 0.0);
@@ -167,9 +179,9 @@ void main() {
     sky_tint *= mix(vec3(1.0), shade_warmth / luminance(shade_warmth), day);
     vec3 overcast = vec3(0.9, 0.95, 1.1);
     vec3 up_lit = push_from_grey(up, saturation) * sky_tint;
-    up_lit = mix(up_lit, luminance(up_lit) * overcast, 0.7 * rain) * mix(1.0, 0.5, rain);
+    up_lit = mix(up_lit, luminance(up_lit) * overcast, 0.7 * grey) * mix(1.0, 0.5, rain);
     vec3 side_lit = push_from_grey(side_sky / 64.0, saturation) * sky_tint;
-    side_lit = mix(side_lit, luminance(side_lit) * overcast, 0.7 * rain) * mix(1.0, 0.5, rain);
+    side_lit = mix(side_lit, luminance(side_lit) * overcast, 0.7 * grey) * mix(1.0, 0.5, rain);
 
     // The ground under the horizon: lit by the sun and the sky, a dull grey-green.
     vec3 ground = vec3(0.12, 0.13, 0.10) * (up_lit + g_light_color.rgb * max(light.y, 0.0));
@@ -182,7 +194,10 @@ void main() {
     // The water's (lib/water.glsl): the rain on it eases in over 5 seconds and away over 20 (where the biome you are
     // in rains, not snows); and where your feet last went into or out of water, for the ring that spreads from there
     // (the block copy says, so it is last frame's: a frame late at most).
+#if !defined SUNLIGHT
     vec4 water_was = imageLoad(cg_globals_img, ivec2(9, 0));
+    float closed = 0.0;
+#endif
     vec4 splash_was = imageLoad(cg_globals_img, ivec2(10, 0));
 #if defined SUNLIGHT
     float rain_target = biome_precipitation == 1 ? rainStrength : 0.0;
@@ -209,7 +224,7 @@ void main() {
         float surface = float(cameraPositionInt.y + top.y) + 0.89;
         splash = vec4(cameraPosition.x, surface, cameraPosition.z, frameTimeCounter);
     }
-    g_water = vec4(rain_on, wet ? 1.0 : 0.0, 0.0, 0.0);
+    g_water = vec4(rain_on, wet ? 1.0 : 0.0, closed, 0.0);
     g_splash = splash;
 
     // A value that came out infinite or not a number keeps last frame's (lib/bad_frame.glsl); the bad frame record

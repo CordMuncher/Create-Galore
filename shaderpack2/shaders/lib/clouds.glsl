@@ -4,7 +4,10 @@
 // - The weather: a slow map, kilometres across, says how much of the sky the clouds cover from place to place (clear
 //   blue, scattered, broken, nearly closed) and what kind of cloud is there: flat stratocumulus sheets with gaps,
 //   fair-weather cumulus, or big cumulus that tower where the cover is thick. It drifts with the wind and changes from
-//   day to day; rain closes it into a grey deck.
+//   day to day; rain closes it into a grey deck. With the Winds & Weather mod (and the Bridge's map of it,
+//   lib/weather.glsl) how much cloud there is comes from the mod's weather regions instead, which stay where they are
+//   in the world while the clouds blow through them: fair skies, broken cloud, and over its fronts a closed, lower,
+//   deeper deck; over its storms dark towers on one. The clusters, the kinds and the shapes stay the pack's own.
 // - Height: the bases rise and fall over a kilometre or two and from cloud to cloud, from 15 blocks under the layer's
 //   height to 20 over it (sheets a little lower, cumulus a little higher). Sheets are 20 to 30 blocks deep, cumulus
 //   45 to 70 tall, the big ones up to 150.
@@ -39,6 +42,7 @@
 
 #include "/lib/sky.glsl"
 #include "/lib/wind.glsl"
+#include "/lib/weather.glsl"
 
 uniform sampler3D cg_cloud_shape; // see tools/cloud_noise.py
 
@@ -82,11 +86,13 @@ float cloud_weather_turn() {
 }
 
 struct CloudMap {
-    float cover; // how much of the sky the clouds cover here (0..1)
+    float cover; // how much cloud there is here: 0 none .. 1 a closed sky (it fills 1 - sqrt(1 - cover) of the sky);
+                 // over 1 (only with the mod's weather, lib/weather.glsl) a deck deeper than it needs to close
     float kind;  // 0 flat stratocumulus, 1 cumulus
     float lift;  // how far the shapes' noise is shifted up here (blocks)
     float base;  // where the clouds' bases are here (world Y)
     float tall;  // how high the strongest heaps here reach over their base (blocks)
+    float shade; // how far into one of the mod's storms this is (0..1): its cloud is darker towards its base
 };
 
 // The weather at a place (noise-space xz, before the wind): three looks at the smooth noise, each for several things
@@ -103,17 +109,42 @@ CloudMap cloud_map(vec2 xz) {
     CloudMap m;
     float weather = wide.a * 0.65 + mid.a * 0.35;
     float cover = (0.1 + 0.62 * smoothstep(0.25, 0.75, weather)) * CLOUD_AMOUNT;
-    cover += (near.a - 0.5) * 0.5;
-    m.cover = clamp(mix(cover, 1.0, rainStrength), 0.0, 1.0);
-    m.kind = smoothstep(0.25, 0.5, wide.r) * (1.0 - rainStrength);
+    float kind = smoothstep(0.25, 0.5, wide.r);
+    float groups = 0.5; // how far the clusters swell and thin the cover
+    float deck = 0.0;   // how far the mod's weather closes the sky here
+    float storm = 0.0;  // and how far into a storm's dark towers
+#if defined MOD_WEATHER
+    Weather theirs = weather_at(xz - cloud_origin().xz);
+    if (theirs.known > 0.0) {
+        float c = weather_cover(theirs.amount);
+        float closed = smoothstep(0.85, 1.0, c);
+        // The Cloud Amount option thins or thickens fair and broken skies, never a closed one.
+        cover = mix(cover, mix(c * CLOUD_AMOUNT, c, closed), theirs.known);
+        deck = closed * theirs.known;
+        storm = deck * smoothstep(0.4, 0.65, theirs.dark) * smoothstep(0.85, 1.05, theirs.heaped);
+        // The mod's flat kinds (overcast, drizzle, fog, mist) are sheets. A deck is a slab whatever stands on it
+        // (heaps alone would leave it thin between them, and the sun would burn through a closed sky).
+        float theirs_kind = min(kind * smoothstep(0.45, 0.9, theirs.heaped), mix(1.0, 0.4, deck));
+        kind = mix(kind, theirs_kind, theirs.known);
+        // The clusters: none in a sky the mod has clear (it stays clear), none in a deck (it stays closed).
+        groups *= mix(1.0, smoothstep(0.0, 0.135, c) * (1.0 - closed), theirs.known);
+    }
+#endif
+    cover += (near.a - 0.5) * groups;
+    m.cover = mix(clamp(cover, 0.0, 1.0 + (weather_deepest - 1.0) * deck), 1.0, rainStrength);
+    m.kind = kind * (1.0 - rainStrength);
     float big = m.kind * smoothstep(0.4, 0.75, m.cover);
     // No two places read the shapes at the same height, so the noise's repeats never show as rows of the same cloud.
     m.lift = wide.a * 160.0 + near.g * 96.0;
-    // Sheets sit a little lower than cumulus; a rain deck lower still.
+    // Sheets sit a little lower than cumulus; a closed deck lower and more even, a rain deck lowest.
     float base = 24.0 * (mid.r - 0.5) + 14.0 * (near.r - 0.5) + mix(-3.0, 3.0, m.kind);
+    base = mix(base, 0.35 * base - 6.0, deck);
     m.base = cloud_layer() + clamp(mix(base, -8.0, rainStrength), -15.0, 20.0);
     m.tall = mix(mix(20.0 + 10.0 * m.cover, 55.0 + 35.0 * m.cover, m.kind), 160.0, big);
+    // A closed deck is as deep as the rain's and deeper the heavier the weather; a storm's towers fill the layer.
+    m.tall = mix(mix(m.tall, max(m.tall, 70.0 + 60.0 * max(m.cover - 1.0, 0.0)), deck), 175.0, storm);
     m.tall = mix(m.tall, 70.0, rainStrength);
+    m.shade = storm;
     return m;
 }
 
@@ -125,6 +156,7 @@ CloudMap cloud_map_between(CloudMap a, CloudMap b, float f) {
     m.lift = mix(a.lift, b.lift, f);
     m.base = mix(a.base, b.base, f);
     m.tall = mix(a.tall, b.tall, f);
+    m.shade = mix(a.shade, b.shade, f);
     return m;
 }
 

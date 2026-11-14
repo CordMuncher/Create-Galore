@@ -331,9 +331,11 @@ vec3 sky_look(vec3 c, vec3 dir) {
     glow = mix(glow, vec3(1.3, 0.95, 1.15), belt * dusk);
     c *= glow;
     // Rain: the sky closes into an even grey, a little cool: the light the overcast gives the land, a little
-    // brighter overhead than low down (as under any closed deck), not the clear air's bright horizon.
+    // brighter overhead than low down (as under any closed deck), not the clear air's bright horizon. Under a dry
+    // closed sky of the mod's weather (g_water.z, lib/weather.glsl) it goes most of the way there: what shows of
+    // the sky from under a deck is its far end, and the haze under it.
     vec3 overcast = g_sky_up.rgb * (0.85 + 0.45 * up);
-    c = mix(c, overcast, rainStrength);
+    c = mix(c, overcast, max(rainStrength, 0.6 * g_water.z));
     return c;
 }
 

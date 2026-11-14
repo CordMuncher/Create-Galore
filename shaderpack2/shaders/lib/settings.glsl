@@ -100,6 +100,11 @@ const ivec3 vox_tiles = vox_size / 8;
 #define CLOUD_SPEED 1.0 // [0.0 0.5 1.0 1.5 2.0]
 // Clouds' shadows drifting over the land.
 #define CLOUD_SHADOWS
+// With the Winds & Weather mod, the clouds follow its weather regions (lib/weather.glsl): fair where it is fair, a
+// closed sky over its fronts and storms. Off, or without the mod: the pack's own weather.
+#define MOD_WEATHER
+#ifdef MOD_WEATHER
+#endif
 // How big the moon looks, against Minecraft's own moon.
 #define MOON_SIZE 2.0 // [1.0 1.5 2.0 2.5 3.0]
 

@@ -15,7 +15,12 @@ env: W, H (default 640 x 360), FRAMES (default 10: the clouds settle over frames
 copy for a before/after), DEFS ("A=1 B=2": option values; "A=on" / "A=off" for switches), SUBS ('a=>b;;c=>d' applied
 to every program), POS ("x,z": where in the world, default 0,0), COLS (pictures per row), TIMING (1: each pass's time
 on this machine), RAW (1: also save OUT.npy, the linear picture before the tone curve), GLOBALS (1: print the frame's
-values, lib/globals.glsl, after each view).
+values, lib/globals.glsl, after each view), WEATHER (the Winds & Weather mod's weather as the Bridge hands it over,
+lib/weather.glsl; without it there is none and the clouds keep to the pack's own: "amount,dark,heaped" the same
+everywhere, each as the pack reads it (amount 0..1: 0.31 fair, 0.46 the mod's middle, 0.6 heavy, 0.7 and over rain
+and storms; dark 0..1; heaped 0.2 a flat sheet .. 1.2 towers); "a,d,h;a,d,h@X" the second from X blocks east of the
+camera on, the first west of it, changing over 640 blocks; "row:FILE" the map's 4096 words as they are), FRAME_TIME
+(seconds a frame, default 1/60: what eases over time, like the light under a closed sky, needs 5 or so to arrive).
 Needs numpy, Pillow and moderngl with an OpenGL 4.3 context (Mesa's llvmpipe will do; EGL, or an X display)."""
 import math, os, pathlib, re, subprocess, sys, tempfile, time
 import numpy as np, moderngl
@@ -41,6 +46,9 @@ def expand(path):
     return '\n'.join(out)
 
 
+DEFS_FOUND = {}  # how often each option of DEFS was found (not every program reads the settings)
+
+
 def program_src(stage):
     body = re.sub(r'#version[^\n]*\n', '', expand(stage))
     for d in os.environ.get('DEFS', '').split():
@@ -49,7 +57,7 @@ def program_src(stage):
             body, n = re.subn(r'(?m)^(//)?#define %s\b[^\n]*' % k, ('' if v == 'on' else '//') + '#define %s' % k, body)
         else:
             body, n = re.subn(r'#define %s [^\n/]*' % k, '#define %s %s ' % (k, v), body)
-        assert n, 'no option ' + k
+        DEFS_FOUND[k] = DEFS_FOUND.get(k, 0) + n
     for s in [x for x in os.environ.get('SUBS', '').split(';;') if x]:
         a, b = s.split('=>')
         body = body.replace(a.replace('\\n', '\n'), b.replace('\\n', '\n'))
@@ -161,7 +169,10 @@ depth = tex2((W, H), 1, 'f4', moderngl.NEAREST)
 blank = tex2((W, H), 4, 'f1', moderngl.NEAREST)
 vox = ctx.texture3d((8, 8, 8), 1, dtype='u4'); vox.filter = (moderngl.NEAREST, moderngl.NEAREST)
 sdf = ctx.texture3d((8, 8, 8), 4, dtype='f1')
-palette = tex2((4096, 880), 1, 'u4', moderngl.NEAREST)
+palette_rows = int(re.search(r'image\.cg_palette_img = .* 4096 (\d+)', (ROOT / 'shaders.properties').read_text())
+                   .group(1))
+palette = tex2((4096, palette_rows), 1, 'u4', moderngl.NEAREST)
+palette.write(bytes(4096 * palette_rows * 4))
 noise_bytes = (ROOT / 'textures/cloud_noise.dat').read_bytes()
 noise_n = round((len(noise_bytes) // 4) ** (1 / 3))
 noise = ctx.texture3d((noise_n,) * 3, 4, noise_bytes)
@@ -329,6 +340,30 @@ def sea_depth(view, proj, cam_y):
     return dep.astype('f4')
 
 
+def weather_row(cam):
+    """The Bridge's weather map (its WeatherMap) round the camera, from WEATHER: 64 x 64 points 160 blocks apart, a
+    point in slot (x mod 64, z mod 64) of the row after the far heights'."""
+    spec = os.environ.get('WEATHER')
+    if not spec or palette_rows < 881:
+        return
+    if spec.startswith('row:'):
+        words = np.fromfile(spec[4:], np.uint32)
+    else:
+        parts = spec.split('@')
+        kinds = [[float(v) for v in k.split(',')] for k in parts[0].split(';')]
+        edge = float(parts[1]) if len(parts) > 1 else 0.0
+        cx, cz = math.floor(cam[0] / 160), math.floor(cam[2] / 160)
+        words = np.zeros(4096, np.uint32)
+        for z in range(cz - 32, cz + 32):
+            for x in range(cx - 32, cx + 32):
+                f = min(max((x * 160 - cam[0] - edge) / 640.0 + 0.5, 0.0), 1.0) if len(kinds) > 1 else 0.0
+                f = f * f * (3 - 2 * f)
+                a, d, h = (k0 + (k1 - k0) * f for k0, k1 in zip(kinds[0], kinds[-1]))
+                words[(z & 63) * 64 + (x & 63)] = (1 << 31 | round(a * 4095) | round(d * 127) << 12
+                                                   | round(h * 100) << 19 | 10 << 26)
+    palette.write(words.tobytes(), viewport=(0, 880, 4096, 1))
+
+
 def render(spec):
     vals = [float(x) for x in spec.split(',')]
     ticks, yaw, pitch = vals[:3]
@@ -345,6 +380,7 @@ def render(spec):
     light = sun if sun[1] > 0 else -sun
     rot = view[:3, :3]
     depth.write(sea_depth(view, proj, cam_y).tobytes())
+    weather_row(cam)
     u = {
         'viewWidth': float(W), 'viewHeight': float(H), 'taau_render_scale': (1.0, 1.0),
         'cameraPosition': tuple(cam), 'cameraPositionInt': ci, 'cameraPositionFract': cf,
@@ -355,7 +391,7 @@ def render(spec):
         'sunPosition': tuple(rot @ sun * 100.0), 'shadowLightPosition': tuple(rot @ light * 100.0),
         'worldTime': int(ticks) % 24000, 'worldDay': day, 'moonPhase': int(os.environ.get('MOON', '0')),
         'rainStrength': rain, 'cloudHeight': 192.0, 'biome_precipitation': 1,
-        'frameTime': 1 / 60.0, 'near': NEAR, 'far': FAR, 'isEyeInWater': 1 if cam_y < SEA_Y else 0,
+        'frameTime': float(os.environ.get('FRAME_TIME', 1 / 60.0)), 'near': NEAR, 'far': FAR, 'isEyeInWater': 1 if cam_y < SEA_Y else 0,
         'eyeBrightnessSmooth': (0, 240), 'fogColor': (0.6, 0.7, 1.0),
     }
     for fr in range(FRAMES):
@@ -389,6 +425,8 @@ progs = {}
 for stage, name in [('setup.csh', 'setup'), ('setup1.csh', 'setup1'), ('begin.csh', 'begin'), ('begin2.csh', 'begin2'),
                     ('deferred3.csh', 'deferred3'), ('vt_draw', 'draw')]:
     progs[name] = Program(stage, name)
+for k, n in DEFS_FOUND.items():
+    assert n, 'no option ' + k
 
 if __name__ == '__main__':
     out = sys.argv[1]

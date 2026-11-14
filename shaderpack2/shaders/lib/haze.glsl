@@ -41,11 +41,13 @@ float haze_share(float y0, float y1) {
 
 // A colour seen dist blocks off along dir (scene space, from the camera), with the haze over it. It starts slowly
 // (squared), so the land around you stays clear: at sea level about 0.05 at 64 blocks, 0.15 at 128, 0.35 at 256;
-// thinner along a look through higher air; three and a half times thicker in rain, which closes the distance in.
+// thinner along a look through higher air; three and a half times thicker in rain, which closes the distance in,
+// and a little thicker under a dry closed sky of the mod's weather (g_water.z, lib/weather.glsl).
 // At the edge of what is drawn (far_end) it is all haze. solid: 0 for the sky itself, which already is that colour.
 vec3 haze_over(vec3 color, vec3 dir, float dist, float solid, float far_end) {
     float d = min(dist, far_end);
-    float density = 0.005 * haze_share(cameraPosition.y, cameraPosition.y + dir.y * d) * (1.0 + 2.5 * rainStrength);
+    float density = 0.005 * haze_share(cameraPosition.y, cameraPosition.y + dir.y * d)
+            * (1.0 + max(2.5 * rainStrength, 0.6 * g_water.z));
     float haze = sqr(1.0 - exp(-d * density));
     float border = smoothstep(far_end * 0.8, far_end, dist);
     haze = max(haze * mix(0.7, 0.95, rainStrength), border) * solid;

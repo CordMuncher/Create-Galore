@@ -69,6 +69,7 @@ VARIANTS = [
     ("box2-scale6", ["DISTANT_HORIZONS"], [value("VOXEL_BOX", 1, 2), value("PIXEL_LIGHT_SCALE", 3, 6)]),
     ("noall", [], [flip("PIXEL_LIGHT", False), flip("GI", False), flip("SSAO", False), flip("HAND_LIGHT", False)]),
     ("noclouds", [], [flip("REAL_CLOUDS", False)]),
+    ("noweather", [], [flip("MOD_WEATHER", False)]),
 ] + [(f"debug-{n}", [], [value("DEBUG_VIEW", 0, n)]) for n in range(1, 15)]
 
 

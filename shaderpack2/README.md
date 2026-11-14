@@ -6,7 +6,7 @@ name is for its motion vectors: not only the camera's, but how each moving thing
 contraptions, ships, mobs, the hand), which is what lets DLSS and FSR keep them sharp. The Bridge's Upscaling &
 Display screen picks the upscaler and the render resolution; the pack has no settings of its own for them.
 
-**Work in progress: alpha 0.8.** It lives on its own branch and is not in the modpack yet. The first Create Galore
+**Work in progress: alpha 0.8.1.** It lives on its own branch and is not in the modpack yet. The first Create Galore
 pack (`shaderpack/`) stays as a research build; the two share only the DLSS hand-off and the mods' plumbing
 (Colorwheel, Distant Horizons), not their lighting.
 
@@ -73,7 +73,22 @@ pack (`shaderpack/`) stays as a research build; the two share only the DLSS hand
   reads as one flat floor. A slow weather map says where the sky is clear blue, scattered, broken or nearly closed,
   and what kind of cloud is there: flat stratocumulus sheets 20 to 30 blocks deep with gaps, fair-weather cumulus 45
   to 70 tall, or big cumulus towering up to 150 where the cover is thick; rain closes it into one grey deck. They
-  gather in groups with clear sky between rather than spreading out evenly. Their shapes are heaps of round lumps
+  gather in groups with clear sky between rather than spreading out evenly. **With the Winds & Weather mod the
+  weather is the mod's** (option Follow Winds & Weather, on by default; the Bridge 1.194.0, pack 0.6.89, or later).
+  The mod makes the world's weather in patches a few kilometres across that sweep over the land at 5 to 12 blocks a
+  second, and draws its own clouds for them in place of Minecraft's, which this pack switches off. So the Bridge
+  hands the pack a map of the mod's cloud field far round you (a point every 160 blocks, 10 kilometres across) and
+  the pack's clouds take how much of the sky they fill from it: none where the mod has none, a few small clouds in
+  its fair weather, a quarter of the sky in its middle (half a world is fairer than that), broken cloud beyond, and
+  over its wet cores, a twentieth of a world, a closed deck, lower and deeper the heavier the weather, with the sun
+  breaking through where it is only just closed; a storm is a dark deck that fills the cloud layer. The clouds'
+  shapes, clusters and kinds stay the pack's own (the mod's flat kinds, overcast, drizzle, fog and mist, are
+  sheets). You see weather coming: a closed deck far off keeps its darkness through the haze, a dark band under the
+  fair clouds that grows as it nears, and from under one the fair weather beyond is a bright strip along the
+  horizon. Under a closed sky the sky's light goes grey, the haze thickens a little, the clouds' shadows let next
+  to no sun through and the cloud bases get little light back from the ground; rain is the game's own, as before,
+  and still closes the whole sky. Without the mod, with an older Bridge or with the option off, the weather is the
+  pack's own slow map. Their shapes are heaps of round lumps
   from a baked noise volume: a cloud is where that noise is over a level which rises with height, slowly at first and
   then faster, so a cumulus stands on a wide flat base and narrows into a dome or a tower, and a sheet keeps its
   width up to a flat top. A cloud thickens inwards from its outline (soft, see-through edges, a solid heart), and
@@ -209,7 +224,9 @@ notes for its options; `scene_leaks.py` and `scene_regress.py` are examples.
 `tools/view_tester/view_tester.py` draws the sky, the clouds and the open sea the same way (the pack's own sky,
 cloud and water code in a stand-in for Iris) in a second or two a view, at any time of day, height and weather:
 `python3 shaderpack2/tools/view_tester/view_tester.py OUT.png name:time,yaw,pitch[,height[,rain[,fov[,day]]]]`;
-`ROOT=` an older copy of `shaders/` draws the same views with it, for a before and after.
+`ROOT=` an older copy of `shaders/` draws the same views with it, for a before and after; `WEATHER=` gives it the
+Winds & Weather mod's weather as the Bridge hands it over (`"0.7,0.5,0.6"` the same everywhere, `"a,d,h;a,d,h@X"` a
+front X blocks east; see the script's notes).
 
 `tools/rig/` runs the real game without a screen or a graphics card (a slim client under Xvfb, drawn on the CPU at
 about a frame a second, so slow but exact): `setup.sh` once, `launch.sh WORLD`, `sync.sh` to copy the pack in

@@ -66,7 +66,9 @@ void shadow_texel(ivec2 cell) {
     }
     // From each height to the top.
     vec4 above = vec4(tau.x + tau.y + tau.z + tau.w, tau.y + tau.z + tau.w, tau.z + tau.w, tau.w);
-    through = max(exp(-above), vec4(0.05));
+    // Scattered clouds' shadows keep a twentieth of the light; under a closed sky (rain, or a deck of the mod's
+    // weather) next to none gets through, so nothing there casts a sun shadow.
+    through = max(exp(-above), vec4(mix(0.05, 0.01, smoothstep(0.8, 1.0, map.cover))));
 #endif
     imageStore(cg_sky_img, cloud_shadow_slot(cell), through);
 }
@@ -164,8 +166,15 @@ March march(vec3 from, vec3 dir, float limit, float jitter, float pixel) {
         }
         t += dt;
         if (ts >= map_from + map_span) {
-            map_from += map_span * floor((ts - map_from) / map_span);
-            map_a = cloud_map((origin + dir * map_from).xz);
+            float spans = floor((ts - map_from) / map_span);
+            map_from += map_span * spans;
+            // One stretch on (the usual case: the steps are shorter than a stretch out to 3200 blocks), the far end
+            // of the last stretch is the near end of this one, and is not read again.
+            if (spans < 1.5) {
+                map_a = map_b;
+            } else {
+                map_a = cloud_map((origin + dir * map_from).xz);
+            }
             map_b = cloud_map((origin + dir * (map_from + map_span)).xz);
         }
         CloudMap map = cloud_map_between(map_a, map_b, (ts - map_from) / map_span);
@@ -192,10 +201,17 @@ March march(vec3 from, vec3 dir, float limit, float jitter, float pixel) {
                                            : cloud_body(p + l * d, y + l.y * d, map)) * w;
         }
         float tau = shade * cloud_extinction;
+        // The ground under a closed sky (rain, or a deck of the mod's weather) is not in the sun: little comes back
+        // up from it.
+        vec3 from_below = ground_light * (1.0 - 0.75 * smoothstep(0.85, 1.0, map.cover));
         vec3 sample_light = cloud_shade(tau, cos_theta, cloud_above(inside, y, map), y - map.base, lit.rgb, sky_light,
-                                        ground_light);
-        // Far off, the clouds take on the sky's colour behind them and fade into the haze.
-        float haze = (1.0 - exp(-ts * flat_len / 1200.0)) * 0.95;
+                                        from_below);
+        // A storm's cloud is darker than its depth alone makes it, most at its base (none of it at its top, which
+        // stays white in the sun).
+        sample_light *= 1.0 - 0.55 * map.shade * (1.0 - smoothstep(0.25, 0.75, (y - map.base) / map.tall));
+        // Far off, the clouds take on the sky's colour behind them and fade into the haze; a closed deck half as
+        // much, so heavy weather far off stands dark against the sky instead of paling into it.
+        float haze = (1.0 - exp(-ts * flat_len / 1200.0)) * 0.95 * (1.0 - 0.5 * smoothstep(0.85, 1.0, map.cover));
         sample_light = mix(sample_light, sky_seen, haze);
 
         float step_through = exp(-density * cloud_extinction * dt);

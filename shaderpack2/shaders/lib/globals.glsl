@@ -24,7 +24,8 @@ uniform sampler2D cg_globals_tex;
 #define g_sun_dir GLOBAL(6)     // xyz towards the sun itself (world space), w how far above the horizon (sin)
 #define g_moon_dir GLOBAL(7)    // xyz towards the moon, w the moon's phase brightness (0 new .. 1 full)
 #define g_cloud_light GLOBAL(8) // rgb the sun's (or moon's) light up at the clouds, w 1 the sun's, 0 the moon's
-#define g_water GLOBAL(9)       // x how hard it rains on open water here (eased), y 1 while your feet are in water
+#define g_water GLOBAL(9)       // x how hard it rains on open water here (eased), y 1 while your feet are in water,
+                                // z how far the mod's weather closes the sky over you (eased; lib/weather.glsl)
 #define g_splash GLOBAL(10)     // where you last went into or out of water: xz world, y its surface, w when (frameTimeCounter)
 
 #endif
