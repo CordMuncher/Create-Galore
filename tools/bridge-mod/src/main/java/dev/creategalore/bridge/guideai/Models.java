@@ -24,7 +24,7 @@ import net.minecraft.world.level.block.state.BlockState;
  * the answer: the model gets pictures of it (Preview) to look at and fix first.
  */
 public final class Models {
-    public static final int MAX_SIZE = 32, MAX_ENTRIES = 256, MAX_LABELS = 12, MAX_PALETTE = 60;
+    public static final int MAX_SIZE = 32, MAX_ENTRIES = 256, MAX_LABELS = 12, MAX_PALETTE = 60, MAX_LINKS = 64;
     private static final int MIN_HOLDINGS = 24;
     static final String[] SHAPES = {"box", "hollow_box", "ellipsoid", "ellipsoid_shell", "streamlined", "streamlined_shell", "repaint"};
 
@@ -34,7 +34,7 @@ public final class Models {
      * (from_world): the copied blocks and world = cell + origin, so every later version stays the player's build.
      */
     record Draft(Map<BlockPos, BlockState> cells, int sx, int sy, int sz, JsonArray labels, JsonArray moving, String title,
-                 String caption, JsonArray speeds, boolean open, Map<BlockPos, BlockState> base, BlockPos origin) {
+                 String caption, JsonArray speeds, boolean open, Map<BlockPos, BlockState> base, BlockPos origin, JsonArray wiring) {
     }
 
     private Models() {
@@ -202,6 +202,23 @@ public final class Models {
         speeds.addProperty("description", "Each Rotation Speed Controller's set speed; one left out is at 16 RPM.");
         speeds.add("items", speed);
         props.add("speeds", speeds);
+        JsonObject link = new JsonObject();
+        link.addProperty("type", "object");
+        JsonObject fp = new JsonObject();
+        fp.add("x", WorldTools.prop("integer", "Link cell."));
+        fp.add("y", WorldTools.prop("integer", "See x."));
+        fp.add("z", WorldTools.prop("integer", "See x."));
+        fp.add("first", WorldTools.prop("string", "Item id, slot 1."));
+        fp.add("second", WorldTools.prop("string", "Item id, slot 2."));
+        link.add("properties", fp);
+        link.add("required", required(fp));
+        link.addProperty("additionalProperties", false);
+        JsonObject links = new JsonObject();
+        links.addProperty("type", "array");
+        links.addProperty("description", "Redstone Link frequencies, carried in the schematic so a Schematicannon prints "
+                + "them set (a sender and its receivers share one). Can be empty.");
+        links.add("items", link);
+        props.add("links", links);
         props.add("airship", Airships.definition());
         props.add("plane", Planes.definition());
         props.add("submarine", Submarines.definition());
@@ -286,7 +303,7 @@ public final class Models {
         // An airship the server lays out from the player's wishes: its cells are the model, and what it chose goes first.
         String laidOut = null;
         JsonArray airship = array(input, "airship");
-        JsonArray airshipSpeeds = null;
+        JsonArray airshipSpeeds = null, laidWiring = null;
         if (airship.size() > 1) return Result.problem("Not built: airship takes one airship at most.");
         if (airship.size() == 1 && airship.get(0).isJsonObject()) {
             if (!array(input, "from_world").isEmpty() || Diagrams.intOr(input, "from_draft", 0) != 0 || !array(input, "move").isEmpty()
@@ -310,15 +327,8 @@ public final class Models {
             sy = layout.sy();
             sz = layout.sz();
             laidOut = layout.summary();
-            airshipSpeeds = new JsonArray();
-            for (Map.Entry<BlockPos, Float> e : layout.speeds().entrySet()) {
-                JsonObject o = new JsonObject();
-                o.addProperty("x", e.getKey().getX());
-                o.addProperty("y", e.getKey().getY());
-                o.addProperty("z", e.getKey().getZ());
-                o.addProperty("rpm", Math.round(e.getValue()));
-                airshipSpeeds.add(o);
-            }
+            airshipSpeeds = speedsJson(layout.speeds());
+            laidWiring = layout.wiring();
             if (!spec.enclosed()) open = true;
         }
         // A plane the server lays out the same way.
@@ -346,6 +356,8 @@ public final class Models {
             sy = layout.sy();
             sz = layout.sz();
             laidOut = layout.summary();
+            airshipSpeeds = speedsJson(layout.speeds());
+            laidWiring = layout.wiring();
             open = true;
         }
         // A submarine the server lays out the same way.
@@ -372,6 +384,8 @@ public final class Models {
             sy = layout.sy();
             sz = layout.sz();
             laidOut = layout.summary();
+            airshipSpeeds = speedsJson(layout.speeds());
+            laidWiring = layout.wiring();
         }
         // A helicopter the server lays out the same way.
         JsonArray helicopter = array(input, "helicopter");
@@ -398,6 +412,8 @@ public final class Models {
             sy = layout.sy();
             sz = layout.sz();
             laidOut = layout.summary();
+            airshipSpeeds = speedsJson(layout.speeds());
+            laidWiring = layout.wiring();
         }
         // A build copied from the world: its blocks are the starting point, and what changes on them is marked.
         Map<BlockPos, BlockState> base = null;
@@ -453,6 +469,8 @@ public final class Models {
         boolean speedsCarried = speedsIn.isEmpty(), labelsCarried = array(input, "labels").isEmpty();
         if (speedsIn.isEmpty() && draft0 != null && draft0.speeds() != null) speedsIn = draft0.speeds();
         if (speedsIn.isEmpty() && airshipSpeeds != null) speedsIn = airshipSpeeds;
+        // How it is wired up (link frequencies, settings) rides with its blocks too; links written now are where they end up.
+        JsonArray wiringIn = draft0 != null && draft0.wiring() != null ? draft0.wiring() : laidWiring != null ? laidWiring : new JsonArray();
         JsonArray moves = array(input, "move");
         List<BlockPos[]> slid = new ArrayList<>();
         List<String> covered = new ArrayList<>();
@@ -505,6 +523,22 @@ public final class Models {
         }
         speedsIn = speedsNow;
         Drives.setModel(set);
+        Map<BlockPos, JsonObject> wired = new java.util.LinkedHashMap<>();
+        for (JsonElement e : wiringIn) {
+            if (!e.isJsonObject()) continue;
+            BlockPos at = slide(Wiring.at(e.getAsJsonObject()), slid);
+            wired.put(at, Wiring.moved(e.getAsJsonObject(), at));
+        }
+        JsonArray linksIn = array(input, "links");
+        java.util.Set<BlockPos> linkedNow = new java.util.HashSet<>();
+        for (int i = 0; i < linksIn.size() && i < MAX_LINKS; i++) {
+            if (!linksIn.get(i).isJsonObject()) continue;
+            JsonObject l = linksIn.get(i).getAsJsonObject();
+            BlockPos at = new BlockPos(Diagrams.intOr(l, "x", 0), Diagrams.intOr(l, "y", 0), Diagrams.intOr(l, "z", 0));
+            wired.put(at, Wiring.link(at, Wiring.id(GuideText.string(l, "first")), Wiring.id(GuideText.string(l, "second"))));
+            linkedNow.add(at);
+        }
+        if (linksIn.size() > MAX_LINKS) problems.add("at most " + MAX_LINKS + " links");
         String coveredNote = covered.isEmpty() ? null : "Note: " + String.join("; ", covered)
                 + ". If that wasn't meant, move those blocks first or take the slide back.";
         Map<Character, BlockState> keys = new HashMap<>();
@@ -625,6 +659,13 @@ public final class Models {
                 return Result.problem("Not built: speeds names cell " + p.getX() + "," + p.getY() + "," + p.getZ()
                         + ", which holds no Rotation Speed Controller.");
         }
+        // Links written now must sit on a Redstone Link and name real items; carried ones whose block is gone are dropped.
+        JsonArray wiring = new JsonArray();
+        for (Map.Entry<BlockPos, JsonObject> e : wired.entrySet()) {
+            String bad = Wiring.problem(e.getValue(), cells.get(e.getKey()));
+            if (bad == null) wiring.add(e.getValue());
+            else if (linkedNow.contains(e.getKey())) return Result.problem("Not built: " + bad + ".");
+        }
         boolean showsFault = input.has("shows_a_fault") && input.get("shows_a_fault").isJsonPrimitive()
                 && input.get("shows_a_fault").getAsBoolean();
         // A vehicle's corner steps are filled so it glues as one piece; the book is told where, so it builds them in.
@@ -669,7 +710,7 @@ public final class Models {
         // Kept for the next version, refused or not: fixing a fault is a few changes on top of it.
         String saved = "";
         if (drafts != null) {
-            drafts.add(new Draft(new HashMap<>(cells), sx, sy, sz, labels, movingIn, title, caption, speedsIn, open, base, origin));
+            drafts.add(new Draft(new HashMap<>(cells), sx, sy, sz, labels, movingIn, title, caption, speedsIn, open, base, origin, wiring));
             saved = "\nThis is model " + drafts.size() + ": start its next version with from_draft " + drafts.size()
                     + " and write only what changes.";
         }
@@ -695,11 +736,17 @@ public final class Models {
         model.add("size", size);
         compact(cells, sx, sy, sz, model);
         model.add("labels", labels);
+        // What the schematic sets on its blocks: link frequencies, settings, and each speed controller's speed.
+        JsonArray wiringOut = wiring.deepCopy();
+        set.forEach((p, rpm) -> wiringOut.add(Wiring.value(p, Math.round(rpm))));
+        if (!wiringOut.isEmpty()) model.add("wiring", wiringOut);
         if (motion != null) model.add("moving", motion.moving());
         String report = check == null ? "" : check.text();
         if (coveredNote != null) report = coveredNote + (report.isEmpty() ? "" : "\n" + report);
         if (laidOut != null) report = laidOut + (report.isEmpty() ? "" : "\n" + report);
         if (!steps.isEmpty()) report = (report.isEmpty() ? "" : report + "\n") + stepReport(steps, cells);
+        String wiredNote = Wiring.report(wiring, set, cells);
+        if (wiredNote != null) report = (report.isEmpty() ? "" : report + "\n") + wiredNote;
         report = (report.isEmpty() ? "" : report + "\n") + tally(cells);
         // A build to copy, not a few machines explaining a point: what it takes of the player's own materials.
         String holdings;
@@ -725,6 +772,20 @@ public final class Models {
     }
 
     /** Where a cell ends up after the slides, in order: a cell inside a slid box moves with it. */
+    /** A laid-out vehicle's speed controller settings as build_model's speeds. */
+    private static JsonArray speedsJson(Map<BlockPos, Float> speeds) {
+        JsonArray a = new JsonArray();
+        for (Map.Entry<BlockPos, Float> e : speeds.entrySet()) {
+            JsonObject o = new JsonObject();
+            o.addProperty("x", e.getKey().getX());
+            o.addProperty("y", e.getKey().getY());
+            o.addProperty("z", e.getKey().getZ());
+            o.addProperty("rpm", Math.round(e.getValue()));
+            a.add(o);
+        }
+        return a;
+    }
+
     private static BlockPos slide(BlockPos p, List<BlockPos[]> slid) {
         for (BlockPos[] s : slid)
             if (p.getX() >= s[0].getX() && p.getX() <= s[1].getX() && p.getY() >= s[0].getY() && p.getY() <= s[1].getY()

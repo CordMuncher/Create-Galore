@@ -149,6 +149,15 @@ final class PlayerCheck {
      */
     static void vehicle(Map<BlockPos, BlockState> blocks, double ceiling, boolean lands, boolean open, List<String> faults,
             List<String> notes) {
+        vehicle(blocks, ceiling, lands, open, false, faults, notes);
+    }
+
+    /**
+     * As above; {@code plane}: a winged aircraft on wheels, which lands to refuel as a small plane does, so an engine
+     * reached from the ground beside it is fuelled there (a Portable Engine's one slot takes a whole stack).
+     */
+    static void vehicle(Map<BlockPos, BlockState> blocks, double ceiling, boolean lands, boolean open, boolean plane, List<String> faults,
+            List<String> notes) {
         BlockGetter getter = new Cells(blocks);
         int minX = Integer.MAX_VALUE, minZ = Integer.MAX_VALUE, maxX = Integer.MIN_VALUE, maxZ = Integer.MIN_VALUE;
         int groundY = Integer.MAX_VALUE;
@@ -208,7 +217,7 @@ final class PlayerCheck {
             crew.retainAll(back);
             // Grouped by what keeps the crew away: one line for every engine stranded the same way.
             Map<Boolean, List<String>> cut = new java.util.TreeMap<>();
-            List<String> cold = new ArrayList<>();
+            List<String> cold = new ArrayList<>(), onGround = new ArrayList<>();
             boolean freezing = ceiling >= FREEZING;
             for (BlockPos f : sorted(fuel)) {
                 // Fuel goes in by hand at the engine, or anywhere along a funnel, chute or hopper line feeding it and the
@@ -217,7 +226,10 @@ final class PlayerCheck {
                 List<Node> at = aboard.values().stream().filter(n -> points.stream().anyMatch(q -> reaches(blocks, getter, n.eye(), q, null))).toList();
                 List<Node> mine = at.stream().filter(crew::contains).toList();
                 String what = name(blocks.get(f));
-                if (mine.isEmpty())
+                if (mine.isEmpty() && plane && landed.values().stream().anyMatch(n -> n.ground
+                        && points.stream().anyMatch(q -> reaches(blocks, getter, n.eye(), q, ground))))
+                    onGround.add(what + " at " + xyz(f));
+                else if (mine.isEmpty())
                     cut.computeIfAbsent(at.isEmpty(), k -> new ArrayList<>()).add(what + " at " + xyz(f));
                 else if (freezing && mine.stream().noneMatch(n -> sheltered(getter, n.head()))) cold.add(what + " at " + xyz(f));
             }
@@ -234,6 +246,10 @@ final class PlayerCheck {
                         + "along a railed walkway, steps or ladder from it, within 4.5 blocks of where they stand with nothing in "
                         + "between (or feed it with a funnel or chute from a hold they can reach)");
             }
+            if (!onGround.isEmpty())
+                notes.add("its " + String.join(", ", onGround) + " " + (onGround.size() > 1 ? "are" : "is") + " fuelled from the "
+                        + "ground beside it, so it lands to refuel, as a small plane does: a Portable Engine's one slot takes a whole "
+                        + "stack, and a stack of Coal Blocks runs it for hours (tell the player to fill each engine before take-off)");
             if (!cold.isEmpty())
                 notes.add(open ? "fuelling " + String.join(", ", cold) + " is out on the open deck the player chose (asked for, or built that way), which "
                         + "freezes from y " + FREEZING + ": Windproof Lining on every armour piece keeps whoever fuels it warm"

@@ -39,7 +39,8 @@ final class VehicleCheck {
     private static final double G = 11, WATER = 10.5, HOLD = 16.5, DAMP = 0.09, WATER_DRAG = 1.7, ENVELOPE_DRAG = 0.33;
     /** Usable thresholds, blocks a second and degrees a second: below the first a vehicle is of no real use. */
     private static final double BOAT_BAD = 2, BOAT_SLOW = 4, SUB_BAD = 1, SUB_SLOW = 2, AIR_BAD = 2.5, AIR_SLOW = 5,
-            CAR_BAD = 3, CAR_SLOW = 6, AIRSHIP_GOOD = 8, TURN_BAD = 3, TURN_SLOW = 8, CLIMB_BAD = 0.5, CLIMB_SLOW = 1, CEILING_BAD = 100;
+            CAR_BAD = 3, CAR_SLOW = 6, AIRSHIP_GOOD = 8, TURN_BAD = 3, TURN_SLOW = 8, CLIMB_BAD = 0.5, CLIMB_SLOW = 1, CEILING_BAD = 100,
+            ROLL_BAD = 10, ROLL_SLOW = 25;
     /** A hull in water turns about half as fast as its turning force alone gives (measured; it slides sideways). */
     private static final double TURN_SLIP = 0.45;
     /** Resting trim or list, degrees: from the first it shows, from the second it is a fault. */
@@ -56,6 +57,11 @@ final class VehicleCheck {
      * speed, take-off "run" and landing "stop" run in blocks, "ceiling", "turn" in degrees a second.
      */
     static final ThreadLocal<Map<String, Double>> FIGURES = ThreadLocal.withInitial(java.util.HashMap::new);
+    /**
+     * Set while a layout search tries many designs: a design with a fault already found isn't flown as well, and a flown
+     * one that fails isn't flown again with its wings moved (the search tries those places itself).
+     */
+    static final ThreadLocal<Boolean> SEARCH = ThreadLocal.withInitial(() -> false);
 
     private VehicleCheck() {
     }
@@ -157,7 +163,8 @@ final class VehicleCheck {
         if (model) ballast(blocks, getter, faults);
         boatEngines(blocks, getter, faults);
         controls(blocks, getter, faults);
-        PlayerCheck.vehicle(blocks, body.ceiling, air || land || (props && !water && !sub), open, faults, notes);
+        PlayerCheck.vehicle(blocks, body.ceiling, air || land || (props && !water && !sub), open, land && winged && !air && !water && !sub,
+                faults, notes);
         boolean redstone = blocks.values().stream().anyMatch(s -> s.isSignalSource() || id(s).contains("throttle_lever"));
         if (redstone) {
             boolean wire = blocks.values().stream().anyMatch(s -> s.is(net.minecraft.world.level.block.Blocks.REDSTONE_WIRE)
@@ -1890,6 +1897,8 @@ final class VehicleCheck {
                 }
             FIGURES.get().put("yawDamp", damp);
             FIGURES.get().put("yawTorque", q);
+            // A winged plane with ailerons and nothing else to steer it turns as a real one does: it banks.
+            boolean bank = how == null && wingLift > 0 && ailerons(surfaces(b, wings, best));
             long gyros = b.count("aeroworks:gyroscope");
             if (gyros > 0) damp += iy;
             if (lev > 0 && q > 0) damp = levititeBrake(b, q, damp);
@@ -1911,10 +1920,12 @@ final class VehicleCheck {
             else if (how == null && still > 0)
                 faults.add(still + " of its propellers don't turn (no engine reaches them), so they neither push nor steer: get "
                         + "every propeller turning before judging the steering");
+            else if (bank) bankTurn(b, wings, best, v, faults, out);
             else turn(q, damp, how, faults, notes, out, "aircraft");
             if (fc) jetControls(b, faults, notes, out);
             else {
-                if (how != null) steering(b, swivel != null && how.equals(swivel.how()) ? swivel : null, faults, notes, out);
+                if (bank) stick(b, faults, out);
+                else if (how != null) steering(b, swivel != null && how.equals(swivel.how()) ? swivel : null, faults, notes, out);
                 throttle(b, side, faults, notes, out);
             }
             if (gyros > 0) notes.add("its Gyroscope keeps it level but also brakes turning");
@@ -1929,7 +1940,7 @@ final class VehicleCheck {
         // Under a balloon the cruise pitch above weighs the thrust line against the balloon's pull; this is for the rest.
         if (pitch >= 4 && b.count("aeroworks:gyroscope") == 0 && !fc && wingLift <= 0 && filled == 0)
             notes.add(String.format(Locale.ROOT, "its propellers push %.0f blocks off the height of its centre of mass, so it "
-                    + "pitches when they run; a Gyroscope or lower propellers fix that", pitch));
+                    + "pitches when they run; propellers in line with it fix that (or a Gyroscope)", pitch));
     }
 
     /**
@@ -2084,11 +2095,37 @@ final class VehicleCheck {
             }
         // Side to side nothing rights a plane: a wing lifts the way it faces however it leans, so the smallest lean
         // tips its lift, it slides toward the low wing and spirals down (a biplane flown without one did, within 20 s).
-        if (gyros == 0 && !fc && other < weight) faults.add("nothing holds its wings level side to side: a wing lifts the way it faces "
-                + "however the plane leans, so the smallest lean grows into a spiral down. It needs an Aeroworks Gyroscope on "
-                + "board, turned from below by an engine on the ship (a Portable Engine's own 32 RPM, through a gearbox under "
-                + "it, holds a small plane level), or a Flight Control Computer with a Smart Attitude Stabilizer and Smart "
-                + "Vector Thrusters");
+        // A pilot holds it level with ailerons, as in a real plane; a gyroscope or a flight computer does it for them.
+        List<Surface> surfaces = surfaces(b, w, best);
+        boolean ailerons = ailerons(surfaces);
+        if (ailerons) {
+            double roll = rollRate(b, w, surfaces, best, v, p0);
+            FIGURES.get().put("roll", roll);
+            // Through a full roll its lift turns with it and, on the whole, cancels out, so it sinks the way a flat sheet
+            // falls (its wings and tail broadside to the air) for as long as the roll takes. Measured: the book's biplane
+            // rolled at full stick from level flight came out 43 blocks lower, against 36 worked out this way, so the
+            // figure is scaled up by that.
+            double broadside = DAMP * b.m;
+            for (Wings.Wing wing : w.all) if (wing.push().getAxis() == Direction.Axis.Y) broadside += wing.par() * p0;
+            double sink = G * b.m / broadside, tau = b.m / broadside, takes = 360 / roll;
+            double rollDrop = 1.2 * sink * (takes - tau * (1 - Math.exp(-takes / tau)));
+            FIGURES.get().put("rollDrop", rollDrop);
+            out.append(String.format(Locale.ROOT, "- Ailerons: full stick to one side tips them 45° opposite ways and rolls it at "
+                    + "about %.0f°/s at top speed (a full roll in %.0f s; its lift turns round with it, so it comes out about %.0f "
+                    + "blocks lower and nose down: roll with height to spare)%s.\n", roll, 360 / roll, Math.ceil(rollDrop / 5) * 5, gyros == 0 && !fc
+                    ? "; nothing else levels it, so a lean the pilot leaves stays and slowly tightens into a turn and a "
+                    + "sink toward the low wing: the pilot keeps it level, which is also what lets it roll and loop" : ""));
+            if (roll < ROLL_BAD) faults.add(String.format(Locale.ROOT, "its ailerons barely roll it (%.0f°/s at full stick): "
+                    + "longer aileron strips farther out along the wings, of Symmetric Sails (they meet the air hardest)", roll));
+            else if (roll < ROLL_SLOW) notes.add(String.format(Locale.ROOT, "it rolls slowly (%.0f°/s at full stick)", roll));
+        }
+        if (gyros == 0 && !fc && other < weight && !ailerons) faults.add("nothing holds its wings level side to side: a wing lifts "
+                + "the way it faces however the plane leans, so the smallest lean grows into a spiral down unless the pilot can "
+                + "roll it back. Give it ailerons: near each wingtip a Swivel Bearing facing out along the wing with a strip of "
+                + "Symmetric Sails glued out from its face (its own glue box) as the wing's trailing edge, its cog turned by a "
+                + "Tilt Adapter that the stick's Left and Right signals swing (Redstone Links on the adapter's two sides). An "
+                + "Aeroworks Gyroscope turned by an engine on board holds it level instead, but it also fights every roll and loop, "
+                + "so it is the choice only for a plane meant to fly itself");
         // It levels only by swinging and throttling its thrusters, which at cruise push little, so it is judged as a
         // quarter-strength gyroscope: the book's jet with its wing far ahead of the centre of mass passed as a full one
         // and looped over on the runway; with the wing over it, it flew level.
@@ -2114,9 +2151,19 @@ final class VehicleCheck {
                         + "block%s further toward the %s it balances", Math.abs(fix), Math.abs(fix) == 1 ? "" : "s", fix > 0 ? "nose" : "tail")));
             }
         }
+        if (SEARCH.get() && !faults.isEmpty()) return;
+        // A plane the pilot flies, with an elevator and nothing levelling it, is judged as it is flown (see flown()).
+        Set<Part> elevator = gyro == 0 && !fc ? elevator(surfaces) : Set.of();
+        if (!elevator.isEmpty()) {
+            flown(b, w, side, best, v, elevator, out, faults, notes);
+            return;
+        }
         Trial trial = trial(b, w, side, best, v, 0, gyro);
         out.append(trial.describe());
-        if (trial.ok()) return;
+        if (trial.ok()) {
+            pitchControl(b, w, side, best, v, gyro, elevator(surfaces), trial, out, faults, notes);
+            return;
+        }
         double fix = 0;
         for (double d = 1; d <= 6 && fix == 0; d++)
             for (double shift : new double[] {-d, d}) if (fix == 0 && trial(b, w, side, best, v, shift, gyro).ok()) fix = shift;
@@ -2130,7 +2177,8 @@ final class VehicleCheck {
         for (double g : new double[] {0.125, 0.25, 0.5, 0.75, 1}) if (need == 0 && g > gyro && trial(b, w, side, best, v, 0, g).ok()) need = g;
         faults.add(trial.problem() + (need > 0 ? String.format(Locale.ROOT, ". Nothing in the air levels a ship by itself and "
                 + "moving its wings doesn't settle it; %s turning at least %d RPM holds it level (full strength at %d RPM; it "
-                + "takes its shaft from below and draws 16 stress units per RPM from an engine on board)", gyros == 0
+                + "takes its shaft from below and draws 16 stress units per RPM from an engine on board), though it also "
+                + "stops it rolling and looping", gyros == 0
                 ? "an Aeroworks Gyroscope" : "its Gyroscope", (int) Math.round(need * GYRO_RPM), (int) GYRO_RPM)
                 : ". Neither moving its wings nor a Gyroscope settles it: bring the thrusters' line level with the centre of "
                 + "mass and keep the wings even around it"));
@@ -2164,6 +2212,16 @@ final class VehicleCheck {
 
     /** Ground runs, blocks: longer than the first is a long field; longer than the second is no use. */
     private static final double RUN_LONG = 60, RUN_BAD = 150;
+    /** Lift-off must come at no more than this share of the speed its wheels top out at (see the take-off run). */
+    private static final double LIFTOFF_SHARE = 0.85;
+    /**
+     * How much faster than its wings' level lift-off speed a plane on wheels really leaves the ground. On its gear its
+     * nose sits level or a little down, so the air meets its flat wing and tail from a shade above and presses them
+     * down, and it lifts off only once the pilot raises the nose. Measured in a test world: two of the book's biplanes,
+     * nose raised with the stick as they rolled, left the ground at 21.5 and 23 blocks/s where level lift equals their
+     * weight at 19.6 and 20; one held level never left the ground at all at 23.8.
+     */
+    private static final double ROTATE = 1.1;
     /** The height a plane's field is judged at. */
     private static final double GROUND_Y = 70;
 
@@ -2180,7 +2238,7 @@ final class VehicleCheck {
         // Judged on a field at about y 70, where most are; the air there is thicker than at y 100, where it flies.
         double weight = G * b.m;
         p0 = pressure(GROUND_Y);
-        takeoff = (weight - other) / (w.up * p0);
+        takeoff = ROTATE * (weight - other) / (w.up * p0);
         List<double[]> push = new ArrayList<>(); // force, airflow
         for (Thrust t : side)
             if (t.dir == best || t.reversible && t.dir == best.getOpposite()) push.add(new double[] {t.force * p0, t.airflow});
@@ -2250,6 +2308,22 @@ final class VehicleCheck {
                     + "ground, so use as few as stand it (three), set to 5, with more forward thrust or more wing to lift off sooner"));
             return;
         }
+        // The speed its wheels top out at with the wings carrying none of it. Measured in a test world: a biplane this check
+        // said lifts off at 14.5 blocks/s in 43 blocks had wheels topping out about 15.4; it crept up to 16 and needed 80
+        // blocks. So lift-off has to come well short of the wheels' top speed for the run to be what it says.
+        if (wheels > 0) {
+            double t0 = 0, t1 = drag + wheels * WHEEL_ROLL * Math.min(b.m, setting);
+            for (double[] k : push) {
+                t0 += k[0];
+                if (k[1] < Double.MAX_VALUE) t1 += k[0] / k[1];
+            }
+            double top = t0 / t1;
+            FIGURES.get().put("groundTop", top);
+            if (takeoff > LIFTOFF_SHARE * top)
+                faults.add(String.format(Locale.ROOT, "it barely gets off the ground: its wheels top out at about %.1f blocks/s and "
+                        + "its wings need %.1f, so it creeps up to flying speed over a much longer run than it should; more wing "
+                        + "(a deeper chord) or more thrust gives it a clear margin", top, takeoff));
+        }
         if (told) {
             double[] dflt = takeoffRun(b, w, push, p0, other, drag, wheels, mu, WHEEL_SUSPENSION);
             notes.add(dflt[2] > 0 ? "it only gets off the ground with " + TIRE_SETTING + ": at the default 10 it never reaches flying speed; "
@@ -2266,7 +2340,7 @@ final class VehicleCheck {
         if (brakes) braked = stop(b, w, p0, other, takeoff, drag, wheels, setting, mu, 0, WHEEL_BRAKE);
         double land = reverse ? back : brakes ? braked : idle;
         out.append(String.format(Locale.ROOT, "- On the ground it stands on %s: from a field at about y %d its take-off run is about %.0f blocks (%.0f s), "
-                + "lifting off at %.1f blocks/s, and after touching down at about %.0f blocks/s it stops in about %.0f blocks %s.\n", gear, (int) GROUND_Y, x, t,
+                + "lifting off at %.1f blocks/s with its nose raised a little (a pilot eases the stick back; held nose-down it stays on its wheels), and after touching down at about %.0f blocks/s it stops in about %.0f blocks %s.\n", gear, (int) GROUND_Y, x, t,
                 takeoff, takeoff, land,
                 reverse ? String.format(Locale.ROOT, "with its propellers reversed (Gearshift lever on; %.0f with them just idle)", idle)
                 : brakes ? String.format(Locale.ROOT, "on full wheel brakes (redstone into the mounts' tops; %.0f rolling free)", idle)
@@ -2294,7 +2368,7 @@ final class VehicleCheck {
             double mu, double setting) {
         double weight = G * b.m, u = 0, x = 0, t = 0, dt = 0.025;
         while (true) {
-            double lift = other + w.up * p0 * u;
+            double lift = other + w.up * p0 * u / ROTATE;
             if (lift >= weight) return new double[] {x, t, 0, u};
             double load = weight - lift, thrust = 0;
             for (double[] k : push) thrust += k[1] < Double.MAX_VALUE ? k[0] * Math.max(0, 1 - u / k[1]) : k[0];
@@ -2404,6 +2478,14 @@ final class VehicleCheck {
 
     private static Trial trial(Body b, Wings w, List<Thrust> side, Direction best, double v, double shift, double gyro) {
         Flight full = fly(b, w, side, best, v, shift, gyro, 1);
+        if (Boolean.getBoolean("creategalore.planes.debug") && shift == 0) {
+            // A hands-off trace from level at 16 blocks/s, to set against the same start in a test world.
+            Sim s = new Sim(b, w, side, best, 16, 0, gyro, Set.of());
+            for (int i = 0; i <= 15 / Sim.DT; i++) {
+                if (i % 20 == 0) System.out.printf(Locale.ROOT, "[hands] t %.1f th %.1f v %.1f vy %.1f%n", i * Sim.DT, Math.toDegrees(s.th), s.speed(), s.vy);
+                s.step(0, 1);
+            }
+        }
         boolean onOff = side.stream().anyMatch(t -> t.what().contains("Solid Fuel"));
         boolean coupler = flightComputer(b) && b.count("create_flight_control:velocity_coupler") > 0;
         if (full.flipped() || full.climb() <= 0) return new Trial(full, null, onOff, coupler);
@@ -2418,6 +2500,158 @@ final class VehicleCheck {
             } else lo = mid;
         }
         return new Trial(full, cruise, onOff, coupler);
+    }
+
+    /**
+     * Fore and aft for a plane the pilot flies: an elevator, and nothing (no gyroscope, no flight computer) levelling it.
+     * Its wings lift in proportion to its speed, so with the stick left alone it flies level at one speed and climbs when
+     * faster; opened to full power from level flight and left alone, the extra lift curves it up and over, as a real
+     * plane's does when the pilot opens the throttle and lets go. So it is judged the way it is flown: hands off at the
+     * power that holds its height it must fly steadily, and at full power the pilot's stick must hold it level with
+     * elevator to spare. Then the elevator's loop (see {@link #pitchControl}).
+     */
+    private static void flown(Body b, Wings w, List<Thrust> side, Direction best, double v, Set<Part> elevator,
+            StringBuilder out, List<String> faults, List<String> notes) {
+        Flown f = flown(b, w, side, best, v, 0, elevator);
+        out.append(f.text());
+        if (f.problem() == null) {
+            pitchControl(b, w, side, best, v, 0, elevator, null, out, faults, notes);
+            return;
+        }
+        double fix = 0;
+        if (!SEARCH.get())
+            for (double d = 1; d <= 6 && fix == 0; d++)
+                for (double shift : new double[] {-d, d}) if (fix == 0 && flown(b, w, side, best, v, shift, elevator).problem() == null) fix = shift;
+        if (SEARCH.get()) {
+            faults.add(f.problem());
+            return;
+        }
+        faults.add(f.problem() + (fix != 0 ? String.format(Locale.ROOT, ". With its wings %.0f block%s further toward the %s (or "
+                + "about %.0f mass x blocks of weight moved toward the %s) it flies steadily", Math.abs(fix),
+                Math.abs(fix) == 1 ? "" : "s", fix > 0 ? "nose" : "tail", Math.abs(fix) * (b.m - w.mass()), fix > 0 ? "tail" : "nose")
+                : ". Moving its wings doesn't settle it: a bigger elevator and stabiliser, a tail farther back, or the propeller's "
+                + "push brought level with the centre of mass"));
+    }
+
+    /** How a pilot-flown plane flies: what it does (text) and what is wrong with it (null if nothing). */
+    private record Flown(String text, String problem) {}
+
+    /** Most of the elevator's travel the pilot may need just to hold it level at full power, leaving the rest to fly it. */
+    private static final double HOLD_STICK = 0.75;
+
+    private static Flown flown(Body b, Wings w, List<Thrust> side, Direction best, double v, double shift, Set<Part> elevator) {
+        Flight full = fly(b, w, side, best, v, shift, 0, 1);
+        // The power that holds its height, hands off.
+        double lo = 0, hi = 1;
+        Flight cruise = null;
+        for (int i = 0; i < 8; i++) {
+            double mid = (lo + hi) / 2;
+            Flight c = fly(b, w, side, best, v * mid, shift, 0, mid);
+            if (c.flipped() || c.climb() > 0) {
+                hi = mid;
+                cruise = c;
+            } else lo = mid;
+        }
+        double[] hold = hold(b, w, side, best, v, shift, elevator);
+        StringBuilder text = new StringBuilder();
+        if (cruise != null && !cruise.flipped()) text.append(cruise.describe(String.format(Locale.ROOT, "hands off with %.0f%% of its "
+                + "thrust (where it holds its height)", cruise.power() * 100)));
+        text.append(full.flipped() ? String.format(Locale.ROOT, "- Opened to full power from level flight and left alone, its wings "
+                + "lift more the faster it goes, so it noses %s and turns over within %.0f s: after take-off the pilot eases the "
+                + "throttle back toward %.0f%% or holds the nose with the stick.\n", full.noseUp() ? "up" : "down",
+                Math.max(1, full.flipTime()), cruise == null ? 100 : cruise.power() * 100) : full.describe("at full power, hands off"));
+        if (hold[0] == 0) text.append(String.format(Locale.ROOT, "- At full power the stick holds it level with about %.0f%% of its "
+                + "travel %s%s.\n", hold[2] * 100, hold[3] >= 0 ? "back" : "forward", hold[4] <= -1 ? String.format(Locale.ROOT,
+                ", sinking %.1f blocks/s", -hold[4]) : ""));
+        String problem = null;
+        if (hold[0] == 0 && hold[4] <= -1) problem = String.format(Locale.ROOT, "it can't hold its height: even at full power, held "
+                + "level, it sinks %.1f blocks/s", -hold[4]);
+        else if (cruise == null || cruise.flipped()) problem = String.format(Locale.ROOT, "it isn't balanced in flight: even hands off "
+                + "at the power that just holds its height it noses %s and turns over", cruise != null && !cruise.noseUp() ? "down" : "up");
+        else if (cruise.swing() > 10) problem = cruise.problem(String.format(Locale.ROOT, "hands off with the %.0f%% of its thrust "
+                + "that holds its height", cruise.power() * 100));
+        else if (Math.abs(cruise.trim()) > 12) problem = cruise.problem(String.format(Locale.ROOT, "hands off with the %.0f%% of "
+                + "its thrust that holds its height", cruise.power() * 100));
+        else if (hold[0] != 0 || hold[1] > 10 || hold[2] > HOLD_STICK) problem = String.format(Locale.ROOT, "its elevator can't hold "
+                + "it at full power: %s", hold[0] != 0 ? "even with the stick held against it, it turns over" : hold[1] > 10
+                ? String.format(Locale.ROOT, "with the stick working against it, it still swings %.0f° off level", hold[1])
+                : String.format(Locale.ROOT, "holding it level takes %.0f%% of the stick's travel, leaving too little to fly it",
+                hold[2] * 100));
+        return new Flown(text.toString(), problem);
+    }
+
+    /**
+     * A pilot holding it level at full power from level flight at top speed, with the stick as a pilot works it (firm
+     * toward level, eased by how fast the nose already moves, and held further while it stays off): {flipped 1/0, worst
+     * degrees off level after the first 5 s, mean stick as a share of full, mean stick sign (+ back), blocks/s climbed
+     * over the last 5 s}.
+     */
+    private static double[] hold(Body b, Wings w, List<Thrust> side, Direction best, double v, double shift, Set<Part> elevator) {
+        Sim s = new Sim(b, w, side, best, v, shift, 0, elevator);
+        double held = 0, worst = 0, stick = 0, sum = 0, y15 = s.y;
+        int n = 0;
+        for (int i = 1; i <= 20 / Sim.DT; i++) {
+            held = Math.max(-SURFACE_LOCK, Math.min(SURFACE_LOCK, held - 1.0 * s.th * Sim.DT));
+            double elev = Math.max(-SURFACE_LOCK, Math.min(SURFACE_LOCK, -2.0 * s.th - 0.8 * s.om + held));
+            s.step(elev, 1);
+            double deg = Math.toDegrees(s.th);
+            if (Math.abs(deg) > 60) return new double[] {1, Math.abs(deg), 1, Math.signum(elev), 0};
+            if (i == Math.round(15 / Sim.DT)) y15 = s.y;
+            if (i * Sim.DT > 5) {
+                worst = Math.max(worst, Math.abs(deg));
+                stick += Math.abs(elev);
+                sum += elev;
+                n++;
+            }
+        }
+        return new double[] {0, worst, stick / n / SURFACE_LOCK, Math.signum(sum), (s.y - y15) / 5};
+    }
+
+    /**
+     * The elevator, flown: from level at top speed with the stick pulled fully back (both elevator halves' trailing edges
+     * up 45°), and again pushed fully forward; then a whole loop as a pilot flies one (see {@link #loop}). With no elevator
+     * it climbs and sinks on its throttle alone.
+     */
+    private static void pitchControl(Body b, Wings w, List<Thrust> side, Direction best, double v, double gyro, Set<Part> elevator,
+            Trial hands, StringBuilder out, List<String> faults, List<String> notes) {
+        if (elevator.isEmpty()) {
+            if (gyro == 0) notes.add("it has no elevator, so it climbs and sinks only on its throttle and can't loop: two Swivel "
+                    + "Bearings at the tail, facing out either side, each with a strip of Symmetric Sails glued out from its face "
+                    + "behind a fixed stabiliser and its cog turned by a Tilt Adapter on the stick's Forward and Back signals");
+            return;
+        }
+        Flight up = fly(b, w, side, best, v, 0, gyro, 1, elevator, SURFACE_LOCK);
+        Flight down = fly(b, w, side, best, v, 0, gyro, 1, elevator, -SURFACE_LOCK);
+        String dive = down.flipped() && !down.noseUp() ? String.format(Locale.ROOT, "pushed fully forward it noses down past 60° "
+                + "within %.0f s", Math.max(1, down.flipTime())) : String.format(Locale.ROOT, "pushed fully forward it settles "
+                + "%.0f° nose %s", Math.abs(down.trim()), down.trim() >= 0 ? "up" : "down");
+        String pull = up.flipped() ? up.noseUp() ? String.format(Locale.ROOT, "pulled fully back it noses up past 60° within %.0f s",
+                Math.max(1, up.flipTime())) : "pulled fully back it doesn't lift the nose" : String.format(Locale.ROOT,
+                "pulled fully back it only holds %.0f° nose %s", Math.abs(up.trim()), up.trim() >= 0 ? "up" : "down");
+        out.append(String.format(Locale.ROOT, "- Elevator: %s; %s.\n", pull, dive));
+        if (gyro > 0) {
+            notes.add("its Gyroscope holds it level against the elevator, so it can't loop while the gyroscope is turning");
+            return;
+        }
+        Loop loop = loop(b, w, side, best, v, elevator);
+        if (loop.round()) {
+            FIGURES.get().put("loop", loop.time());
+            FIGURES.get().put("loopDrop", loop.drop());
+            FIGURES.get().put("loopEntry", loop.entry());
+            out.append(String.format(Locale.ROOT, "- Loops: from level flight at full power, pull the stick fully back and hold it "
+                    + "all the way round until the nose is level again, keeping the wings level with the stick, then ease it; it "
+                    + "takes about %.0f s, goes over the top at about %.0f blocks/s and the whole manoeuvre drops about %.0f blocks, "
+                    + "so start it at least %.0f blocks above the ground.\n", loop.time(), loop.slowest(), Math.max(0, loop.drop()),
+                    Math.max(0, loop.drop()) + 20));
+            return;
+        }
+        String why = loop.slowest() <= LOOP_SLOWEST ? String.format(Locale.ROOT, "pulled from level flight at full power it runs "
+                + "out of speed going up (%.1f blocks/s) and falls back", Math.max(0, loop.slowest())) : loop.turned() ? String.format(
+                Locale.ROOT, "pulled from level flight at full power it crawls round in %.0f s, over the top at %.0f blocks/s, and a "
+                + "plane that slow stalls nose high and falls off sideways", loop.time(), loop.slowest())
+                : "pulled from level flight at full power it doesn't come round";
+        faults.add("its elevator can't loop it: " + why + "; a bigger elevator (longer strips on its Swivel Bearings), a tail "
+                + "farther back, more thrust or a lighter plane lets it loop");
     }
 
     /** Aeroworks' gyroscope: full strength at this RPM, a critically damped pull back to level (omega 3, damping 0.9). */
@@ -2452,64 +2686,118 @@ final class VehicleCheck {
      */
     private static Flight fly(Body b, Wings w, List<Thrust> side, Direction best, double v0, double shift, double gyro,
             double power) {
-        java.util.IdentityHashMap<Part, Wings.Wing> wingOf = new java.util.IdentityHashMap<>();
-        for (Wings.Wing wing : w.all) wingOf.put(wing.part, wing);
-        int n = b.parts.size();
-        double[] pa = new double[n], ph = new double[n];
-        double m = 0, ca = 0, ch = 0;
-        for (int i = 0; i < n; i++) {
-            Part p = b.parts.get(i);
-            pa[i] = forward(b, best, p.cx(), p.cz()) + (wingOf.containsKey(p) ? shift : 0);
-            ph[i] = p.cy() - b.cy;
-            m += p.mass;
-            ca += p.mass * pa[i];
-            ch += p.mass * ph[i];
-        }
-        ca /= m;
-        ch /= m;
-        double inertia = 0;
-        for (int i = 0; i < n; i++) inertia += b.parts.get(i).mass * (1 / 6.0 + sq(pa[i] - ca) + sq(ph[i] - ch));
-        // Lift blocks: place, normal (fore, up), scalars.
-        List<double[]> lifts = new ArrayList<>();
-        for (int i = 0; i < n; i++) {
-            Wings.Wing wing = wingOf.get(b.parts.get(i));
-            if (wing == null) continue;
-            Direction normal = wing.push.getOpposite();
-            double nf = normal == best ? 1 : normal == best.getOpposite() ? -1 : 0, nu = normal.getStepY();
-            lifts.add(new double[] {pa[i] - ca, ph[i] - ch, nf, nu, wing.lift, wing.par, wing.free});
-        }
-        List<double[]> pushes = new ArrayList<>(); // fore, up, force, airflow, along (1) or up (0)
-        for (Thrust t : side) {
-            double a = forward(b, best, t.at.getX() + 0.5, t.at.getZ() + 0.5) - ca, h = t.at.getY() + 0.5 - b.cy - ch;
-            if (t.dir == best.getOpposite() && !t.reversible && t.airflow < Double.MAX_VALUE) {
-                pushes.add(new double[] {a, h, -t.force, Double.MAX_VALUE, 1});
-                continue;
-            }
-            if (t.dir != best && !(t.reversible && t.dir == best.getOpposite())) continue;
-            pushes.add(new double[] {a, h, t.force, t.airflow, 1});
-        }
-        // The gyroscope's strength, as Aeroworks works it out: its RPM share, capped by its authority (5000 each at
-        // full speed) over the ship's mean inertia.
-        double meanInertia = (inertia + b.iYaw() + b.iRoll()) / 3, scale = Math.min(gyro, gyro * 5000 / Math.max(meanInertia, 1e-6));
-        double dt = 0.025, x = 0, y = TAKEOFF_Y, vx = v0, vy = 0, th = 0, om = 0, minTh = 0, maxTh = 0, sumTh = 0, y15 = 0, felt = 0;
+        return fly(b, w, side, best, v0, shift, gyro, power, Set.of(), 0);
+    }
+
+    /** As above, with the elevator's parts ({@code flaps}) tipped {@code elev} radians, trailing edge up (stick back) if positive. */
+    private static Flight fly(Body b, Wings w, List<Thrust> side, Direction best, double v0, double shift, double gyro,
+            double power, Set<Part> flaps, double elev) {
+        Sim s = new Sim(b, w, side, best, v0, shift, gyro, flaps);
+        double minTh = 0, maxTh = 0, sumTh = 0, y15 = 0;
         int counted = 0;
         for (int step = 1; step <= 800; step++) {
-            double cos = Math.cos(th), sin = Math.sin(th), fx = 0, fy = -G * m - DAMP * m * vy, tq = -DAMP * inertia * om;
-            fx -= DAMP * m * vx;
+            s.step(elev, power);
+            double deg = Math.toDegrees(s.th);
+            if (Math.abs(deg) > 60) return new Flight(true, deg > 0, step * Sim.DT, 0, 0, 0, 0, power);
+            if (step == 600) y15 = s.y;
+            if (step > 600) {
+                minTh = counted == 0 ? deg : Math.min(minTh, deg);
+                maxTh = counted == 0 ? deg : Math.max(maxTh, deg);
+                sumTh += deg;
+                counted++;
+            }
+        }
+        return new Flight(false, false, 0, (s.y - y15) / 5, sumTh / counted, maxTh - minTh, s.speed(), power);
+    }
+
+    /**
+     * The ship flown in its fore-and-aft plane with Sable's own rules, a step at a time: weight, damping (0.09 x mass and
+     * x inertia, measured), each lift block's lift and drag at its own speed through the air, and each thruster or
+     * propeller pushing where it sits. Starts level at {@code v0}; shift moves every wing that far toward the nose; the
+     * elevator's parts ({@code flaps}) tip by the angle each step is given.
+     */
+    private static final class Sim {
+        static final double DT = 0.025;
+        final List<double[]> lifts = new ArrayList<>(), pushes = new ArrayList<>();
+        final double m, inertia, scale;
+        double x, y = TAKEOFF_Y, vx, vy, th, om, felt;
+
+        Sim(Body b, Wings w, List<Thrust> side, Direction best, double v0, double shift, double gyro, Set<Part> flaps) {
+            java.util.IdentityHashMap<Part, Wings.Wing> wingOf = new java.util.IdentityHashMap<>();
+            for (Wings.Wing wing : w.all) wingOf.put(wing.part, wing);
+            int n = b.parts.size();
+            double[] pa = new double[n], ph = new double[n];
+            double mass = 0, ca = 0, ch = 0;
+            for (int i = 0; i < n; i++) {
+                Part p = b.parts.get(i);
+                pa[i] = forward(b, best, p.cx(), p.cz()) + (wingOf.containsKey(p) ? shift : 0);
+                ph[i] = p.cy() - b.cy;
+                mass += p.mass;
+                ca += p.mass * pa[i];
+                ch += p.mass * ph[i];
+            }
+            ca /= mass;
+            ch /= mass;
+            double in = 0;
+            for (int i = 0; i < n; i++) in += b.parts.get(i).mass * (1 / 6.0 + sq(pa[i] - ca) + sq(ph[i] - ch));
+            m = mass;
+            inertia = in;
+            if (Boolean.getBoolean("creategalore.planes.debug"))
+                System.out.printf(Locale.ROOT, "[sim] mass %.1f pitch inertia %.0f com fore %.2f up %.2f (from body centre %.2f %.2f %.2f)%n",
+                        m, inertia, ca, ch, b.cx, b.cy, b.cz);
+            // Lift blocks: place, normal (fore, up), scalars, and 1 if it is part of the elevator.
+            for (int i = 0; i < n; i++) {
+                Wings.Wing wing = wingOf.get(b.parts.get(i));
+                if (wing == null) continue;
+                Direction normal = wing.push.getOpposite();
+                double nf = normal == best ? 1 : normal == best.getOpposite() ? -1 : 0, nu = normal.getStepY();
+                lifts.add(new double[] {pa[i] - ca, ph[i] - ch, nf, nu, wing.lift, wing.par, wing.free, flaps.contains(b.parts.get(i)) ? 1 : 0});
+            }
+            for (Thrust t : side) { // fore, up, force, airflow
+                double a = forward(b, best, t.at.getX() + 0.5, t.at.getZ() + 0.5) - ca, h = t.at.getY() + 0.5 - b.cy - ch;
+                if (t.dir == best.getOpposite() && !t.reversible && t.airflow < Double.MAX_VALUE) {
+                    pushes.add(new double[] {a, h, -t.force, Double.MAX_VALUE});
+                    continue;
+                }
+                if (t.dir != best && !(t.reversible && t.dir == best.getOpposite())) continue;
+                pushes.add(new double[] {a, h, t.force, t.airflow});
+            }
+            // The gyroscope's strength, as Aeroworks works it out: its RPM share, capped by its authority (5000 each at
+            // full speed) over the ship's mean inertia.
+            double meanInertia = (inertia + b.iYaw() + b.iRoll()) / 3;
+            scale = Math.min(gyro, gyro * 5000 / Math.max(meanInertia, 1e-6));
+            vx = v0;
+        }
+
+        /** Its speed along its own nose (backward if negative). */
+        double along() {
+            return vx * Math.cos(th) + vy * Math.sin(th);
+        }
+
+        double speed() {
+            return Math.hypot(vx, vy);
+        }
+
+        /** One step with the elevator tipped {@code elev} radians (trailing edge up if positive) at {@code power} of full thrust. */
+        void step(double elev, double power) {
+            double cos = Math.cos(th), sin = Math.sin(th), fx = -DAMP * m * vx, fy = -G * m - DAMP * m * vy, tq = -DAMP * inertia * om;
+            double ce = Math.cos(elev), se = Math.sin(elev);
             for (double[] k : lifts) {
                 double rx = k[0] * cos - k[1] * sin, ry = k[0] * sin + k[1] * cos;
                 double px = vx - om * ry, py = vy + om * rx;
-                double nx = k[2] * cos - k[3] * sin, ny = k[2] * sin + k[3] * cos;
+                // A flap tipped about the line across the plane: trailing edge up turns an upward normal forward.
+                double nf = k[7] > 0 ? k[2] * ce + k[3] * se : k[2], nu = k[7] > 0 ? -k[2] * se + k[3] * ce : k[3];
+                double nx = nf * cos - nu * sin, ny = nf * sin + nu * cos;
                 double pr = pressure(y + ry), nv = nx * px + ny * py, par = nv * k[5] * pr;
-                double lx = px - nx * par * dt, ly = py - ny * par * dt, lift = Math.hypot(lx, ly) * k[4] * pr;
+                double lx = px - nx * par * DT, ly = py - ny * par * DT, lift = Math.hypot(lx, ly) * k[4] * pr;
                 double gx = -(nx * par + px * k[6] * pr + nx * lift), gy = -(ny * par + py * k[6] * pr + ny * lift);
                 fx += gx;
                 fy += gy;
                 tq += rx * gy - ry * gx;
             }
+            double along = along();
             for (double[] k : pushes) {
                 double rx = k[0] * cos - k[1] * sin, ry = k[0] * sin + k[1] * cos;
-                double along = vx * cos + vy * sin;
                 double f = power * (k[3] < Double.MAX_VALUE ? k[2] * pressure(y + ry) * Math.max(0, 1 - along / k[3]) : k[2]);
                 double gx = f * cos, gy = f * sin;
                 fx += gx;
@@ -2521,24 +2809,67 @@ final class VehicleCheck {
                 felt += 0.2 * (tq - felt);
                 tq += -scale * (9 * inertia * Math.sin(th) + 5.4 * inertia * om) - scale * felt;
             }
-            vx += fx / m * dt;
-            vy += fy / m * dt;
-            om += tq / inertia * dt;
-            x += vx * dt;
-            y += vy * dt;
-            th += om * dt;
-            double deg = Math.toDegrees(th);
-            if (Math.abs(deg) > 60) return new Flight(true, deg > 0, step * dt, 0, 0, 0, 0, power);
-            if (step == 600) y15 = y;
-            if (step > 600) {
-                minTh = counted == 0 ? deg : Math.min(minTh, deg);
-                maxTh = counted == 0 ? deg : Math.max(maxTh, deg);
-                sumTh += deg;
-                counted++;
-            }
+            vx += fx / m * DT;
+            vy += fy / m * DT;
+            om += tq / inertia * DT;
+            x += vx * DT;
+            y += vy * DT;
+            th += om * DT;
         }
-        return new Flight(false, false, 0, (y - y15) / 5, sumTh / counted, maxTh - minTh, Math.hypot(vx, vy), power);
+
+        /** The elevator a pilot gives to bring the nose to {@code target} radians: firm, eased by how fast it already turns. */
+        double toward(double target) {
+            return Math.max(-SURFACE_LOCK, Math.min(SURFACE_LOCK, 2.0 * (target - th) - 0.8 * om));
+        }
     }
+
+    /**
+     * A loop as a pilot flies one: from level flight at top speed, the stick held fully back until the nose comes all the
+     * way round to level, then eased. The drop is from where the pull began to the lowest point. It goes round if the
+     * nose turns the full circle within {@link #LOOP_TIME} while the plane keeps flying forward through the top.
+     */
+    record Loop(boolean round, boolean turned, double entry, double slowest, double drop, double time) {}
+
+    private static Loop loop(Body b, Wings w, List<Thrust> side, Direction best, double v, Set<Part> elevator) {
+        Sim s = new Sim(b, w, side, best, v, 0, 0, elevator);
+        boolean debug = Boolean.getBoolean("creategalore.planes.debug");
+        double y0 = s.y, minY = s.y, entry = s.speed(), slowest = Double.MAX_VALUE, t = 0;
+        boolean round = false;
+        for (int i = 0; i < 30 / Sim.DT && !round; i++) {
+            s.step(SURFACE_LOCK, 1);
+            t += Sim.DT;
+            // Its nose against the horizon, counted on round: 90 straight up, 180 upside down over the top, 270 straight down.
+            double deg = Math.toDegrees(s.th);
+            if (deg > 60 && deg < 270) slowest = Math.min(slowest, s.along());
+            // Held fully back until the nose is level again: measured, the book's biplane pulled from level flight at full
+            // power went over the top at 9 blocks/s and bottomed out about 20 blocks below where the pull began.
+            if (deg >= 355) round = true;
+            minY = Math.min(minY, s.y);
+            if (debug && i % 20 == 0) System.out.printf(Locale.ROOT, "[loop] t %.1f th %.1f v %.1f along %.1f y %.1f%n", t, deg,
+                    s.speed(), s.along(), s.y);
+        }
+        // Eased back to level, it bottoms out below where the pull began.
+        double level = s.th - Math.toRadians(360) * Math.round(Math.toDegrees(s.th) / 360);
+        s.th = level;
+        for (int i = 0; i < 10 / Sim.DT; i++) {
+            s.step(s.toward(0.1), 1);
+            minY = Math.min(minY, s.y);
+            if (s.vy > 0 && Math.abs(s.th - 0.1) < 0.05) break;
+        }
+        boolean over = round && slowest > LOOP_SLOWEST;
+        return new Loop(over && t <= LOOP_TIME, over, entry, slowest == Double.MAX_VALUE ? 0 : slowest, y0 - minY, t);
+    }
+
+    /** Below this forward speed through the top of a loop it hangs on its propeller and falls back (measured: 3.6 went round). */
+    private static final double LOOP_SLOWEST = 3;
+    /**
+     * The longest a loop from level flight may take, seconds. Measured in a test world, full power, stick held fully back:
+     * a biplane this check had round in 6 s looped just as worked out (over the top at 9 blocks/s); one it had crawling
+     * round in 11 s, and the same plane from a 40° dive in 9 s, stood on its tail at 73 to 77°, slowed to 8 blocks/s,
+     * rolled off and fell out sideways each time. Slow and nose high, the air turns a plane more weakly than the
+     * working-out allows, so only a loop that keeps the nose coming round briskly counts.
+     */
+    private static final double LOOP_TIME = 8;
 
     /** Offset from the centre of mass in a horizontal direction. */
     private static double forward(Body b, Direction d, double x, double z) {
@@ -3044,6 +3375,120 @@ final class VehicleCheck {
     private record Swivel(double torque, String how, BlockPos bearing, boolean wheel) {
     }
 
+    /**
+     * A control surface: a straight strip of flat lift blocks (Symmetric Sails, best) glued out from the face of a Swivel
+     * Bearing whose axis lies across the plane, which tips the strip's trailing edge up or down as the bearing's cog turns.
+     * Out along the wing it is an aileron (one up and one down rolls the plane), far aft an elevator (both up raise the nose).
+     * {@code par}: the strip's parallel drag scalars summed; {@code fore} and {@code across}: where its middle is from the
+     * centre of mass; {@code driven}: something on board turns the bearing's cog (a Tilt Adapter, a wheel or a servo).
+     */
+    private record Surface(BlockPos bearing, List<Part> cells, double par, double fore, double across, boolean driven) {
+        boolean aileron() {
+            return Math.abs(across) > Math.abs(fore);
+        }
+    }
+
+    /** How far a Tilt Adapter swings a surface at full signal (15): 45°, the most it turns either way. */
+    private static final double SURFACE_LOCK = Math.toRadians(45);
+
+    private static List<Surface> surfaces(Body b, Wings w, Direction best) {
+        List<Surface> out = new ArrayList<>();
+        if (best == null) return out;
+        Map<BlockPos, Wings.Wing> at = new java.util.HashMap<>();
+        for (Wings.Wing wing : w.all) at.put(wing.part().pos, wing);
+        Direction right = best.getClockWise();
+        boolean turner = b.count("createpropulsion:tilt_adapter") > 0 || b.count("simulated:steering_wheel") > 0
+                || b.count("aeroworks:mechanical_servo") > 0 || b.count("aeroworks:stepper_servo") > 0;
+        for (Part p : b.parts) {
+            if (!p.id.equals("simulated:swivel_bearing")) continue;
+            Direction f = facing(p.state);
+            if (f == null || f.getAxis() != right.getAxis()) continue;
+            List<Part> cells = new ArrayList<>();
+            double par = 0, fore = 0, across = 0;
+            for (BlockPos q = p.pos.relative(f); at.containsKey(q) && at.get(q).push().getAxis() == Direction.Axis.Y; q = q.relative(f)) {
+                // The strip, and the same blocks in line behind it: a surface hinged at its front edge trails back from
+                // the bearing's line (what lies ahead of the hinge is the fixed wing or stabiliser).
+                for (BlockPos r = q; at.containsKey(r) && at.get(r).push().getAxis() == Direction.Axis.Y
+                        && (r.equals(q) || b.blocks.get(r).getBlock() == b.blocks.get(q).getBlock()); r = r.relative(best.getOpposite())) {
+                    Wings.Wing wing = at.get(r);
+                    cells.add(wing.part());
+                    par += wing.par();
+                    fore += wing.par() * forward(b, best, wing.part().cx(), wing.part().cz());
+                    across += wing.par() * forward(b, right, wing.part().cx(), wing.part().cz());
+                }
+            }
+            // Simulated's Symmetric Sails stick to the Symmetric Sails beside them in their own plane, glue or no glue, so
+            // the bearing swings every one joined to its strip that way. Measured: an elevator strip laid against a
+            // Symmetric Sail stabiliser took the whole stabiliser with it, an all-moving tail three times as strong.
+            java.util.ArrayDeque<Part> open = new java.util.ArrayDeque<>(cells);
+            Set<BlockPos> seen = new HashSet<>();
+            for (Part c : cells) seen.add(c.pos);
+            while (!open.isEmpty()) {
+                Part c = open.poll();
+                if (!c.id.endsWith("_symmetric_sail")) continue;
+                Direction.Axis axis = c.state.getValue(net.minecraft.world.level.block.RotatedPillarBlock.AXIS);
+                for (Direction d : Direction.values()) {
+                    if (d.getAxis() == axis) continue;
+                    BlockPos q = c.pos.relative(d);
+                    if (q.equals(p.pos) || !seen.add(q) || !at.containsKey(q)) continue;
+                    Wings.Wing wing = at.get(q);
+                    if (!wing.part().id.endsWith("_symmetric_sail")) continue;
+                    cells.add(wing.part());
+                    open.add(wing.part());
+                    par += wing.par();
+                    fore += wing.par() * forward(b, best, wing.part().cx(), wing.part().cz());
+                    across += wing.par() * forward(b, right, wing.part().cx(), wing.part().cz());
+                }
+            }
+            if (cells.isEmpty() || par <= 0) continue;
+            boolean cog = false;
+            for (Direction d : Direction.values()) {
+                if (d == f) continue;
+                BlockState n = b.blocks.get(p.pos.relative(d));
+                if (n != null && (id(n).endsWith("cogwheel"))) cog = true;
+            }
+            out.add(new Surface(p.pos, cells, par, fore / par, across / par, turner && cog));
+        }
+        return out;
+    }
+
+    /** Whether it has driven ailerons out along both wings. */
+    private static boolean ailerons(List<Surface> surfaces) {
+        boolean left = false, right = false;
+        for (Surface s : surfaces) {
+            if (!s.aileron() || !s.driven()) continue;
+            if (s.across() < 0) left = true;
+            else right = true;
+        }
+        return left && right;
+    }
+
+    /** The parts of its driven elevator (surfaces aft of the centre of mass that aren't ailerons). */
+    private static Set<Part> elevator(List<Surface> surfaces) {
+        Set<Part> out = java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<>());
+        for (Surface s : surfaces) if (!s.aileron() && s.driven() && s.fore() < -2) out.addAll(s.cells());
+        return out;
+    }
+
+    /**
+     * How fast full aileron rolls it, degrees a second: each aileron's flat strip, tipped 45°, meets the air at that angle
+     * and pushes up or down with its parallel drag (1.75 x pressure x speed x sin 45° for a Symmetric Sail; its upward
+     * share cos 45°) at its distance out; against that, every flat lift block resists the roll in proportion to its own
+     * distance out squared (its parallel drag as it moves up or down) and Sable damps 0.09 x the roll inertia.
+     */
+    private static double rollRate(Body b, Wings w, List<Surface> surfaces, Direction best, double v, double p0) {
+        Direction right = best.getClockWise();
+        double torque = 0, damp = DAMP * b.iRoll();
+        for (Surface s : surfaces)
+            if (s.aileron() && s.driven()) torque += s.par() * p0 * v * Math.sin(SURFACE_LOCK) * Math.cos(SURFACE_LOCK) * Math.abs(s.across());
+        for (Wings.Wing wing : w.all) {
+            if (wing.push().getAxis() != Direction.Axis.Y) continue;
+            double r = forward(b, right, wing.part().cx(), wing.part().cz());
+            damp += (wing.par() + wing.free()) * p0 * r * r;
+        }
+        return Math.toDegrees(torque / damp);
+    }
+
     /** How far a Steering Wheel is taken to swing a swivelled part, either way: past this a propeller mostly pushes sideways. */
     private static final double SWIVEL_LOCK = Math.toRadians(45);
 
@@ -3530,6 +3975,47 @@ final class VehicleCheck {
         if (v < bad) faults.add(String.format(Locale.ROOT, "it crawls at %.1f blocks/s: too slow to be a usable %s (it should "
                 + "manage at least %.0f); more thrust or less weight and drag", v, what, slow));
         else if (v < slow) notes.add(String.format(Locale.ROOT, "it is slow for a %s (%.1f blocks/s)", what, v));
+    }
+
+    /**
+     * Turning by banking: rolled into a lean, the wings' lift tips with the plane and its sideways share curves the path
+     * round (rate = gravity x tan(bank) / speed), and an upright fin far aft swings the nose to follow (it meets the air
+     * sideways as the path curves). Without a fin the plane slides round nose-first only as far as its drag lets it.
+     */
+    private static void bankTurn(Body b, Wings w, Direction best, double v, List<String> faults, StringBuilder out) {
+        double fin = 0;
+        for (Wings.Wing wing : w.all) {
+            if (wing.push().getAxis() != best.getClockWise().getAxis()) continue;
+            double arm = forward(b, best, wing.part().cx(), wing.part().cz());
+            if (arm < -2) fin += wing.par() * -arm;
+        }
+        if (fin <= 0) {
+            faults.add("nothing keeps its nose into a turn: banked, its wings pull it round but nothing swings the nose to follow, "
+                    + "so it slides sideways. Give it an upright fin at the tail (Symmetric Sails standing on edge along the boom)");
+            return;
+        }
+        double deg = Math.toDegrees(G * Math.tan(Math.toRadians(30)) / Math.max(v, 1));
+        FIGURES.get().put("turn", deg);
+        out.append(String.format(Locale.ROOT, "- Turns by banking, as a real plane does: the stick rolls it into a lean, and its "
+                + "wings' lift, tipped with it, curves its path round while the upright fin at the tail swings the nose to "
+                + "follow. Banked 30° at %.0f blocks/s it turns about %.0f°/s (slower is a wider, gentler turn); a little back "
+                + "stick holds its height in the turn, and rolling level again stops it.\n", v, deg));
+    }
+
+    /**
+     * Who flies an aileron plane: its Tilt Adapters swing the surfaces to the strength of the Redstone Links beside them,
+     * so something at the seat must send those signals: an Aeroworks console's stick (a Joystick Module or a Yoke).
+     */
+    private static void stick(Body b, List<String> faults, StringBuilder out) {
+        if (consoles(b) == 0 && b.count("aeroworks:joystick") == 0) {
+            faults.add("nothing at the pilot's seat sends its Tilt Adapters their signals, so the ailerons and elevator never move: "
+                    + "put an Aeroworks Control Stand in front of the seat with a Joystick Module (Left and Right to the ailerons' "
+                    + "links, Forward and Back to the elevator's), each direction on its own Redstone Link frequency");
+            return;
+        }
+        out.append("- Flown from its Aeroworks console: the stick's Left and Right swing the ailerons, its Forward and Back the "
+                + "elevator, each direction on its own Redstone Link frequency to the links at the Tilt Adapters' sides (a "
+                + "stronger signal swings them further, up to 45° at full stick).\n");
     }
 
     private static void turn(double torque, double damping, String how, List<String> faults, List<String> notes, StringBuilder out, String what) {

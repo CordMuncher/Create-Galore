@@ -1,0 +1,57 @@
+{
+  "title": "A sail-winged biplane is laid out (bigger than a Copycat-winged one) and flies, with its own note on finding its level power",
+  "from": "2026-11-14: the plane search reached a 17-wide sail biplane once heavy tails stopped ruling out whole wing sizes; flown in a test world it lifts off and answers the stick",
+  "roots": [
+    "R3",
+    "R4"
+  ],
+  "kind": "model",
+  "model": {
+    "title": "Sail-winged biplane",
+    "size_x": 0,
+    "size_y": 0,
+    "size_z": 0,
+    "from_world": [],
+    "from_draft": 0,
+    "move": [],
+    "palette": [],
+    "layers": [],
+    "blocks": [],
+    "labels": [],
+    "caption": "",
+    "draft": false,
+    "goal": "",
+    "shows_a_fault": false,
+    "for_later": false,
+    "speeds": [],
+    "airship": [],
+    "plane": [
+      {
+        "seats": 2,
+        "wood": "spruce",
+        "colour": "white",
+        "wings": 2,
+        "wing_block": "sail",
+        "span": 0,
+        "tips": "square"
+      }
+    ],
+    "open_by_request": true,
+    "new_by_request": true,
+    "part_of_vehicle": false
+  },
+  "expect": {
+    "built": true,
+    "has": [
+      "Laid out by the server from plane",
+      "small biplane",
+      "white sails",
+      "find its level power by eye"
+    ],
+    "lacks": [
+      "PROBLEM",
+      "none did both",
+      "Copycat Wings (8m): each is two"
+    ]
+  }
+}

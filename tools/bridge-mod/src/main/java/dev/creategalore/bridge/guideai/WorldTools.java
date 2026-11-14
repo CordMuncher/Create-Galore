@@ -145,6 +145,7 @@ final class WorldTools {
                 + "them, or, given words instead, the entries that contain all of them. The notes in your instructions already "
                 + "hold every fact of the guide; read an entry when its notes are too short on what the player needs, when "
                 + "you want the guide's exact wording, or to search for something you can't place.", guideProps));
+        tools.add(DesignBriefs.definition());
         tools.add(Diagrams.definition());
         tools.add(Models.definition());
         return tools;
@@ -193,6 +194,8 @@ final class WorldTools {
                 case "recipe_tree" -> Reach.tree(player, server, GuideText.string(input, "item"), Math.max(1, Diagrams.intOr(input, "amount", 1)));
                 case "block_drops" -> Reach.drops(player, GuideText.string(input, "block"));
                 case "read_guide" -> GuideText.read(GuideText.string(input, "query"));
+                // The answer's own copy (GuideAi) marks the guide given; here, a lone call, it always comes back whole.
+                case "design_guide" -> DesignBriefs.guide(GuideText.string(input, "kind"), new java.util.HashSet<>());
                 case "search_storage" -> {
                     TouchedStorage storage = GuideAi.storage();
                     yield storage == null ? "Storage isn't tracked on this server." : storage.describe(player,

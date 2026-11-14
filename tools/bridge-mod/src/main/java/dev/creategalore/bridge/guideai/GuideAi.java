@@ -1097,6 +1097,8 @@ public final class GuideAi {
                     } else {
                         result = problem;
                     }
+                } else if (name.equals("design_guide")) {
+                    result = DesignBriefs.guide(GuideText.string(input, "kind"), briefs);
                 } else if (name.equals("build_model")) {
                     Models.Result built = l.server.submit(() -> {
                         ServerPlayer player = l.server.getPlayerList().getPlayer(playerId);
@@ -1176,14 +1178,15 @@ public final class GuideAi {
 
     /**
      * Whether a trace_build or read_area result read a balloon, airship, helicopter or plane the player built (its envelope
-     * blocks, a gyroscopic rotor, or a propeller among sails).
+     * blocks, a gyroscopic rotor, or a propeller among sails or wings).
      */
     static boolean readsOwnAircraft(String tool, String result) {
         if (!(tool.equals("trace_build") || tool.equals("read_area")) || result == null) return false;
         String r = result.toLowerCase(java.util.Locale.ROOT);
         return r.contains("_envelope") || r.contains("gyroscopic_propeller_bearing") || r.contains("gyroscopic propeller bearing")
-                || (r.contains("wooden_propeller") || r.contains("wooden propeller")
-                || r.contains("andesite_propeller") || r.contains("andesite propeller")) && r.contains("sail");
+                || (r.contains("wooden_propeller") || r.contains("wooden propeller") || r.contains("andesite_propeller")
+                || r.contains("andesite propeller") || r.contains("propeller_bearing") || r.contains("propeller bearing"))
+                && (r.contains("sail") || r.contains("wing"));
     }
 
     /**

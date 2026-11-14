@@ -9,9 +9,10 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.state.BlockState;
 
 /**
- * How a skilled builder designs each kind of build, given to the book with the first model of that kind in an answer
- * instead of sitting in the instructions sent with every question. What a check enforces (posts on slabs, an engine the
- * crew can reach, a cold helm) isn't repeated here: the check's own result says it when it happens.
+ * How a skilled builder designs each kind of build, given to the book with the first model of that kind in an answer, or
+ * when it asks for one (design_guide) to advise on a vehicle without a model, instead of sitting in the instructions
+ * sent with every question. What a check enforces (posts on slabs, an engine the crew can reach, a cold helm) isn't
+ * repeated here: the check's own result says it when it happens.
  */
 final class DesignBriefs {
     /**
@@ -51,12 +52,11 @@ final class DesignBriefs {
             out ahead from the helm: the controls go on a dashboard below the window sill or on the wall beside the \
             windows, never on or in front of the glass. The pilot steers with one control turned left and right, as in a \
             real cockpit: a Steering Wheel at the helm (a boat's Boat Engine tiller is one too), and sets the speed with \
-            one Throttle Lever, anywhere from stopped to flat out. An aircraft is flown from an Aeroworks Control Stand or \
-            Control Desk instead, never a ship's wheel: its Yoke Module sends Turn Left and Turn Right, and its Throttle \
-            Quadrant's levers the throttle and the reverse, each on its own Redstone Link frequency (strength and all), \
-            so a turn slows the propeller line on one side; tell the player which frequency each control and receiver \
-            gets. Where they can't make a console yet, the wheel's cog turns a Swivel Bearing that swings a Wooden \
-            Propeller at the stern, or a comparator against each side of the wheel slows one side's line. \
+            one Throttle Lever, anywhere from stopped to flat out. The wheel's cog turns a Swivel Bearing that swings a \
+            Wooden Propeller at the stern, or a comparator against each side of the wheel slows one side's line. A plane \
+            is the exception: it turns by banking and is flown from an Aeroworks Control Stand (a stick for its ailerons \
+            and elevator, a throttle lever, brake pedals, each on its own Redstone Link frequency: design_guide plane \
+            has it); tell the player which frequency each control and receiver gets. \
             The throttle is an Analog Transmission in each propeller line: its shaft takes the engine's turn and its \
             cogwheel passes it on toward the propeller, slowed by the redstone strength reaching it and stopped at 15, so \
             a Throttle Lever wrenched once to invert it runs from stopped to full. A transmission takes the stronger of \
@@ -87,52 +87,124 @@ final class DesignBriefs {
             engines, a bigger fan, Propeller Bearings, a lighter body). The guide's Designing Aircraft notes hold the \
             numbers behind these rules.""";
 
+    /**
+     * The plane design guide: every part this world has for a plane and how each works, from a sweep of the mods' own code
+     * and the Book's laid-out biplane flown in a test world. Long, so it comes only when a plane does: through
+     * design_guide, or with the first plane model of an answer. The pilot flies it (ailerons, elevator); a gyroscope is an
+     * add-on only, since it stops the rolls and loops a plane is for.
+     */
     static final String PLANE = """
-            Design every small plane new through build_model's plane, choosing its shape for this player: \
-            seats (one or two), wood and colour, the engine, then the wings. engine prop is Portable Engines and \
-            propellers; engine jet trades them and the gyroscope for two Smart Vector Thrusters (Create: Flight Control) \
-            either side of the tail and a Flight Control Computer that swings and throttles them, fed by a Smart \
-            Attitude Stabilizer (Level, Medium preset: keeps it level), a Velocity Coupler (the throttle: holds the speed \
-            set in it, 30 blocks/s against a propeller plane's 16) and an Angular Velocity Coupler (the turns), all \
-            flown from the same Control Stand through a Redstone Proxy. Lava or TFMG fuel lasts long at cruise. A jet \
-            needs Control Units (sequenced assembly) and every link made by hand with the Flight Control Tool Gun once \
-            it is built, so give one to a player who asks for a jet or thrusters, or can make those parts and wants \
-            speed or height. To judge a player's jet: its thrusters go far from the centre of mass (the computer pitches \
-            it by swinging them; a block or two from it, holding level took so much thrust that the plane ran away past \
-            its set speed and climbed off), its wing balances it fore and aft by itself, it needs no gyroscope, and it \
-            is assembled with the controllers' engine cold (assembled turning, controllers went missing). Lift grows with speed and every block is weight, so \
-            the wing block sets the plane's size: Copycat Wings (8m) (iron sheets: a Wing cut on a saw, two stacked per \
-            block) lift half again as much as a Create sail for the same weight, and only they get a plane off the ground \
-            on wheels, so they are the default; sails can't (wheels drag until it lifts, and a sail wing big enough adds \
-            more weight and drag than lift). A Copycat biplane is about 29 across, a monoplane about 31. \
-            Pick wings 1 (sleek, wide), 2 (compact, classic) or 0 to let the server choose; span 0 unless the player \
-            named a size (wider lifts more and climbs higher, narrower fits a hangar); tips round for a softer, real \
-            plane look, square for the most lift. Choose from what they can make and what they asked for (small, \
-            cheap, high, sleek, a look) and say why in your answer. The server builds every part joined, geared and \
-            balanced, fills in what you left to it and checks it, or says why the choice can't fly and what would; \
-            then change it with from_draft only where the player asked for something it doesn't cover (paint, \
-            trim), keeping its engines, gear and wing in place. A Copycat Wing shows as a bare frame until a block is used \
-            on it; tell the player to give the wings a look (white wool or concrete for a classic wing). Every part must visibly join the next \
-            and no sky may show through its body: a sail is a thin panel across the middle of its block and joins \
-            only blocks beside it. One the player built stays theirs: copy it with from_world and improve it in its own \
-            shape by the rules below, never by swapping in a laid-out plane. The rules, to explain the design and to \
-            judge one the player built: a plane reads as an aircraft, a body narrowing back to a tail with a flat \
-            stabiliser and an upright fin, wings set over the weight's centre, and it flies only if it is light, so \
-            wings and tail are fabric or copycat (Create sails lift like Wing blocks at a quarter of the weight; Symmetric \
-            Sails steady a tail without lifting) and the body is light wood, stairs rather than planks, closed at the \
-            sides. The pilot sits up front with \
-            every control in reach and nothing but a low nose and a window ahead of their eyes: engines and \
-            propellers go behind the pilot or out on the wings (propellers on the wings' leading edge, pushing at the \
-            height of the centre of mass), never in front of the windscreen, and a wing in front of the pilot's eyes \
-            blinds them. Portable Engines geared up to 256 RPM turn Wooden Propellers from the start, and a Gyroscope \
-            keeps the wings level, in proportion to its RPM: only at 256 (two engines' worth, 16 stress units per RPM) does it hold a plane \
-            level; at 128 it flies a few degrees banked, at a bare 32 it leans hard. It stands on real wheels: three Offroad Wheel Mounts (one under the nose, two \
-            just behind the centre of mass), each facing sideways with a Tire in it, never Grindstones or bare blocks. A \
-            wheel drags 1.5 x its suspension setting per block/s until the plane leaves the ground, so three are set to \
-            5, their lowest (at the default 10 the run is far longer); tell the player. The pilot flies from an \
-            Aeroworks Control Stand (Yoke and Throttle Quadrant on link frequencies), and a Gearshift in each propeller \
-            line, reversed from the throttle quadrant, stops it in a few blocks after landing. The \
-            check gives the take-off and landing runs; quote them. When a draft fails, change the design.""";
+            PLANE DESIGN GUIDE: the parts this world has for a plane and how each works, to design one, explain it and \
+            judge one the player built.
+            Start: design every new small plane through build_model's plane: seats (one or two), wood and colour, engine \
+            prop or jet, then wings 1 (one wide wing), 2 (a biplane) or 0, wing_block copycat_wing (the default) or sail, \
+            span 0 unless the player named a size, tips round (a softer look) or square (the most lift). The server lays \
+            it out joined, geared, wired and balanced, checks it and says what it does and how to build and fly it; say \
+            why you chose what you did, and quote its take-off and landing runs. Change it with from_draft only where the \
+            player asked for something it doesn't cover (paint, trim, a window), keeping its engines, gear, wing and tail \
+            in place. One the player built stays theirs: copy it with from_world and improve it in its own shape by the \
+            rules below, never by swapping in a laid-out plane. When a draft fails, change the design.
+            How it flies: only lift blocks facing up lift it, more the faster it goes and less as the air thins with \
+            height, so it needs a run to rise and has a ceiling. Lift for weight per block: Copycat Wing (8m) 0.71 for \
+            0.25, the best there is (cut a Wing on a Mechanical Saw or stonecutter for a Copycat Wing, place one and use a \
+            second on it); Copycat Wing (4m) and a Create sail 0.48 for 0.25; Copycat Wing (12m) 0.95 for 0.5; a Wing or \
+            Tempered Wing 0.48 for a whole 1. A Copycat Wing takes the look of any block used on it (white wool or \
+            concrete for a classic wing) at the same weight, and shows a bare frame until then. Copycat Wings make the \
+            smallest plane: a two-seater flies on a biplane 13 wide and 4 deep of them, but needs one 17 wide and 6 deep \
+            of sails, and one deck of sails can't lift it at all. Symmetric \
+            Sails lift nothing and drag when angled to the air: fins, the tail's stabiliser, control surfaces, propeller \
+            blades. Weight per block: wool, wooden stairs and slabs, trapdoors, fences, panes, ladders, sails and \
+            Redstone Links 0.25; planks, logs, shafts, cogwheels and seats 0.5; most machines and full blocks 1; a Wheel \
+            Mount and stone 2; metal blocks and flywheels 4.
+            Shape: it reads as an aircraft: a slim body of light wood (stairs rather than planks, closed at the sides, no \
+            sky through it) narrowing back to a tail with a flat stabiliser and an upright fin, the wings over the centre \
+            of mass, every part visibly joined to the next (a sail is a thin panel across the middle of its block and joins \
+            only blocks beside it). The pilot sits with every control in reach, a low nose and a window ahead of their \
+            eyes, and no engine, machine or wing in front of the windscreen. A nose propeller's disc is level with their \
+            eyes: from a seat close behind it, it hides the middle of the view, so a tandem cockpit seats the pilot in the \
+            back, as in an open-cockpit biplane, and a passenger in front.
+            Flying it level: nothing holds a plane level by itself, and that is what lets it bank, roll and loop: the \
+            pilot flies it, as a real one. Ailerons near the wingtips roll it, an elevator behind the tail's stabiliser \
+            pitches it: each a strip of Symmetric Sails glued out from the face of a Swivel Bearing (each strip its own \
+            small glue box), the bearing's cog turned by a Tilt Adapter on a turning shaft. A Tilt Adapter swings its \
+            output shaft to (right signal minus left signal)/15 of 45 degrees and holds it there (an Advanced Tilt \
+            Adapter, with a Precision Mechanism, goes to 90), so Redstone Links on its two sides, on the stick's \
+            frequencies, are its control wires. A Swivel Bearing turns at its cog's speed, up to 96 RPM; a Portable \
+            Engine's 32 RPM is plenty. Other ways to swing a surface: an Aeroworks Mechanical Servo (signal strength sets \
+            an angle between two set ones) or Stepper Servo (steps either way by strength), brass tier, 4 stress units \
+            per RPM; or a Torsion Spring, which springs back to centre, fed through a Directional Gearshift. Banked, its \
+            wings' tipped lift curves it round while the fin swings the nose after it; a little back stick holds the \
+            height in a turn.
+            The Aeroworks Gyroscope is an add-on, never the default: turned from below (full strength at 256 RPM, 16 \
+            stress units per RPM: 4096, two Portable Engines of its own) it pulls the plane level and damps every roll, \
+            pitch and turn, so it fights banking and stops rolls and loops. Give one only to a player who asks for a \
+            plane that flies itself or who can't fly one by hand, and say what it costs them; redstone into its east or \
+            west side weakens it about one axis and into its north or south side the other (15 switches that axis off), \
+            so a lever there frees it for aerobatics. A jet's Smart Attitude Stabilizer levels it the same way, and its \
+            Master Switch turns that off.
+            Push: a propeller pushes only up to its airflow speed, so spin it at 256 RPM, the most a shaft turns. A \
+            Propeller Bearing turning a glued disc of sails (sails, wool and Symmetric Sails all count as blades) pushes \
+            0.2 x sails^1.5 x RPM for 2 stress units per sail per RPM, with an airflow of 0.05 x the square root of its \
+            sails x RPM: twelve sails at 256 RPM push about 2100 for 6144 stress, three Portable Engines, and a bigger \
+            slower disc pushes more for the same engines. A Wooden or Andesite Propeller pushes 1 x RPM for 4 stress per \
+            RPM (airflow a tenth of its RPM). Push at the height of the centre of mass, or the nose pitches as the power \
+            changes. Reaching 256 RPM needs no tower of cogwheels: a Rotation Speed Controller (brass casing and a \
+            Precision Mechanism) takes any turning shaft through it and turns the Large Cogwheel on top at the speed on \
+            its value panel, whatever drives it (it starts at 16, so set it; below zero turns the other way). Or a source \
+            that runs at 256 itself: an Electric Motor (Crafts & Additions; 16384 stress at 256, on Forge energy from an \
+            Accumulator), a Stirling Engine (Create Propulsion; 4096 at 256, over a Solid or Liquid Burner) or a TFMG \
+            engine (up to 256 on its throttle signal, with cylinders, fuel and an exhaust). A Portable Engine (any furnace \
+            fuel in its one slot; a stack of Coal Blocks lasts hours) turns 32 RPM with 2048 stress, 64 RPM and 4096 on \
+            Blaze Cake; every machine costs its stress per RPM x its own RPM, so a line stepped up from 32 to 256 turns an \
+            eighth as much per engine. Portable Engines on one line add up, and one lit while the line already turns sets \
+            its own direction to match. The throttle is an Analog Transmission in the line (shaft in, cogwheel on toward \
+            the propeller): no signal passes full speed, a stronger one slows it, 15 stops it.
+            Wheels: three Offroad Wheel Mounts, each facing sideways with a Tire on its open side (Small, Tire, Large or \
+            Monstrous differ only in size): one under the nose, two just behind the centre of mass. A mount's suspension \
+            (its value panel, 5 to 180, starting at 10) sets how firmly it holds, and a wheel drags 1.5 x that per \
+            block/s until the plane lifts off, so a light plane runs them at 5, their lowest. Redstone into a mount's top \
+            brakes it by strength; into its sides it steers (up to 30 degrees). They don't retract; never Grindstones or \
+            bare blocks as gear. A plane that sits back on its main wheels and tail, nose wheel off the ground, steers on \
+            the ground by braking one main wheel, as light planes do with toe brakes: a Pedal per wheel.
+            Cockpit: the pilot flies from an Aeroworks Control Stand (or Control Desk), never a ship's wheel. It has two \
+            small sockets, one large (taking the place of both) and three pedal sockets; each direction of each module \
+            sends its own Redstone Link frequency (two items) at strength 0 to 15, set with Shift + right-click, where \
+            Idle Power, Full Power, Swap Idle and Full Power and Range (Full or one way only) shape it. The stick is a \
+            Joystick Module: Left and Right for the ailerons, Forward and Back for the elevator, on the mouse, springing \
+            back. The throttle is a Lever Module (it stays where left): Forward on the throttle's frequency, Range \
+            Forward Only, Swap Idle and Full Power pressed, so back sends 15 (stopped) and forward 0 (full). Pedal \
+            Modules spring back: brakes. A Yoke Module (large socket) also pitches and rolls; a Throttle Quadrant has \
+            four levers. The lever and pedals start on the W and S keys, so give each its own. Right-click the stand \
+            with an empty hand to fly, Esc to let go. build_model writes each receiving Redstone Link's frequency \
+            (links), each Rotation Speed Controller's speed and each Wheel Mount's suspension into the model, so a \
+            Schematicannon prints them set; the Control Stand's modules and their frequencies and the Tires the player \
+            fits by hand: tell them.
+            Building it: on open flat ground or a runway pointed into the open, every engine cold. Glue it with Super \
+            Glue in boxes covering all of it but each control surface's strip, and give each strip a small box of its \
+            own; use the Physics Assembler; then right-click each Swivel Bearing with an empty hand to give it its strip; \
+            only then fuel the engines (a propeller turning when it is assembled loses its blades, and controllers spun \
+            up during assembly drop off). It lands to refuel.
+            Flying: at full power it lifts off by itself and keeps nosing up, so once the wheels are off the pilot brings \
+            the throttle back and holds a gentle climb; loops and rolls want height to spare; it lands at low power with \
+            the nose a little down, then brakes. The layout says the numbers for its own design.
+            Jets: engine jet trades the propeller drive for two Smart Vector Thrusters (Create: Flight Control) either \
+            side of the tail and a Flight Control Computer that swings and throttles them, fed by a Smart Attitude \
+            Stabilizer (Level, Medium preset: keeps it level), a Velocity Coupler (the throttle: holds the speed set in \
+            it, 30 blocks/s) and an Angular Velocity Coupler (the turns), all flown from the same Control Stand through \
+            a Redstone Proxy. Lava or TFMG fuel lasts long at cruise. A jet needs Control Units (sequenced assembly; \
+            diamonds) and every link made by hand with the Flight Control Tool Gun once it is built, so give one to a \
+            player who asks for a jet or thrusters, or can make those parts and wants speed or height. To judge a \
+            player's jet: its thrusters go far from the centre of mass (the computer pitches it by swinging them; a \
+            block or two from it, holding level took so much thrust that the plane ran away past its set speed and \
+            climbed off), its wing balances it fore and aft by itself, it needs no gyroscope, and it is assembled with \
+            the controllers' engine cold. Copycat Integrated Sails (Flight Control) lift only once aerodynamics is \
+            switched on in their screen, and the computer can work them as flaps.
+            What each part takes: a Tilt Adapter and an Andesite Propeller are andesite; a Portable Engine needs iron \
+            plate, an Engine Assembly and a blast furnace; a Swivel Bearing an industrial iron block; a Propeller Bearing, \
+            an Analog Transmission and a Rotation Speed Controller brass (the controller a Precision Mechanism too); the \
+            Control Stand copper casing, a Precision Mechanism and an Electron Tube, and its modules brass casing and a \
+            transmitter. When the player can't make a part yet, say what it is, build the nearest plane they can, and \
+            name what to make next.""";
 
     static final String AIRSHIP = """
             Start every airship or blimp you design new from build_model's airship: say what the player wants (closed cabin or \
@@ -229,6 +301,49 @@ final class DesignBriefs {
             the hull lets the sea in. The hatch is an iron trapdoor on the roof, above the waterline when surfaced, \
             with a ladder down; every engine is reached from inside.""";
 
+    /** The kinds design_guide hands over. */
+    static final List<String> KINDS = List.of("plane", "airship", "helicopter", "submarine", "boat");
+
+    /** The design_guide tool: one kind's guide, asked for when a question is about one (it is long, so not sent always). */
+    static com.google.gson.JsonObject definition() {
+        com.google.gson.JsonObject props = new com.google.gson.JsonObject();
+        com.google.gson.JsonObject kind = WorldTools.prop("string", "Kind.");
+        com.google.gson.JsonArray kinds = new com.google.gson.JsonArray();
+        KINDS.forEach(kinds::add);
+        kind.add("enum", kinds);
+        props.add("kind", kind);
+        return WorldTools.tool("design_guide", "How to design one kind of vehicle here: its parts, the numbers that decide "
+                + "how it flies, its controls, what each part takes. Read it before you design, judge or advise on a plane, "
+                + "airship, helicopter or submarine.", props);
+    }
+
+    /** design_guide: the briefs for a kind not yet given in this answer, marking them given. */
+    static String guide(String kind, Set<String> given) {
+        String k = kind == null ? "" : kind.strip().toLowerCase(java.util.Locale.ROOT);
+        if (!KINDS.contains(k)) return "No design guide for '" + kind + "': kind is one of " + String.join(", ", KINDS) + ".";
+        List<String> kinds = new ArrayList<>(List.of("vehicle"));
+        if (!k.equals("submarine") && !k.equals("boat")) kinds.add("aircraft");
+        kinds.add(k);
+        List<String> out = new ArrayList<>();
+        for (String one : kinds) if (given.add(one)) out.add(brief(one));
+        if (out.isEmpty()) return "The " + k + " design guide is already above in this answer.";
+        return "Design guide: " + k + " (for you: follow it, and tell the player what matters to them in plain words)\n"
+                + String.join("\n", out);
+    }
+
+    private static String brief(String kind) {
+        return switch (kind) {
+            case "build" -> BUILD;
+            case "vehicle" -> VEHICLE;
+            case "aircraft" -> AIRCRAFT;
+            case "airship" -> AIRSHIP;
+            case "plane" -> PLANE;
+            case "submarine" -> SUBMARINE;
+            case "helicopter" -> HELICOPTER;
+            default -> BOAT;
+        };
+    }
+
     private static final net.minecraft.tags.TagKey<net.minecraft.world.level.block.Block> WINDMILL_SAILS =
             net.minecraft.tags.BlockTags.create(net.minecraft.resources.ResourceLocation.parse("create:windmill_sails"));
 
@@ -265,19 +380,7 @@ final class DesignBriefs {
         if (sub) kinds.add("submarine");
         else if (water) kinds.add("boat");
         List<String> out = new ArrayList<>();
-        for (String k : kinds) {
-            if (!given.add(k)) continue;
-            out.add(switch (k) {
-                case "build" -> BUILD;
-                case "vehicle" -> VEHICLE;
-                case "aircraft" -> AIRCRAFT;
-                case "airship" -> AIRSHIP;
-                case "plane" -> PLANE;
-                case "submarine" -> SUBMARINE;
-                case "helicopter" -> HELICOPTER;
-                default -> BOAT;
-            });
-        }
+        for (String k : kinds) if (given.add(k)) out.add(brief(k));
         return out;
     }
 }
