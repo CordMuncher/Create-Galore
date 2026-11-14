@@ -1172,13 +1172,14 @@ public final class GuideAi {
     }
 
     /**
-     * Whether a trace_build or read_area result read a balloon, airship or plane the player built (its envelope blocks, or
-     * a propeller among sails).
+     * Whether a trace_build or read_area result read a balloon, airship, helicopter or plane the player built (its envelope
+     * blocks, a gyroscopic rotor, or a propeller among sails).
      */
     static boolean readsOwnAircraft(String tool, String result) {
         if (!(tool.equals("trace_build") || tool.equals("read_area")) || result == null) return false;
         String r = result.toLowerCase(java.util.Locale.ROOT);
-        return r.contains("_envelope") || (r.contains("wooden_propeller") || r.contains("wooden propeller")
+        return r.contains("_envelope") || r.contains("gyroscopic_propeller_bearing") || r.contains("gyroscopic propeller bearing")
+                || (r.contains("wooden_propeller") || r.contains("wooden propeller")
                 || r.contains("andesite_propeller") || r.contains("andesite propeller")) && r.contains("sail");
     }
 

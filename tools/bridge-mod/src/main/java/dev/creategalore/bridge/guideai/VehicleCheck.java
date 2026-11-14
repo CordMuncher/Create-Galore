@@ -1602,6 +1602,7 @@ final class VehicleCheck {
     // ---------- aircraft ----------
 
     private static void air(Body b, Map<BlockPos, Float> rpm, StringBuilder out, List<String> faults, List<String> notes) {
+        rotorDisc(b, faults);
         // Balloons: each burner fills the envelope above it.
         Map<BlockPos, int[]> balloons = new java.util.LinkedHashMap<>(); // seed -> volume, burners
         Map<BlockPos, double[]> centres = new java.util.HashMap<>(); // seed -> centre of its air
@@ -1663,8 +1664,11 @@ final class VehicleCheck {
             if (isPropeller(p.id)) stress += propellerStress(b, p, rpm);
         }
         all = againstEachOther(b, all, rpm, faults);
-        double up = 0;
+        double up = 0, upOverAir = 0;
         for (Thrust t : all) {
+            // A propeller's push falls off as the craft climbs toward its airflow speed, as it does going forward.
+            if ((t.dir == Direction.UP || t.reversible && t.dir == Direction.DOWN) && t.airflow < Double.MAX_VALUE)
+                upOverAir += t.force * pressure(TAKEOFF_Y) / t.airflow;
             if (t.dir == Direction.UP || t.reversible && t.dir == Direction.DOWN) up += t.force;
             else if (t.dir == Direction.DOWN && !t.reversible && t.airflow < Double.MAX_VALUE) up -= t.force;
         }
@@ -1749,10 +1753,21 @@ final class VehicleCheck {
             if (ceiling < CEILING_BAD) faults.add(String.format(Locale.ROOT, "its ceiling is only about y %.0f: it barely clears "
                     + "the ground and hits hills; it needs more wings or more speed for its weight", ceiling));
         }
+        else if (filled == 0 && wingLift <= 0 && lev + endStone == 0 && up > 0) {
+            // A rotor's thrust thins with the air like a wing's: it rises until thrust x pressure meets the weight.
+            double ceiling = Math.min(280, 63 + Math.log(up / (G * b.m)) / 0.004);
+            b.ceiling = ceiling;
+            FIGURES.get().put("ceiling", ceiling);
+            out.append(String.format(Locale.ROOT, "- Ceiling about y %.0f with its rotors at full (their push thins with the air; "
+                    + "below that it hovers wherever the throttle balances its weight).\n", ceiling));
+            if (ceiling < CEILING_BAD) faults.add(String.format(Locale.ROOT, "its ceiling is only about y %.0f: it barely clears "
+                    + "the ground and hits hills; it needs more rotor (sails or RPM) for its weight", ceiling));
+        }
         double climbDrag = DAMP * b.m + ENVELOPE_DRAG * p0 * airtight + 1.1 * lev + wings.drag(Direction.Axis.Y, p0);
         // A winged craft's climb comes from flying it (below); this is the straight-up climb of balloons and rotors.
         if (lift0 >= G * b.m && (filled > 0 || up > 0 || lev + endStone > 0)) {
-            double climb = terminal(lift0 - G * b.m, climbDrag, 22 * lev, 0);
+            double climb = terminal(lift0 - G * b.m, climbDrag, 22 * lev, upOverAir);
+            FIGURES.get().put("climb", climb);
             if (filled > 0 || up > 0) out.append(String.format(Locale.ROOT, "- Climbs at about %.1f blocks/s at y %d with everything at full; turning the "
                     + "burners down lets it sink.\n", climb, (int) TAKEOFF_Y));
             if (lev + endStone > 0 && filled == 0 && up == 0)
@@ -1837,6 +1852,18 @@ final class VehicleCheck {
                 if (p.state.is(LEVITITE)) damp += 0.55 * r2;
             }
             for (Wings.Wing wing : wings.all) damp += wing.free() * p0 * (sq(wing.part().cx() - b.cx) + sq(wing.part().cz() - b.cz));
+            // A rotor craft yaws on the spot, so an upright fin far aft swings broadside through the air and brakes the
+            // turn; fitted to a test helicopter's turns on a Swivel Bearing (2 x 1 fin: spun up and coasted; 2 x 3 and
+            // more: steady within two seconds, stopped within two of letting go).
+            if (filled == 0 && wingLift <= 0 && up > 0)
+                for (Wings.Wing wing : wings.all) {
+                    Direction.Axis n = wing.push().getAxis();
+                    if (n == Direction.Axis.Y) continue;
+                    double arm = n == Direction.Axis.X ? wing.part().cz() - b.cz : wing.part().cx() - b.cx;
+                    damp += ROTOR_FIN * wing.par() * p0 * arm * arm;
+                }
+            FIGURES.get().put("yawDamp", damp);
+            FIGURES.get().put("yawTorque", q);
             long gyros = b.count("aeroworks:gyroscope");
             if (gyros > 0) damp += iy;
             if (lev > 0 && q > 0) damp = levititeBrake(b, q, damp);
@@ -2402,7 +2429,18 @@ final class VehicleCheck {
         if (push <= 0 || drag <= 0) return;
         double dy = dragY / drag, ty = pushY / push, gap = dy - ty;
         double pitch = Math.toDegrees(Math.asin(Math.max(-1, Math.min(1, drag * gap / (G * b.m * liftAbove)))));
+        FIGURES.get().put("cruisePitch", pitch);
         if (Math.abs(pitch) < 4) return;
+        if (b.parts.stream().noneMatch(p -> airtight(p.state))) {
+            // A rotor craft: nothing but its weight drags, so the push should go through its centre of mass.
+            String rotor = String.format(Locale.ROOT, "at full speed it pitches about %.0f° nose %s: its pushing propellers sit "
+                    + "%.1f blocks %s its centre of mass, which is where the air holds it back, and the rotor overhead swings "
+                    + "it only so far back; drive the pusher level with the centre of mass (or move heavy parts toward it)",
+                    Math.abs(pitch), gap > 0 ? "up" : "down", Math.abs(gap), gap > 0 ? "below" : "above");
+            if (Math.abs(pitch) >= 10) faults.add(rotor);
+            else notes.add(rotor);
+            return;
+        }
         // The middle of the drag is the envelope's, pulled a shade down by the weight's own drag.
         String text = String.format(Locale.ROOT, "at full speed it pitches about %.0f° nose %s: its propellers push %.1f blocks %s the "
                 + "middle of its drag (about %.1f blocks above its lowest block: mostly the envelope's, pulled a little down by "
@@ -2440,12 +2478,33 @@ final class VehicleCheck {
             l += f * b.lateral(p.cx(), p.cz());
             v += f * (p.cy() - b.cy);
         }
+        // A Gyroscopic Propeller Bearing (and a Smart Propeller, on its one hinge) keeps its push pointing straight up
+        // whatever the craft does, up to 12 degrees off its own axis, so a rotor above the weight swings the craft back
+        // under it like a pendulum (measured: kicked to 14 degrees it rocked back level). Any other upward propeller or
+        // thruster pushes the way the craft points, so its push turns with it and rights nothing: kicked, such a rotor
+        // craft rolled over and fell.
+        double fixedUp = 0, levelUp = 0;
+        String fixedWhat = null;
         for (Thrust t : all) {
             if (t.dir != Direction.UP) continue;
+            if (t.what.startsWith("Gyroscopic") || t.what.equals("Smart Propeller")) levelUp += t.force;
+            else {
+                fixedUp += t.force;
+                if (fixedWhat == null) fixedWhat = t.what;
+                continue;
+            }
             sum += t.force;
             a += t.force * b.along(t.at.getX() + 0.5, t.at.getZ() + 0.5);
             l += t.force * b.lateral(t.at.getX() + 0.5, t.at.getZ() + 0.5);
             v += t.force * (t.at.getY() + 0.5 - b.cy);
+        }
+        if (fixedUp > 0 && b.count("aeroworks:gyroscope") == 0 && fixedUp >= 0.25 * (sum + fixedUp)) {
+            faults.add(String.format(Locale.ROOT, "it tips over: %.0f of its lift is upward push from its %s, which pushes the way "
+                    + "the craft points, so when it leans the push leans with it and nothing swings it back; hovering, the first "
+                    + "gust or turn rolls it over. Lift a rotor craft with a Gyroscopic Propeller Bearing above its weight (it keeps "
+                    + "its push pointing straight up, up to 12 degrees off its own axis, so the craft hangs under it like a "
+                    + "pendulum), or hold it level with an Aeroworks Gyroscope at 256 RPM", fixedUp, fixedWhat));
+            return Double.NaN;
         }
         if (sum <= 0) return Double.NaN;
         a /= sum;
@@ -2484,6 +2543,12 @@ final class VehicleCheck {
         minusSide += axis(side.getOpposite());
         // Swinging till the lift is over the centre of mass raises the end the lift sits toward.
         double pd = Math.toDegrees(Math.atan2(a, v)) * up, ld = Math.toDegrees(Math.atan2(l, v));
+        FIGURES.get().put("hangPitch", pd);
+        FIGURES.get().put("hangList", ld);
+        if (levelUp > 0 && Math.max(Math.abs(pd), Math.abs(ld)) > 10)
+            faults.add(String.format(Locale.ROOT, "it hangs %.0f degrees over under its rotor, and a Gyroscopic Propeller Bearing "
+                    + "keeps its push upright only up to 12 degrees off its own axis: set the rotor straight over the centre of "
+                    + "mass (or move the heavy parts under it)", Math.max(Math.abs(pd), Math.abs(ld))));
         String trimText = Math.abs(pd) < 0.25 ? "level fore and aft" : String.format(Locale.ROOT, "%s %.1f° down", pd > 0 ? behind : ahead, Math.abs(pd));
         String listText = Math.abs(ld) < 0.25 ? "level side to side" : String.format(Locale.ROOT, "%.1f° down to %s", Math.abs(ld), ld > 0 ? minusSide : plusSide);
         out.append(String.format(Locale.ROOT, "- Hovering it hangs %s and %s (its lift centres %.1f blocks above its centre of "
@@ -2591,6 +2656,12 @@ final class VehicleCheck {
         if (v < AIR_SLOW) faults.add(text.toString());
         else notes.add(text.toString());
     }
+
+    /**
+     * Scales an upright fin's broadside drag into a rotor craft's yaw brake, fitted in the world: the laid-out two-seat
+     * helicopter (9 fin sails) held 23°/s at full wheel where this sum without the factor gave 80.
+     */
+    private static final double ROTOR_FIN = 4.4;
 
     private static double terminal(double force, double linear, double brake, double overAir) {
         if (force <= 0) return 0;
@@ -2745,7 +2816,8 @@ final class VehicleCheck {
                         + "face; it needs at least 2 (Create sails or Windcatchers) to push");
                 return null;
             }
-            return new Thrust(p.pos, f, 0.2 * Math.pow(s, 1.5) * r, 0.05 * Math.sqrt(s) * r, "Propeller Bearing (" + s + " sails)", true);
+            return new Thrust(p.pos, f, 0.2 * Math.pow(s, 1.5) * r, 0.05 * Math.sqrt(s) * r, (p.id.equals("aeronautics:gyroscopic_propeller_bearing")
+                    ? "Gyroscopic Propeller Bearing (" : "Propeller Bearing (") + s + " sails)", true);
         }
         if (p.id.equals("create_submarine:submarine_propeller")) return null;
         return new Thrust(p.pos, f, r, 0.1 * r, p.state.getBlock().getName().getString(), true);
@@ -2784,6 +2856,37 @@ final class VehicleCheck {
             }
         }
         return count;
+    }
+
+    /**
+     * A rotor's disc must be clear: whatever stands in the plane its blades sweep, or touches them from above or below,
+     * is struck as they spin. Measured: a fin touching a blade tip was enough for Sable to cut the tail off the ship when
+     * the rotor spun up (it took the blades as what held the tail on).
+     */
+    private static void rotorDisc(Body b, List<String> faults) {
+        for (Part p : b.parts) {
+            Direction f = facing(p.state);
+            if (!p.id.endsWith("propeller_bearing") || f == null || !f.getAxis().isVertical()) continue;
+            Set<BlockPos> blades = new HashSet<>();
+            if (sails(b, p.pos, f, blades) < 2) continue;
+            BlockPos hub = p.pos.relative(f);
+            double reach = 0;
+            for (BlockPos q : blades) reach = Math.max(reach, Math.hypot(q.getX() - hub.getX(), q.getZ() - hub.getZ()));
+            List<String> hit = new ArrayList<>();
+            for (BlockPos q : b.blocks.keySet()) {
+                if (blades.contains(q) || q.equals(hub) || q.equals(p.pos) || Math.abs(q.getY() - hub.getY()) > 1) continue;
+                if (q.getX() == hub.getX() && q.getZ() == hub.getZ()) continue;
+                boolean inPlane = q.getY() == hub.getY() && Math.hypot(q.getX() - hub.getX(), q.getZ() - hub.getZ()) <= reach + 0.5;
+                boolean touching = blades.contains(q.above()) || blades.contains(q.below());
+                if (inPlane || touching) hit.add(xyz(q));
+            }
+            if (!hit.isEmpty())
+                faults.add(String.format(Locale.ROOT, "%s stand%s in the sweep of the rotor on %s or touch%s its blades: they strike "
+                        + "it as they spin, and the ship can come apart there when they start. Keep the disc the blades sweep, and the "
+                        + "blocks just above and below them, clear", hit.size() > 3 ? hit.size() + " blocks (" + String.join(", ",
+                        hit.subList(0, 3)) + "...)" : String.join(", ", hit), hit.size() == 1 ? "s" : "", xyz(p.pos),
+                        hit.size() == 1 ? "es" : ""));
+        }
     }
 
     /** A propeller or fin a Swivel Bearing swings round, its turning force at full lock and what turns the bearing. */

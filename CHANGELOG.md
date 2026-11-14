@@ -5,6 +5,18 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.83
+
+### Added
+- Create Galore Bridge 1.190.0.
+- **Ask the Book lays out helicopters.** Asked for a helicopter, the book now names the seats, wood and seat colour, and the server lays one out and checks it, keeping the smallest that passes: a Gyroscopic Propeller Bearing rotor of Sails sized to the craft's weight (the gyro keeps its push upright, so the cabin hangs level under it), Portable Engines turning the rotor through an Analog Transmission on a Throttle Lever (the collective) and a second transmission and lever for the push, which steps up to 256 RPM and runs along the tail boom to a Swivel Bearing with a Wooden Propeller turned by the Steering Wheel, and a tail fin that stops the turn when the wheel comes back. Its answer covers setting the bearing to push air up, the glue boxes (the swivel's part gets its own), assembly and how to hover, climb and land. A test craft built this way lifts off, climbs about 4 blocks a second, hovers on half collective near the ground, flies forward at 8 blocks a second and more, and turns about 23 degrees a second.
+- **Field Guide, Flight: Helicopters** covers why a rotor needs the gyroscopic bearing, sizing the rotor, which way it pushes, the collective and push levers, steering with a swivel tail propeller and a fin, keeping the rotor's sweep clear, gluing and assembling, and a helicopter that flies.
+
+### Fixed
+- **The book's vehicle check let rotors climb faster than they can.** A propeller's push falls off as the craft speeds up toward the air the propeller moves, and the climb now counts that, as forward speed already did.
+- **Rotor craft turned far too fast in the check** (about 300 degrees a second where a test craft turned 23): the check now counts the drag of upright fins and walls swinging sideways round the rotor.
+- **A block in the sweep of a rotor** passed the check; it is struck by the blades and joins the ship to them, so the check now names it as a problem.
+
 ## 0.6.82
 
 ### Added

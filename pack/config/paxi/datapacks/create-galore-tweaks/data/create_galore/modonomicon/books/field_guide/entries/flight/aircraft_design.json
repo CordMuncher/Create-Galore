@@ -20,7 +20,7 @@
     {
       "type": "modonomicon:text",
       "title": "Designing Aircraft",
-      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- Every block is weight to lift and drag to push.\n- Envelope: round, **2 to 3 times as long as wide**, tapering to the tail.\n- **Engines inside**, where the crew refuels them; shafts carry the power out.\n- Push **through the middle of the drag**."
+      "text": "[#](FFFFFF)[#]() **Key points**\n\n- Every block is weight to lift and drag to push.\n- Envelope: round, **2 to 3 times as long as wide**, tapering to the tail.\n- **Engines inside**, where the crew refuels them; shafts carry the power out.\n- Push **through the middle of the drag**."
     },
     {
       "type": "modonomicon:text",
@@ -127,7 +127,7 @@
     {
       "type": "modonomicon:text",
       "title": "A blimp that hauls",
-      "text": "[#](FFFFFF)\ue103[#]() **In depth.** An 11 by 11 by 25 envelope (about 600 m3) over a closed 7 by 10 gondola with the helm, barrels, a smoker, a crafting table and two Hot Air Burners. Four Portable Engines in its engine room turn a 28-sail Propeller Bearing behind the tail at 128 RPM."
+      "text": "[#](FFFFFF)[#]() **In depth.** An 11 by 11 by 25 envelope (about 600 m3) over a closed 7 by 10 gondola with the helm, barrels, a smoker, a crafting table and two Hot Air Burners. Four Portable Engines in its engine room turn a 28-sail Propeller Bearing behind the tail at 128 RPM."
     },
     {
       "type": "modonomicon:text",
@@ -137,12 +137,12 @@
     {
       "type": "modonomicon:text",
       "title": "Ask the Book",
-      "text": "Where the book has its voice, ask it for an airship and it lays one out to your wishes (open deck or cabin, beds, chests, speed, height), balanced to hang level, as a 3D model you can save as a schematic. Ask it for a small plane (one or two seats) and it designs one that flies from a short field, with one wing or two, sails or Copycat Wings, round or square tips, to suit what you want and can make."
+      "text": "Where the book has its voice, ask it for an airship and it lays one out to your wishes (open deck or cabin, beds, chests, speed, height), balanced to hang level, as a 3D model you can save as a schematic. Ask it for a small plane (one or two seats) and it designs one that flies from a short field, with one wing or two, sails or Copycat Wings, round or square tips, to suit what you want and can make. Ask it for a helicopter (one to three seats) and it lays one out on a gyroscopic rotor, balanced and checked."
     },
     {
       "type": "modonomicon:text",
       "title": "Related",
-      "text": "- [#](2E5AAC)[Balloons and Lift](entry://flight/balloons_and_lift)[#]()\n- [#](2E5AAC)[Propellers](entry://flight/propellers)[#]()\n- [#](2E5AAC)[Steering and Controls](entry://flight/controls)[#]()\n- [#](2E5AAC)[Building a Ship](entry://flight/ship_building)[#]()"
+      "text": "- [#](2E5AAC)[Balloons and Lift](entry://flight/balloons_and_lift)[#]()\n- [#](2E5AAC)[Propellers](entry://flight/propellers)[#]()\n- [#](2E5AAC)[Steering and Controls](entry://flight/controls)[#]()\n- [#](2E5AAC)[Building a Ship](entry://flight/ship_building)[#]()\n- [#](2E5AAC)[Helicopters](entry://flight/helicopters)[#]()"
     }
   ]
 }
