@@ -289,7 +289,10 @@ public final class ReelDrive {
                     gearbox.index() > gear ? 1.1f : 0.9f);
         }
         boolean nowWinding = hook != null && hook.flag(CastHook.FLAG_REELING);
-        double nowHeadroom = torque() / gearRatio();
+        // What the drive can wind against at all: a geared drive shifts down before a fish stalls it, so that is its
+        // lowest gear's limit, not just the gear it happens to be in (a small fish puts it in top gear, where the limit
+        // reads a quarter as much and looked lower than the drag).
+        double nowHeadroom = torque() / (kind.geared() ? gearbox.lowestRatio() : 1);
         if (nowStalled != stalled || nowWinding != winding || gearbox.index() != gear
                 || (Math.abs(nowHeadroom - headroomKg) > 0.25 && syncIn <= 0)) {
             stalled = nowStalled;
