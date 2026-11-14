@@ -36,8 +36,8 @@ struct ScreenHit {
 // first 0.3 blocks, the longest 4), then, at a step that went behind something, halved four times between the last
 // two to find where; if there it is still more than a block behind what the screen shows, it passed behind a thing
 // (a pillar, a post) rather than into it, and goes on. (The screen only knows each thing's front: taking everything
-// behind it as solid smears thin things into long dark streaks across the water.)
-ScreenHit screen_reflect(vec3 view_start, vec3 view_dir, int steps) {
+// behind it as solid smears thin things into long dark streaks across the water.) It goes no further than reach.
+ScreenHit screen_reflect(vec3 view_start, vec3 view_dir, int steps, float reach) {
     ScreenHit h;
     h.hit = false;
     h.color = vec3(0.0);
@@ -49,9 +49,11 @@ ScreenHit screen_reflect(vec3 view_start, vec3 view_dir, int steps) {
     float step_len = 0.3;
     vec3 last = view_start;
     vec3 p = view_start;
-    for (int i = 0; i < steps; i++) {
+    float gone = 0.0;
+    for (int i = 0; i < steps && gone < reach; i++) {
         last = p;
         p += view_dir * step_len;
+        gone += step_len;
         vec4 clip = gbufferProjection * vec4(p, 1.0);
         if (clip.w <= 0.0) {
             break;
@@ -113,6 +115,14 @@ bool screen_only(ScreenHit sh) {
     return !grid_live() || !vox_in_box(cell, 0) || (vox_word(cell) & VOX_SOLID) == 0u;
 }
 
+// From under the surface, what the surface mirrors is seen through the water twice: from what the look finds back to
+// the surface, and from the surface to you. Past this many blocks in all, under a twentieth of even the blue is left
+// (water_extinction_inside), so no look goes further: the far surface costs nothing, the near one a short look.
+const float under_see = 48.0;
+// And where the surface mirrors less than this share (looking up through it, inside the bright window to the sky),
+// the dim floor in it can't be told from deep water.
+const float under_least = 0.06;
+
 void main() {
 #if WATER_QUALITY == 3
     const float reach = 96.0;
@@ -152,28 +162,42 @@ void main() {
     // (the forward pass's spread, see gbuffers.fsh).
     float rough_spread = (1.0 - water.w) / 0.49 * 0.5;
     float spread = pixel_angle() * 1.5 + rough_spread;
-    float dist;
+    float dist = reach;
     vec3 view_dir = mat3(gbufferModelView) * r;
+    // How far this pixel's look goes (see under_see).
+    float look = reach;
+    float screen_look = 1e9; // the look along the screen stops at the screen's edge or its last step
+    if (isEyeInWater == 1) {
+        look = water.z < under_least ? 0.0 : min(reach, under_see - distance_away);
+        screen_look = look;
+    }
+    vec3 color = vec3(0.0);
+    if (look > 1.0) {
 #if WATER_QUALITY >= 2
-    vec3 color = reflect_world(scene + flat_n * 0.02, r, distance_away * spread, spread, reach, steps, dist);
-    // What the copy doesn't hold (see screen_only), from the screen where it is nearer.
-    ScreenHit sh = screen_reflect(view, view_dir, screen_steps);
-    if (sh.hit && sh.dist < dist && screen_only(sh)) {
-        color = mix(color, sh.color, sh.fade);
-        dist = mix(dist, sh.dist, sh.fade);
-    }
+        color = reflect_world(scene + flat_n * 0.02, r, distance_away * spread, spread, look, steps, dist);
+        if (dist >= look) {
+            dist = reach;
+            if (isEyeInWater == 1) {
+                color = vec3(0.0); // under the surface, a look that finds nothing sees deep water
+            }
+        }
+        // What the copy doesn't hold (see screen_only), from the screen where it is nearer.
+        ScreenHit sh = screen_reflect(view, view_dir, screen_steps, screen_look);
+        if (sh.hit && sh.dist < dist && screen_only(sh)) {
+            color = mix(color, sh.color, sh.fade);
+            dist = mix(dist, sh.dist, sh.fade);
+        }
 #else
-    ScreenHit sh = screen_reflect(view, view_dir, screen_steps);
-    vec3 color = reflect_sky(r, scene, spread);
-    dist = reach;
-    if (sh.hit && sh.material != MAT_HAND) {
-        color = mix(color, sh.color, sh.fade);
-        dist = mix(dist, sh.dist, sh.fade);
-    }
-    if (isEyeInWater == 1 && !sh.hit) {
-        color = vec3(0.0); // under the surface, a look that finds nothing on the screen sees deep water
-    }
+        ScreenHit sh = screen_reflect(view, view_dir, screen_steps, screen_look);
+        if (isEyeInWater != 1) {
+            color = reflect_sky(r, scene, spread); // under the surface, a look that finds nothing sees deep water
+        }
+        if (sh.hit && sh.material != MAT_HAND) {
+            color = mix(color, sh.color, sh.fade);
+            dist = mix(dist, sh.dist, sh.fade);
+        }
 #endif
+    }
     if (isEyeInWater == 1) {
         // From under the surface the mirror shows the water below, through all that water.
         color = water_inside(color, dist, water_light_around(float(eyeBrightnessSmooth.y) / 240.0));
