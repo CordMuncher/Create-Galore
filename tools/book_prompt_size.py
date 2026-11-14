@@ -19,7 +19,7 @@ import sys
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 SRC = os.path.join(ROOT, "tools/bridge-mod/src/main/java/dev/creategalore/bridge/guideai")
-BUDGET = {"persona": 5500, "tools": 17000}
+BUDGET = {"persona": 5500, "tools": 17200}
 
 
 def literals(src):

@@ -1,0 +1,20 @@
+{
+  "title": "A horse's own Shift + right-click (its inventory) is found by trying it, so the book knows PatPat leaves it",
+  "from": "pack 0.6.87: check_pet tries every pet's right-clicks for real",
+  "roots": [
+    "R1",
+    "R2"
+  ],
+  "kind": "tool",
+  "tool": "check_pet",
+  "input": {
+    "creature": "minecraft:horse"
+  },
+  "expect": {
+    "has": [
+      "the player rides it",
+      "its inventory opens",
+      "its own Shift action"
+    ]
+  }
+}

@@ -5,6 +5,19 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.87
+
+### Added
+- Create Galore Bridge 1.192.0.
+- **Ask the Book tries any creature out as a pet.** A new check, for every mod's creatures alike, tames one with a stand-in owner and then really tries it: what its owner's right-click does with an empty hand, with Shift and with every food, taming item and item of its own mod (sit, heal, breed, ride, an inventory, armor or a collar, a mod's own switches such as a Whistle), whether it starts after its owner and stops while sitting, whether it goes for what hurts its owner, whether its babies are born tamed and whether it despawns. The book answers pet questions from that, so no creature needs notes of its own. The check runs a little each tick, so the server never stalls while it works.
+- **Acorn weevils in the Field Guide** (Exploration, Creatures): Critters and Companions' acorn weevil is a pet. Acorns from oak leaves tame it, 1 try in 10; a tamed one follows, sits on an empty-hand right-click, can be patted, heals and breeds on acorns, and throws mud balls at whatever hurts its owner. The Acorn Hat is there too.
+
+### Fixed
+- **Taming odds could be far off.** The book's taming odds came from 100 tries, so a 1 in 10 chance could read 1 in 7 or 1 in 20; the items it names now get 1,000 tries.
+
+### Removed
+- Nothing.
+
 ## 0.6.86
 
 ### Added

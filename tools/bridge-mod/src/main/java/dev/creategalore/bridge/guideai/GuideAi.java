@@ -1131,6 +1131,9 @@ public final class GuideAi {
                                 + "model and text \"" + diagrams.size() + "\"."
                                 + (built.check().isEmpty() ? "" : "\n" + built.check());
                     }
+                } else if (name.equals("check_pet")) {
+                    // A pet trial can be long; it runs here, sending the server short slices of work, one a tick.
+                    result = Pets.check(l.server, playerId, GuideText.string(input, "creature"));
                 } else {
                     result = l.server.submit(() -> {
                         ServerPlayer player = l.server.getPlayerList().getPlayer(playerId);

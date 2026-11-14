@@ -148,6 +148,30 @@ final class Creatures {
         return out.toString().strip();
     }
 
+    /** The creatures that best match a name, id or description, closest name first (for check_pet). */
+    static List<EntityType<?>> matches(Level level, String query) {
+        String q = query.strip().toLowerCase(Locale.ROOT);
+        List<EntityType<?>> hits = new ArrayList<>();
+        if (q.isEmpty()) return hits;
+        List<String> words = new ArrayList<>();
+        for (String w : q.split("[\\s,]+")) words.add(SYNONYMS.getOrDefault(w, w));
+        int best = 0;
+        for (EntityType<?> type : living()) {
+            String hay = (name(type) + " " + id(type) + " " + WorldTools.modName(id(type).getNamespace())).toLowerCase(Locale.ROOT);
+            int score = (int) words.stream().filter(hay::contains).count();
+            if (score == 0 || score < best) continue;
+            if (score > best) hits.clear();
+            best = score;
+            hits.add(type);
+        }
+        hits.sort(Comparator.comparingInt((EntityType<?> t) -> exactness(t, q)).thenComparing(Creatures::name));
+        return hits;
+    }
+
+    static String nameOf(EntityType<?> type) {
+        return name(type) + " (" + id(type) + ", " + WorldTools.modName(id(type).getNamespace()) + ")";
+    }
+
     private static final Map<String, String> SYNONYMS = Map.ofEntries(Map.entry("big", "large"), Map.entry("huge", "large"),
             Map.entry("giant", "large"), Map.entry("flying", "flies"), Map.entry("fly", "flies"), Map.entry("swimming", "swims"), Map.entry("swim", "swims"), Map.entry("gray", "grey"),
             Map.entry("pet", "tameable"), Map.entry("pets", "tameable"), Map.entry("tame", "tameable"));

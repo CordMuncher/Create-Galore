@@ -1,0 +1,27 @@
+{
+  "title": "An acorn weevil is a pet: acorns tame it, it sits, gets patted, follows and throws mud at its owner's enemies",
+  "from": "pack 0.6.87: a player asked for the acorn weevil to be tameable; it already was, and check_pet shows it for any creature",
+  "roots": [
+    "R1",
+    "R2"
+  ],
+  "kind": "tool",
+  "tool": "check_pet",
+  "input": {
+    "creature": "acorn weevil"
+  },
+  "expect": {
+    "has": [
+      "Acorn [crittersandcompanions:acorn]",
+      "sits down",
+      "pats it (PatPat)",
+      "starts after its owner",
+      "goes for whatever hurts its owner",
+      "belongs to the same owner",
+      "never despawns"
+    ],
+    "lacks": [
+      "no item tamed it"
+    ]
+  }
+}
