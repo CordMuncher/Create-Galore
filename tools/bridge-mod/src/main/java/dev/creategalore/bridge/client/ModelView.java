@@ -105,6 +105,8 @@ final class ModelView {
     private final BlockState[] cells;
     private final List<Label> labels = new ArrayList<>();
     private final List<Change> changes = new ArrayList<>();
+    /** What the schematic sets on a block (a Redstone Link's frequency, a setting), by cell index. */
+    private final Map<Integer, net.minecraft.nbt.CompoundTag> wiring = new HashMap<>();
     private final Map<BlockState, Boolean> hasQuads = new HashMap<>(), hasWorldQuads = new HashMap<>();
     /**
      * Block entities for the blocks whose moving parts are drawn by a block entity renderer (Create's shafts, cogs, water
@@ -205,6 +207,19 @@ final class ModelView {
                             r.get(4).getAsInt(), r.get(5).getAsInt(), r.get(6).getAsInt() == 1));
                 } catch (RuntimeException ignored) {
                     // skip the run
+                }
+            }
+        }
+        if (o.has("wiring") && o.get("wiring").isJsonArray()) {
+            for (JsonElement e : o.getAsJsonArray("wiring")) {
+                try {
+                    JsonObject w = e.getAsJsonObject();
+                    int[] c = dev.creategalore.bridge.guideai.Wiring.cellOf(w);
+                    net.minecraft.nbt.CompoundTag tag = dev.creategalore.bridge.guideai.Wiring.nbt(w);
+                    if (tag != null && c[0] >= 0 && c[0] < sx && c[1] >= 0 && c[1] < sy && c[2] >= 0 && c[2] < sz)
+                        m.wiring.put(m.index(c[0], c[1], c[2]), tag);
+                } catch (RuntimeException ignored) {
+                    // skip the entry
                 }
             }
         }
@@ -483,7 +498,9 @@ final class ModelView {
      * The model as a structure file (the format Create's Schematic and Quill writes and its Schematic Table reads): every
      * block but air, so a placed schematic never asks to clear what is around it. Flowing water and lava are left out:
      * their sources make them again once placed. A build with moving parts is saved standing at its start, as it is
-     * built: the motion on the model is only drawn, the cells never move. Null for a model with nothing in it.
+     * built: the motion on the model is only drawn, the cells never move. How it is wired up goes with its blocks
+     * (each Redstone Link's frequency, each speed controller's speed, each Wheel Mount's suspension), which Create's
+     * Schematicannon copies onto what it prints. Null for a model with nothing in it.
      */
     net.minecraft.nbt.CompoundTag structure() {
         Map<BlockState, Integer> index = new HashMap<>();
@@ -503,6 +520,8 @@ final class ModelView {
                     net.minecraft.nbt.CompoundTag b = new net.minecraft.nbt.CompoundTag();
                     b.put("pos", ints(x, y, z));
                     b.putInt("state", i);
+                    net.minecraft.nbt.CompoundTag data = wiring.get(index(x, y, z));
+                    if (data != null) b.put("nbt", data.copy());
                     blocks.add(b);
                 }
         if (blocks.isEmpty()) return null;

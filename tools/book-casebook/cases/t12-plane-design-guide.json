@@ -1,0 +1,35 @@
+{
+  "title": "The plane design guide comes on request and teaches a pilot-flown plane: ailerons and elevator on Tilt Adapters, the gyroscope only as an add-on, a Rotation Speed Controller drive, tyred wheels with toe brakes, a Control Stand",
+  "from": "pack 0.6.84: the book still put a gyroscope on every plane (no flips), a tower of cogwheels for 256 RPM, and its plane knowledge came only with a model",
+  "roots": [
+    "R1",
+    "R3"
+  ],
+  "kind": "tool",
+  "tool": "design_guide",
+  "input": {
+    "kind": "plane"
+  },
+  "expect": {
+    "has": [
+      "PLANE DESIGN GUIDE",
+      "Tilt Adapter",
+      "is an add-on, never the default",
+      "Rotation Speed Controller",
+      "it starts at 16, so set it",
+      "Offroad Wheel Mounts",
+      "toe brakes",
+      "Joystick Module",
+      "Swap Idle and Full Power",
+      "Schematicannon prints them set",
+      "Copycat Wing (8m) 0.71",
+      "a plane is the exception: it turns by banking"
+    ],
+    "lacks": [
+      "keeps the wings level, in proportion",
+      "Gearshift in each propeller line",
+      "Yoke Module sends Turn Left",
+      "Throttle Quadrant's levers the throttle and the reverse"
+    ]
+  }
+}

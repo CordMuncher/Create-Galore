@@ -1,5 +1,5 @@
 {
-  "title": "A Copycat-winged biplane with square tips is laid out solid: its top wing beside the windscreen joins, and the gyroscope runs at 256 RPM on two engines",
+  "title": "A Copycat-winged biplane with square tips is laid out solid: its top wing beside the windscreen joins, and a Rotation Speed Controller turns the propeller at 256 RPM with no gyroscope",
   "from": "2026-11-09 (pack 0.6.77 work): the plane search judged panes before they joined their neighbours, so a top wing beside the windscreen hung loose once built; the gyroscope gets its own two engines",
   "roots": [
     "R3",
@@ -46,15 +46,18 @@
       "small biplane",
       "Copycat Wings (8m)",
       "square tips",
-      "256 RPM",
-      "light all four engines"
+      "256",
+      "Rotation Speed Controller",
+      "fill the four engines"
     ],
     "lacks": [
       "PROBLEM",
       "none did both",
       "parts that don't visibly join",
       "hull can be seen through",
-      "128 RPM"
+      "128 RPM",
+      "Gyroscope at",
+      "light all four engines"
     ]
   }
 }

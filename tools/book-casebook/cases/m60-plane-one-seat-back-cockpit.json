@@ -1,0 +1,58 @@
+{
+  "title": "A one-seat plane is laid out with the pilot in the back cockpit, as in an open-cockpit biplane, so the nose propeller doesn't fill their view",
+  "from": "2026-11-14: one-seat planes never laid out: from the front seat, close behind the nose propeller, 44% of the pilot's view was blocked",
+  "roots": [
+    "R3",
+    "R4"
+  ],
+  "kind": "model",
+  "model": {
+    "title": "One-seat plane",
+    "size_x": 0,
+    "size_y": 0,
+    "size_z": 0,
+    "from_world": [],
+    "from_draft": 0,
+    "move": [],
+    "palette": [],
+    "layers": [],
+    "blocks": [],
+    "labels": [],
+    "caption": "",
+    "draft": false,
+    "goal": "",
+    "shows_a_fault": false,
+    "for_later": false,
+    "speeds": [],
+    "airship": [],
+    "plane": [
+      {
+        "seats": 1,
+        "wood": "birch",
+        "colour": "white",
+        "wings": 0,
+        "wing_block": "copycat_wing",
+        "span": 0,
+        "tips": "square"
+      }
+    ],
+    "open_by_request": true,
+    "new_by_request": true,
+    "part_of_vehicle": false
+  },
+  "expect": {
+    "built": true,
+    "has": [
+      "Laid out by the server from plane",
+      "for one",
+      "the back one, as in an open-cockpit biplane",
+      "that pit is left open for a passenger seat",
+      "sit in the back seat"
+    ],
+    "lacks": [
+      "PROBLEM",
+      "none did both",
+      "the pilot can't see out ahead"
+    ]
+  }
+}

@@ -268,6 +268,7 @@ final class Casebook {
                         result = "Built as diagram " + s.drawings.size() + "." + (r.check().isEmpty() ? "" : "\n" + r.check());
                     }
                 }
+                case "design_guide" -> result = DesignBriefs.guide(GuideText.string(input, "kind"), s.plain ? new java.util.HashSet<>() : s.briefs);
                 case "draw_diagram" -> {
                     String problem = Diagrams.check(input, new ArrayList<>());
                     if (problem == null) {

@@ -116,8 +116,15 @@ final class Airships {
         }
     }
 
-    /** A laid-out airship: model cells from 0, its Rotation Speed Controller's setting, and what was chosen and why. */
-    record Layout(Map<BlockPos, BlockState> cells, int sx, int sy, int sz, Map<BlockPos, Float> speeds, String summary) {
+    /**
+     * A vehicle the server laid out: its cells, size, speed controller settings, what it says about it, and how it is wired
+     * up ({@link Wiring} entries the schematic carries, so the Schematicannon prints it set).
+     */
+    record Layout(Map<BlockPos, BlockState> cells, int sx, int sy, int sz, Map<BlockPos, Float> speeds, String summary,
+                  com.google.gson.JsonArray wiring) {
+        Layout(Map<BlockPos, BlockState> cells, int sx, int sy, int sz, Map<BlockPos, Float> speeds, String summary) {
+            this(cells, sx, sy, sz, speeds, summary, new com.google.gson.JsonArray());
+        }
     }
 
     enum Fan {

@@ -103,13 +103,15 @@ final class BuildCheck {
                 Cell first = kinetic.get(sourceOf.get(src.pos));
                 Integer a = spin(first), b = spin(src);
                 if (a != null && b != null && Math.abs(Math.abs(speed.get(src.pos)) - 1) < 1e-3) {
-                    // Both are Portable Engines, which turn the same speed; only the way round can disagree.
+                    // Both are Portable Engines, which turn the same speed. One that lights while its line already turns
+                    // flips its own Rotation Direction to match the line (its tick does that before it starts), so two
+                    // facing either way never fight: the one lit first sets the way round. Measured on a plane's drive:
+                    // an engine facing against the other two ran with them, none overstressed.
                     if (a * Math.signum(speed.get(src.pos)) == b) notes.add(name(src) + " drives the same line as " + name(first)
                             + ", turning it the same way, so their stress adds up");
-                    else notes.add(name(src) + " drives the same line as " + name(first) + " but, as each comes from placing, "
-                            + "turns it the other way, which would break the line: tell the player to set it to turn the other "
-                            + "way (its Rotation Direction setting, the value box on the engine) before lighting it; "
-                            + "then their stress adds up");
+                    else notes.add(name(src) + " drives the same line as " + name(first) + "; as placed it would turn it "
+                            + "the other way, but a Portable Engine lit while its line already turns sets itself to match, so "
+                            + "their stress adds up (nothing to set; whichever is lit first sets the way the line turns)");
                 } else {
                     notes.add(name(src) + " drives the same network as " + name(first)
                             + "; sources on one network must turn it at the same speed and direction, or it breaks");
@@ -220,7 +222,8 @@ final class BuildCheck {
                 if (!sourceOf.get(e.getKey()).equals(src.pos)) continue;
                 Float at = set.get(e.getValue().pos);
                 out.append("- ").append(name(kinetic.get(e.getKey()))).append(" turns at the speed set on ").append(name(e.getValue()))
-                        .append(at != null ? ", " + trim(Math.abs(at)) + " RPM (tell the player to set it on its panel)"
+                        .append(at != null ? ", " + (at < 0 ? trim(at) + " (" + trim(-at) + " RPM reversed)" : trim(at) + " RPM")
+                                + " (tell the player to set it on its panel)"
                                 : ": not given in speeds, so 16 RPM as placed").append(". Turning with it:");
                 list(out, kinetic, e.getKey(), rootOf, speed);
             }
@@ -489,11 +492,15 @@ final class BuildCheck {
     }
 
     /**
-     * A small cogwheel, or Simulated's Analog Transmission, whose cogwheel meshes like one. Unpowered its cogwheel turns
-     * with its shaft; a redstone signal slows the cogwheel (taken as full throttle here, the speed it gives at signal 0).
+     * A small cogwheel, or a block of Simulated's with a cogwheel of its own that meshes like one: the Analog Transmission
+     * (unpowered its cogwheel turns with its shaft; a redstone signal slows the cogwheel, taken as full throttle here, the
+     * speed it gives at signal 0) and the Swivel Bearing (a cogwheel round its turning axis, so a cogwheel beside it
+     * swings it: a plane's ailerons and elevator are driven that way).
      */
     private static boolean smallCog(BlockState state) {
-        return ICogWheel.isSmallCog(state) || BuiltInRegistries.BLOCK.getKey(state.getBlock()).toString().equals("simulated:analog_transmission");
+        if (ICogWheel.isSmallCog(state)) return true;
+        String id = BuiltInRegistries.BLOCK.getKey(state.getBlock()).toString();
+        return id.equals("simulated:analog_transmission") || id.equals("simulated:swivel_bearing");
     }
 
     /** Notes the face {@code to} took its rotation in through, when it came straight along a shaft from {@code from}. */
@@ -555,7 +562,8 @@ final class BuildCheck {
 
     /**
      * Which way a Portable Engine turns its shaft as placed (+1 or -1 along its axis): its speed is set along the way it
-     * faces, until its rotation setting is changed. Null for other sources.
+     * faces, until its rotation setting is changed (which it does itself when lit on a line another engine already turns
+     * the other way). Null for other sources.
      */
     private static Integer spin(Cell c) {
         if (!name(c).contains("portable_engine") || !c.state.hasProperty(BlockStateProperties.HORIZONTAL_FACING)) return null;

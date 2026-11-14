@@ -1,0 +1,21 @@
+{
+  "title": "design_guide names the kinds it has when asked for one it doesn't",
+  "from": "pack 0.6.85: design_guide added",
+  "roots": [
+    "R1"
+  ],
+  "kind": "tool",
+  "tool": "design_guide",
+  "input": {
+    "kind": "rocket"
+  },
+  "expect": {
+    "has": [
+      "No design guide for 'rocket'",
+      "plane, airship, helicopter, submarine, boat"
+    ],
+    "lacks": [
+      "PLANE DESIGN GUIDE"
+    ]
+  }
+}
