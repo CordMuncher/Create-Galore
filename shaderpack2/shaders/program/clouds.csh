@@ -3,7 +3,10 @@
 // and what still gets through it, from a starting point along the look that moves a little each frame. Then this
 // frame's result is mixed with last frame's at the same spot in the clouds (found by where most of the cloud is along
 // the look and how far the wind carried it), held within the range of this frame's results around it so nothing
-// stale lingers, and the mix over a few frames smooths away the moving start. Results in cg_cloud_img (see
+// stale lingers, and the mix over a few frames smooths away the moving start. Where last frame's can't be kept (a
+// cloud's edge on the move, the part of the sky a turn just brought in), the average of this frame's results around
+// the pixel stands in for it: their starts differ, so nine of them are nearly as smooth as nine frames, and no
+// pattern of the moving start shows while you turn. Results in cg_cloud_img (see
 // lib/clouds.glsl); the lighting pass (deferred_light.fsh) lays them over the sky and far terrain, and the DLSS pass
 // gives cloudy sky the clouds' own motion.
 //
@@ -31,6 +34,7 @@ uniform mat4 dhProjectionInverse;
 #endif
 
 shared vec4 s_light[64];
+shared float s_limit[64];
 
 // One texel of the clouds' shadow map (cloud_shadow in lib/sky.glsl): what gets through the clouds along the line
 // towards the light from the floor of the layer under the texel's middle, from four heights on it to the top, through
@@ -312,14 +316,18 @@ void main() {
         }
     }
     s_light[local] = m.light;
+    s_limit[local] = limit;
     barrier();
     if (!inside) {
         return;
     }
 
-    // This frame's range round the pixel (within its work group).
+    // This frame's range round the pixel (within its work group), and the average of those that looked as far as it
+    // did (the sky beside a mountain's edge isn't the air in front of the mountain).
     vec4 lo = m.light;
     vec4 hi = m.light;
+    vec4 around = vec4(0.0);
+    float counted = 0.0;
     ivec2 at = ivec2(gl_LocalInvocationID.xy);
     for (int y = -1; y <= 1; y++) {
         for (int x = -1; x <= 1; x++) {
@@ -329,12 +337,18 @@ void main() {
                 vec4 v = s_light[q.y * 8 + q.x];
                 lo = min(lo, v);
                 hi = max(hi, v);
+                float its = s_limit[q.y * 8 + q.x];
+                if (abs(its - limit) <= 0.1 * limit) {
+                    around += v;
+                    counted += 1.0;
+                }
             }
         }
     }
+    around /= counted; // the pixel itself always counts
 
-    // Last frame's result at the same spot in the clouds.
-    vec4 result = m.light;
+    // Last frame's result at the same spot in the clouds; with none, this frame's average.
+    vec4 result = around;
     float follow = m.mid < cloud_far_sky ? m.mid : min(m.slab, limit);
     vec3 was = dir * follow - cloud_wind() * frameTime;
     vec4 clip = previous_clip(was, gbufferPreviousProjection);
@@ -352,9 +366,10 @@ void main() {
             vec4 margin = (hi - lo) * 0.1;
             vec4 held = clamp(history, lo - margin, hi + margin);
             // Where last frame's had to be pulled into this frame's range (an edge on the move), less of it is
-            // kept, so a moving edge stays crisp instead of smearing over several frames.
+            // kept, so a moving edge stays crisp instead of smearing over several frames, and what comes in its place
+            // is this frame's average rather than the pixel's own look.
             float pulled = clamp(2.0 * length(held - history) / (length(hi - lo) + 0.02), 0.0, 1.0);
-            result = mix(held, m.light, mix(0.15, 0.5, pulled));
+            result = mix(held, mix(m.light, around, pulled), mix(0.15, 0.5, pulled));
         }
     }
 

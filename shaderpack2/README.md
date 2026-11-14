@@ -6,7 +6,7 @@ name is for its motion vectors: not only the camera's, but how each moving thing
 contraptions, ships, mobs, the hand), which is what lets DLSS and FSR keep them sharp. The Bridge's Upscaling &
 Display screen picks the upscaler and the render resolution; the pack has no settings of its own for them.
 
-**Work in progress: alpha 0.7.6.** It lives on its own branch and is not in the modpack yet. The first Create Galore
+**Work in progress: alpha 0.8.** It lives on its own branch and is not in the modpack yet. The first Create Galore
 pack (`shaderpack/`) stays as a research build; the two share only the DLSS hand-off and the mods' plumbing
 (Colorwheel, Distant Horizons), not their lighting.
 
@@ -53,8 +53,10 @@ pack (`shaderpack/`) stays as a research build; the two share only the DLSS hand
   never shows as a line. The heights come from Distant Horizons through the Bridge 1.175.0 (pack 0.6.65) or later,
   which reads only what changed; without them the map fades into the sky light alone.
 - **The sky**: a physically based atmosphere, pushed to the look we follow: a deep blue overhead by day paling to a
-  bright, slightly hazy horizon, an orange glow round the setting sun and a pink belt across from it, a deep blue
-  night. Stars by the thousand in their own colours, steady (no twinkle) and at least a pixel and a half wide so the
+  light blue horizon that never burns out to white, an orange glow round the setting sun and a pink belt across from
+  it, a deep blue night that is no darker at dusk and dawn (when the moon is still low) than at midnight. Under the
+  horizon, past the edge of the land that is drawn, the sky goes on in the horizon's own colour, so no dark band shows
+  there. Stars by the thousand in their own colours, steady (no twinkle) and at least a pixel and a half wide so the
   upscaler keeps them: the brightest come out first at dusk, and a bright moon hides the faint ones and the Milky Way,
   which has dark dust lanes along it. The sun, round, with a tight glow. The moon about twice Minecraft's size
   (option Moon Size), its surface from NASA's maps of the Moon: its seas and craters, lit from the side its phase
@@ -62,37 +64,46 @@ pack (`shaderpack/`) stays as a research build; the two share only the DLSS hand
   as the sun is a warm white), with the Earth's faint light on its dark part and a halo of the moonlight the air
   scatters, half as bright about ten degrees out. The sun and the moon set behind the ground, also where it isn't
   drawn yet. The far haze takes the sky's colour. Sunlight on the land turns warmer at
-  dawn and dusk. Rain greys the sky and hides the sun, the moon and the stars.
+  dawn and dusk. Rain closes the sky into an even grey, a little brighter overhead than low down, thickens the far
+  haze, and hides the sun, the moon and the stars.
 - **Clouds**: a layer of real clouds drawn as a volume, their bases gathering round Y 230 (option Cloud Height),
   always above the pollution's smog, so they never hide what goes on below them. The bases rise and fall over a
   kilometre or two and from cloud to cloud (15 blocks under the layer's height to 20 over it), so the layer never
   reads as one flat floor. A slow weather map says where the sky is clear blue, scattered, broken or nearly closed,
-  and what kind of cloud is there: flat stratocumulus sheets 12 to 24 blocks deep with gaps, small fair-weather
-  cumulus 24 to 40 tall with domed tops, or big cumulus towering up to 120 where the cover is thick; rain closes it
-  into one grey deck. They gather in groups with clear sky between rather than spreading out evenly. A hard flat base,
-  ragged outlines, round cauliflower billows bulging from their tops and sides with a crisp surface, and
-  swirled wisps under the base, a frayed edge about a block across up close (for planes), small loose scraps round
-  the bigger ones; the cores are solid. Far above, thin streaks and soft ripples (cirrus and cirrocumulus) in places.
-  Lit by the sun through the cloud between, the light scattered again and again inside so a thick cloud's body glows
-  (white tops, shade in the crevices and on the far side, silver edges round the sun, which burns through thin parts,
-  and with the sun behind you the darker "powder" look of real cumulus) and by the sky from above (grey-blue
-  undersides), gold and pink at dusk and dawn, moonlit at night (tops about twice as bright as the night sky round
-  them, undersides a little darker); they fade into the sky's colour far off and reach 5000 blocks. Seen from above,
-  they stay in front of the land's haze, the water and glass. The look along each pixel crosses empty air in coarse steps and goes
-  back over the stretch where it found cloud in fine ones, so their edges hold still from frame to frame, and detail
-  too fine to show at a distance gives way to its average so nothing far off flickers. The game's clock moves them
-  (they don't jump, they are where they were when you reload, and with the daylight cycle stopped they stop too) at
-  about a block a second (option Cloud Speed), the wind's direction wandering over days. Every pixel is worked out
-  every frame at half the render size each way and smoothed over a few frames, never a fraction of the pixels per
-  frame (which makes clouds crawl in motion); DLSS gets their own motion. Their shadows cross the land (option Cloud
-  Shadows) and hold still while you climb or drop. Option Realistic Clouds off gives Minecraft's clouds, lit orange and pink at dusk and dawn.
+  and what kind of cloud is there: flat stratocumulus sheets 20 to 30 blocks deep with gaps, fair-weather cumulus 45
+  to 70 tall, or big cumulus towering up to 150 where the cover is thick; rain closes it into one grey deck. They
+  gather in groups with clear sky between rather than spreading out evenly. Their shapes are heaps of round lumps
+  from a baked noise volume: a cloud is where that noise is over a level which rises with height, slowly at first and
+  then faster, so a cumulus stands on a wide flat base and narrows into a dome or a tower, and a sheet keeps its
+  width up to a flat top. A cloud thickens inwards from its outline (soft, see-through edges, a solid heart), and
+  round billows are worn into every side of it (cauliflower), finer up close. Far above, thin streaks and soft
+  ripples (cirrus and cirrocumulus) in places. Lit by the sun through the cloud between, the light scattered again
+  and again inside: a top in the sun is white, its shaded side and the folds between its billows grey, the base of a
+  thick cloud dark, a thin edge towards the sun silver, and the sun burns through thin cloud. The sky lights them
+  from above and the ground from below; gold and pink at dusk and dawn, moonlit at night; they fade into the sky's
+  colour far off and reach 5000 blocks. Seen from above, they stay in front of the land's haze, the water and glass.
+  Each pixel's look crosses the layer in even steps that lengthen with distance, from a start that moves a little
+  each frame; detail too fine to show at a distance gives way to its average, so nothing far off flickers. The
+  game's clock moves them (they don't jump, they are where they were when you reload, and with the daylight cycle
+  stopped they stop too) at about a block a second (option Cloud Speed), the wind's direction wandering over days.
+  Every pixel is worked out every frame at half the render size each way and smoothed over a few frames, never a
+  fraction of the pixels per frame (which makes clouds crawl in motion); where last frame's can't be kept (a cloud's
+  edge on the move, the sky a turn just brought in) the looks round the pixel stand in for it, so no pattern shows
+  while you turn; DLSS gets their own motion. Their shadows cross the land and the sea (option Cloud Shadows) and
+  hold still while you climb or drop. Option Realistic Clouds off gives Minecraft's clouds, lit orange and pink at
+  dusk and dawn.
 - **Water** (its own options screen):
-  - **Waves** in four layers, the biggest a swell running with the clouds' wind that only builds where there is open
-    water up-wind (a pond stays calm, a sea doesn't), the others crossing it, down to ripples a third of a block
-    across; crests bend along their length, and stretches hundreds of blocks across run calmer or choppier. The
-    ripples stay on the water as far as a pixel can show them. The pattern repeats every 1024 blocks and every hour exactly, so it never jumps. Waves too fine for a pixel to show
-    become roughness that spreads the sun's glint and the reflection instead of flickering. Rain roughens the small
-    waves and drops rings on open water (option Rain Rings); walking into water sends a ring out from you.
+  - **Waves**: a wind sea in seven sizes, from a swell with crests about 14 blocks apart down to ripples a fifth of
+    a block apart, each half the size of the one before. Every size is the same baked pattern of real wind waves
+    (running down the wind and about 45 degrees either side of it), laid down at its own scale and swung at its own
+    rate, so crests travel, catch each other up and dissolve instead of sliding by as a fixed picture. Their slopes
+    are those of a real sea in a fresh breeze (about 7 degrees on open water), so the surface has relief you can
+    see, the sky in it is broken by the waves and the sun lays a path of glitter on it. The wind is the clouds'
+    wind. The longest waves only build where there is open water up-wind (a pond stays rippled but calm, a sea
+    rolls), and stretches hundreds of blocks across run calmer or choppier. The pattern repeats every 1024 blocks
+    and every hour exactly, so it never jumps. Waves too fine for a pixel to show become roughness that spreads the
+    sun's glint and the reflection instead of flickering. Rain roughens the small waves and drops rings on open
+    water (option Rain Rings); walking into water sends a ring out from you.
   - **Wakes**: you, other players, mobs, boats and Sable's ships push the water aside as they go, so ripples spread
     from them and trail a V behind whatever moves, narrower the faster it goes; a still one leaves the water flat.
     A ship's wake grows with the water its hull pushes aside and its band with its draft, so a laden hull throws a
@@ -105,21 +116,30 @@ pack (`shaderpack/`) stays as a research build; the two share only the DLSS hand
     atlas and each block's face maps), lit as the world is lit, so the reflection is the same from wherever you look
     and holds what is off screen; what the copy doesn't hold as solid blocks (mobs, Create's machines, Sable's ships,
     plants, lamps) comes from the screen where it is nearer. One look per pixel at every quality; Ultra
-    reaches further. The clouds water mirrors are looked at from the water's own point, so they hold still on it, and
-    as soft as the waves spread them. The textures need the Bridge 1.174.0 (pack 0.6.64) or later; with an older one a
+    reaches further. The sky and clouds water mirrors come from a map of the cloud layer as it looks from sea level
+    (256 directions round, 96 up, finer towards the horizon), worked out a part each frame; each mirrored look
+    reads it towards where it meets the clouds, so every stretch of water mirrors the clouds over it, they hold
+    still on it as you climb or drop, and nothing in it flickers; rough and far water read a soft copy. Seen from
+    under the surface, a reflection reaches only as far as the water lets light through (48 blocks in all). The textures need the Bridge 1.174.0 (pack 0.6.64) or later; with an older one a
     reflected block shows its average colour.
-  - **Colour**: light is absorbed red first, so water deepens from clear turquoise over sand to deep blue, tinted by
-    the biome's water colour; a floor fades into the water's own colour within about 15 blocks of water, and deep
-    water is a dark navy-teal body; what lies under it is bent by the waves (option Refraction), never pulling nearer
-    things in. Seen from under the surface, the sky shows only through Snell's window and the rest is a mirror.
-  - **Caustics**: the waves focus sunlight into moving bright lines on what lies under them, worked out from where
-    the light actually lands, once per 2 x 2 pixels (option Caustics); the brightest roll off softly and the lines
-    lose their contrast with depth; the sun reaches under water along the water in the block copy, so a
-    dock's shade stays on the floor under it.
+  - **Colour**: light is absorbed red first, so water deepens from clear turquoise over sand to blue, tinted by the
+    biome's water colour; a floor fades into the water's own colour within about 15 blocks of water, and deep water
+    is a clear blue body in the sun rather than black. With a low sun in front of you, the faces of the waves turned
+    your way glow with the light coming through them. What lies under the water is bent by the waves (option
+    Refraction), never pulling nearer things in. Seen from under the surface, the sky shows only through Snell's
+    window and the rest is a mirror.
+  - **Caustics**: the waves focus sunlight into a moving net of bright lines on what lies under them (option
+    Caustics): for each spot the light is followed back up to where it came through the surface, and how much the
+    waves gather or spread it there comes from the surface's own curvature (baked beside the waves), so the lines
+    are as smooth as the waves and hold still from frame to frame. A fine net in the shallows, wider and softer
+    with depth as the small ripples blur out; the brightest lines roll off softly and the net loses its contrast
+    with depth. Once per 2 x 2 pixels. The sun reaches under water along the water in the block copy, so a dock's
+    shade stays on the floor under it.
   - **Under water**: the water's own fog, light shafts from the sun shaded by what stands over it (option Light
     Shafts), and the surface seen from below.
   - Distant Horizons' water uses the same waves, colour, floor and sky with clouds, so a sea looks the same across
-    the edge of the loaded chunks, and takes over from Minecraft's pixel by pixel over the last 16 blocks before it.
+    the edge of the loaded chunks, and takes over from Minecraft's pixel by pixel over the last 16 blocks before it
+    (both judge a pixel by the same spot on the water, so none is left out by both).
 - **Light in the air**: a coloured haze around lamps (strongest at night, underground and in the Nether), haze far
   off (as thick as the air along the look, so from high up the land below is hazed no more than it should be), water
   and lava around you.
@@ -171,7 +191,8 @@ off:
     python3 shaderpack2/programs.py          # writes the program files Iris looks for (after adding or removing one)
     python3 shaderpack2/tools/compile_check.py  # compiles every program and option variant with glslangValidator
     shaderpack2/build.sh                     # zips the pack into shaderpack2/dist/
-    python3 shaderpack2/tools/cloud_noise.py # remakes the clouds' noise (shaders/textures/cloud_noise.dat)
+    python3 shaderpack2/tools/cloud_noise.py # remakes the clouds' noise and shapes (shaders/textures/cloud_noise.dat, cloud_shape.dat)
+    python3 shaderpack2/tools/wave_noise.py  # remakes the waves and their curvature (shaders/textures/water_waves.dat, water_curve.dat)
     python3 shaderpack2/tools/moon_map.py    # remakes the moon's surface (shaders/textures/moon.png) from NASA's maps
     python3 shaderpack2/tools/light_tester/light_tester.py SCENE.py OUT.png  # the block light without Minecraft
 
@@ -179,6 +200,20 @@ off:
 block and the light per pixel) on a scene of blocks written in Python, in a stand-in for Iris, and draws it at any
 resolution in under a minute on the CPU: for problems too fine or too slow to chase in the game. See the script's
 notes for its options; `scene_leaks.py` and `scene_regress.py` are examples.
+
+`tools/view_tester/view_tester.py` draws the sky, the clouds and the open sea the same way (the pack's own sky,
+cloud and water code in a stand-in for Iris) in a second or two a view, at any time of day, height and weather:
+`python3 shaderpack2/tools/view_tester/view_tester.py OUT.png name:time,yaw,pitch[,height[,rain[,fov[,day]]]]`;
+`ROOT=` an older copy of `shaders/` draws the same views with it, for a before and after.
+
+`tools/rig/` runs the real game without a screen or a graphics card (a slim client under Xvfb, drawn on the CPU at
+about a frame a second, so slow but exact): `setup.sh` once, `launch.sh WORLD`, `sync.sh` to copy the pack in
+(`FREEZE=` holds the water's clock for stills), `view.sh OUT.png X Y Z YAW PITCH` for a picture from a spot,
+`motion.sh` for pictures while the camera turns or flies, `cmd.sh` and `key.sh` for commands and keys. The Bridge's
+cost meter (F10) works in it, so a change's cost per pass can be compared before and after.
+
+`tools/gpu_stats.py` says what a graphics card's compiler makes of each compute program (registers, spills,
+instructions), without a card.
 
 ## How it is laid out
 

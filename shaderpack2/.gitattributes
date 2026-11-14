@@ -1,0 +1,3 @@
+# The baked textures are raw bytes: never text, whatever they happen to hold (a file with no zero byte in it would
+# otherwise have its line ends rewritten on a Windows checkout).
+*.dat binary
