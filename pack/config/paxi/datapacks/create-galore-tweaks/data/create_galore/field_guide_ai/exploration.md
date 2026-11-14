@@ -1,4 +1,4 @@
-<!-- sources sha256:28d0c005f99fcf29cf39821b2c8058af0b128ba02eb04b5e75d35687795d4d1e -->
+<!-- sources sha256:e3086eb7c11f629bb6379956a3c000233e7e8db45228dda88d57d4e155d21fea -->
 # Exploration and Adventure (exploration)
 
 ## exploration/dimensions | Dimensions
@@ -223,7 +223,10 @@
 - Capture Net [naturalist:capture_net]: catches small creatures like butterflies and firefly
 - **Hedgehogs** (Naturalist; plains, meadows, forests, taiga) can be pets. A wild one curls into a spiky ball when a player walks up (2 damage on touch); crouch or hold berries and it stays out. Tame with sweet berries or glow berries, 1 try in 2 (hearts = tamed, smoke = try again). Tamed: follows its owner straight away; empty-hand right-click = sit/stand; Shift + right-click pats it; berries heal it; a dye recolours its little outfit (red at first), shears take the dye off; never despawns; its spikes never hurt its owner
 - Whistle [naturalist:whistle]: copper ingot over string; right-click a tamed Naturalist pet to switch it between following its owner and wandering
-- Taming any creature: find_creatures says whether it can be tamed, with which items and how often, tried on the server
+- **Acorn weevils** (Critters and Companions; forests and lush biomes) can be pets. Tame with acorns, 1 try in 10 (hearts = tamed, smoke = try again); holding an acorn makes weevils follow. Tamed: follows its owner straight away; empty-hand right-click = sit/stand; Shift + right-click pats it; acorns heal it; two weevils fed acorns breed, a tamed parent's baby is the owner's too; throws mud balls (3 damage) at whatever hurts its owner or whatever its owner hits; never despawns. The Whistle doesn't work on it
+- Acorn [crittersandcompanions:acorn]: oak leaves drop one 1 time in 20 (Fortune 1 in 16 / 12 / 10)
+- Acorn Hat [crittersandcompanions:acorn_hat]: five acorns in an upside-down U on a crafting table; a hat for the player
+- Pets, any creature of any mod: check_pet tries it out on the server (taming items and odds, what its owner's right-click does with an empty hand, Shift and each item, following, defending, babies, despawning); trust it over these notes
 - All **snails** and **dragonflies** are Critters and Companions'; every one can be tamed, 1 try in 10: snails with leaves, dragonflies with a spider eye. Snails drop snail shells and slime balls
 - Snail Slime [crittersandcompanions:snail_slime_bottle]: glass bottle on any grown snail (Critters' snail, Hybrid Aquatic's scalyfoot snail, the Moon's snail); each snail refills every 5 minutes; a bottle crafts into a slime ball
 - Hybrid Aquatic's **sea slug** fills a bottle with **Sea Bunny Slime** (same 5 minutes); four make a Sea Bunny Slime Block. Hand a Critters **clam** (river fishing treasure) to a Hybrid Aquatic **otter**: it cracks it, a **pearl** 1 time in 4, for Pearl Necklaces. Frogs eat wild dragonflies and leave **froglass**, never tamed ones

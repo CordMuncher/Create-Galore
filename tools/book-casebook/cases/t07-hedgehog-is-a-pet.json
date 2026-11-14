@@ -6,16 +6,18 @@
     "R2"
   ],
   "kind": "tool",
-  "tool": "find_creatures",
+  "tool": "check_pet",
   "input": {
-    "query": "hedgehog"
+    "creature": "hedgehog"
   },
   "expect": {
     "has": [
       "Sweet Berries",
       "Glow Berries",
       "Whistle",
-      "sit and stand",
+      "sits down",
+      "pats it (PatPat)",
+      "starts after its owner",
       "never despawns"
     ],
     "lacks": [

@@ -20,7 +20,7 @@
     {
       "type": "modonomicon:text",
       "title": "Creatures",
-      "text": "[#](FFFFFF)[#]() **Key points**\n\n- **Critters and Companions** and **Naturalist** add Overworld animals, many of them tameable.\n- **Hedgehogs** make pets: sweet or glow berries tame one.\n- Every snail and dragonfly can be tamed; snails give slime in a bottle."
+      "text": "[#](FFFFFF)[#]() **Key points**\n\n- **Critters and Companions** and **Naturalist** add Overworld animals, many of them tameable.\n- **Hedgehogs** (berries) and **acorn weevils** (acorns) make pets.\n- Every snail and dragonfly can be tamed; snails give slime in a bottle."
     },
     {
       "type": "modonomicon:text",
@@ -78,6 +78,32 @@
       },
       "title": "Capture Net",
       "text": "Naturalist's tool to catch small creatures like butterflies and firefly."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Acorn weevils as pets",
+      "text": "Critters and Companions' **acorn weevil** is a little brown beetle of forests and lush places.\\\n\\\nHand it **acorns**: each one is a 1 in 10 try. Hearts mean it's yours, smoke means try again."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "crittersandcompanions:acorn"
+      },
+      "title": "Acorn",
+      "text": "Oak leaves drop one now and then (1 in 20 when broken, more often with Fortune). Weevils follow you while you hold one."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "- It **follows** you from the moment it is tamed.\n- Right-click it with an empty hand to make it **sit** or stand.\n- Hold Shift and right-click to **pat** it.\n- Acorns heal it when it's hurt, and two tamed weevils fed acorns have a baby that is yours too.\n- It throws **mud balls** at whatever hurts you or whatever you hit.\n- It never despawns."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "crittersandcompanions:acorn_hat"
+      },
+      "title": "Acorn Hat",
+      "text": "Five acorns in a crafting table, an upside-down U. A hat for you to wear."
     },
     {
       "type": "modonomicon:text",

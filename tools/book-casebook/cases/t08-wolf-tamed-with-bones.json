@@ -6,15 +6,16 @@
     "R2"
   ],
   "kind": "tool",
-  "tool": "find_creatures",
+  "tool": "check_pet",
   "input": {
-    "query": "wolf"
+    "creature": "minecraft:wolf"
   },
   "expect": {
     "has": [
       "Bone [minecraft:bone]",
-      "sit and stand",
-      "it follows its owner"
+      "sits down",
+      "starts after its owner",
+      "goes for whatever hurts its owner"
     ]
   }
 }

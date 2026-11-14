@@ -113,10 +113,14 @@ final class WorldTools {
                 + "the player now, or 'all' for every creature by mod."));
         tools.add(tool("find_creatures", "Every creature on this server, every mod. For a match: name, id, mod, "
                 + "whether it flies, swims, is hostile or a boss, skin colours, health, attack, armor, size, whether "
-                + "it can be tamed (items and odds tried here; sits, follows), its spawn biomes and a player's kill drops. "
+                + "it can be tamed (items and odds tried here), its spawn biomes and a player's kill drops. "
                 + "'nearby' lists the creatures within " + Creatures.AROUND + " blocks of the player now (how many, how far, "
                 + "how high, in sight or not), even off screen. Use it whenever a player asks about a creature, "
-                + "above all one described by looks, wanted as a pet or missing from your notes.", creatureProps));
+                + "above all one described by looks or missing from your notes.", creatureProps));
+        JsonObject petProps = new JsonObject();
+        petProps.add("creature", prop("string", "The creature's name or id."));
+        tools.add(tool("check_pet", "A creature tried out as a pet here, any mod: taming, its owner's right-click "
+                + "(empty hand, Shift, items), following, defending, babies, despawning.", petProps));
         tools.add(tool("get_advancements", "The asking player's advancements, a record of things they have done: how many "
                 + "they have in each mod's tree, the most recent ones with their descriptions, every other one by title, and "
                 + "the next steps in each tree. A next step only means the one before it is done, not that they can do it "
@@ -185,6 +189,7 @@ final class WorldTools {
                 case "lookup_recipes" -> recipes(server, GuideText.string(input, "item"), GuideText.string(input, "direction"));
                 case "find_items" -> findItems(GuideText.string(input, "query"));
                 case "find_creatures" -> Creatures.find(player, server, GuideText.string(input, "query"));
+                case "check_pet" -> Pets.check(player, GuideText.string(input, "creature"));
                 case "recipe_tree" -> Reach.tree(player, server, GuideText.string(input, "item"), Math.max(1, Diagrams.intOr(input, "amount", 1)));
                 case "block_drops" -> Reach.drops(player, GuideText.string(input, "block"));
                 case "read_guide" -> GuideText.read(GuideText.string(input, "query"));
