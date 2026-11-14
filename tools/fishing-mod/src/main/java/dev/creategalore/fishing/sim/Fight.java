@@ -21,7 +21,8 @@ import java.util.random.RandomGenerator;
  *       give: the drag acts as locked. A fish swimming at the angler faster than the line is wound leaves slack.</li>
  *   <li>An angler moving away from the fish (walking, or a boat) tows it: the water's drag on the fish, from its size
  *       and the speed, is what the line has to pull. A small fish on a strong rig is towed along; a big one takes
- *       line through the drag.</li>
+ *       line through the drag. Closing on it (a boat chasing it) slackens the line instead: the fish keeps its own
+ *       speed through the water, and winding in the slack gains line.</li>
  *   <li>Lifting the rod (pumping): the rod comes up at a speed set by the load, fast as a flick with a light fish
  *       and slow under a heavy one, and its tip draws line back by the rod's sweep, against the drag but not
  *       against the reel's crank. Lowering it gives that line back as slack; winding while it comes down ("winding
@@ -296,7 +297,9 @@ public final class Fight {
         double drag = tackle.hasReel() && !spooled ? clamp(in.drag, 0.05, tackle.reelMaxDrag()) : Double.POSITIVE_INFINITY;
         double crank = in.crankLimit(tackle);
         double retrieve = tackle.reelRetrieve() * in.retrieveScale;
-        double recede = Math.max(0, in.recede);
+        // Below zero the angler closes on the fish (a boat chasing it): the line slackens by that much, for the reel
+        // to take up. The fish swims through the water, not with the boat.
+        double recede = in.recede;
 
         // The rod: lifting draws line back by the tip's travel, lowering gives it. Winding while the rod comes down:
         // it comes down as fast as the reel takes up the line ("winding down"): the angler's arms hold the fish while

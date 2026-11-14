@@ -22,7 +22,10 @@ public final class Controls {
      * reel out fast; the geared drives pause instead.
      */
     public boolean crankThroughSlip = true;
-    /** How fast the rod tip moves away from the fish, m/s (walking off, or a boat under way); 0 in the simulator. */
+    /**
+     * How fast the rod tip moves away from the fish, m/s (walking off, or a boat under way); below zero it closes on
+     * the fish (a boat chasing it), which slacks the line for the reel to take up. 0 in the simulator.
+     */
     public double recede;
     /** Lifting the rod (a player holding attack; see {@link Fight} for pumping). Machines never lift. */
     public boolean lifting;

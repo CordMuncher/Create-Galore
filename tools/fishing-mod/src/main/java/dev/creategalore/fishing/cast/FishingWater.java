@@ -3,6 +3,7 @@ package dev.creategalore.fishing.cast;
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.Vec3;
 
@@ -28,11 +29,18 @@ public final class FishingWater {
         return level.getMinBuildHeight() - 6;
     }
 
-    /** Top of the fluid column at {@code pos} (searching up to 32 blocks), as a y coordinate. */
+    /**
+     * Top of the fluid column at {@code pos} (searching up to 32 blocks), as a y coordinate. Falling fluid above it (a
+     * waterfall pouring in) isn't part of the column: the surface is where the pool is, not the top of the fall.
+     */
     public static double surface(Level level, BlockPos pos) {
         BlockPos.MutableBlockPos p = pos.mutable();
         if (level.getFluidState(p).isEmpty()) return pos.getY();
-        for (int i = 0; i < 32 && !level.getFluidState(p.above()).isEmpty(); i++) p.move(0, 1, 0);
+        for (int i = 0; i < 32; i++) {
+            FluidState above = level.getFluidState(p.above());
+            if (above.isEmpty() || falling(above)) break;
+            p.move(0, 1, 0);
+        }
         FluidState top = level.getFluidState(p);
         return p.getY() + top.getHeight(level, p);
     }
@@ -42,6 +50,17 @@ public final class FishingWater {
         BlockPos.MutableBlockPos p = pos.mutable();
         for (int i = 0; i < 64 && !level.getFluidState(p.below()).isEmpty(); i++) p.move(0, -1, 0);
         return p.getY();
+    }
+
+    /** A fluid pouring straight down (a waterfall or a lava fall): nothing swims in it or up it. */
+    public static boolean falling(FluidState fluid) {
+        return !fluid.isEmpty() && !fluid.isSource() && fluid.hasProperty(FlowingFluid.FALLING)
+                && fluid.getValue(FlowingFluid.FALLING);
+    }
+
+    /** True if a hooked fish can swim at {@code pos}: the medium's fluid, and not falling through the air. */
+    public static boolean swimmable(Level level, BlockPos pos, String medium) {
+        return in(level, pos, medium) && !falling(level.getFluidState(pos));
     }
 
     /** Fluid depth at a spot, in blocks. */

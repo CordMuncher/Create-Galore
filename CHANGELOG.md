@@ -5,6 +5,15 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.86
+
+### Added
+- Create Galore Fishing 0.3.33.
+
+### Fixed
+- **A hooked fish could climb a waterfall.** A fish that swam under a waterfall (such as one pouring off a floating island) was put at the top of the fall in a single moment. Falling water and pools more than a block higher now turn a hooked fish back like a shore, and a float under a waterfall stays on the pool.
+- **Chasing a hooked fish in a boat never gained on it.** Driving toward a fish put the fish back at the full line length every moment, so it kept pace with the boat. Closing on a fish now slackens the line, winding the slack in gains line, and the fish swims at its own speed through the water.
+
 ## 0.6.85
 
 ### Added
