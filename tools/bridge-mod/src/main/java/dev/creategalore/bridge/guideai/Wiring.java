@@ -13,13 +13,15 @@ import net.minecraft.world.level.block.state.BlockState;
 
 /**
  * How a model is wired up, carried into its schematic so the Schematicannon prints it set: each Redstone Link's two
- * frequency items, each Rotation Speed Controller's speed and each Wheel Mount's suspension. Create's Schematicannon
- * keeps what a block entity marks as safe to copy, and those three are (a link's frequency and a block's value panel,
- * written as {@code FrequencyFirst}/{@code FrequencyLast} and {@code ScrollValue}); anything else on a block (a Control
- * Stand's modules, a Tire in a mount, fuel) the player sets by hand.
+ * frequency items, each Rotation Speed Controller's speed, and each Wheel Mount's suspension and Tire. Create's
+ * Schematicannon keeps what a block entity marks as safe to copy: a link's frequency and a block's value panel (written
+ * as {@code FrequencyFirst}/{@code FrequencyLast} and {@code ScrollValue}), and a mount's Tire, which the Bridge marks
+ * (WheelMountSchematics; the cannon takes a Tire from its chest for it). Anything else on a block (a Control Stand's
+ * modules, fuel) the player sets by hand.
  *
- * <p>An entry is {@code {x, y, z, link: [first item, last item]}} or {@code {x, y, z, value: n}}; the model JSON carries
- * them as {@code wiring}, the client turns each into the block's data in the schematic it saves.
+ * <p>An entry is {@code {x, y, z, link: [first item, last item]}} or {@code {x, y, z, value: n}}, a mount's with
+ * {@code tire: item} too; the model JSON carries them as {@code wiring}, the client turns each into the block's data in
+ * the schematic it saves.
  */
 public final class Wiring {
     private static final String LINK = "create:redstone_link";
@@ -39,11 +41,39 @@ public final class Wiring {
         return o;
     }
 
-    /** A value-panel entry: the setting on the block at {@code at} (a Wheel Mount's suspension). */
+    /** A value-panel entry: the setting on the block at {@code at} (a speed controller's speed). */
     static JsonObject value(BlockPos at, int value) {
         JsonObject o = cell(at);
         o.addProperty("value", value);
         return o;
+    }
+
+    /** A Wheel Mount's entry: its suspension and the Tire in it. */
+    static JsonObject mount(BlockPos at, int suspension, String tire) {
+        JsonObject o = value(at, suspension);
+        o.addProperty("tire", tire);
+        return o;
+    }
+
+    /** The Tire a Wheel Mount prints with when nothing names another: Offroad's standard one. */
+    static final String TIRE = "offroad:tire";
+
+    /**
+     * Gives every Wheel Mount in {@code cells} a Tire in {@code wiring}, the standard one where its entry names none, so a
+     * schematic never prints a bare mount (a mount without a Tire carries nothing).
+     */
+    static void fitTires(JsonArray wiring, Map<BlockPos, BlockState> cells) {
+        Map<BlockPos, JsonObject> at = new java.util.HashMap<>();
+        for (JsonElement e : wiring) if (e.isJsonObject()) at.putIfAbsent(at(e.getAsJsonObject()), e.getAsJsonObject());
+        cells.forEach((p, st) -> {
+            if (!BuiltInRegistries.BLOCK.getKey(st.getBlock()).toString().equals(WHEEL_MOUNT)) return;
+            JsonObject o = at.get(p);
+            if (o == null) {
+                o = cell(p);
+                wiring.add(o);
+            }
+            if (!o.has("tire")) o.addProperty("tire", TIRE);
+        });
     }
 
     private static JsonObject cell(BlockPos at) {
@@ -83,8 +113,14 @@ public final class Wiring {
             }
             return null;
         }
+        if (o.has("tire")) {
+            if (!id.equals(WHEEL_MOUNT)) return "a Tire at " + where + ", which holds " + id + ", not a Wheel Mount";
+            if (!o.get("tire").isJsonPrimitive() || !dev.creategalore.bridge.WheelMountSchematics.isTire(ResourceLocation.tryParse(id(o.get("tire").getAsString()))))
+                return "the Tire at " + where + " names " + o.get("tire") + ", which isn't one of Offroad's Tires";
+        }
         if (o.has("value")) return id.equals(WHEEL_MOUNT) || id.equals(SPEED_CONTROLLER) ? null
                 : "a setting at " + where + ", which holds " + id + " (only Wheel Mounts and speed controllers keep one)";
+        if (o.has("tire")) return null;
         return "a wiring entry at " + where + " with nothing to set";
     }
 
@@ -122,11 +158,14 @@ public final class Wiring {
             tag.put("FrequencyLast", stack(items.get(1)));
             return tag;
         }
-        if (o.has("value") && o.get("value").isJsonPrimitive()) {
-            tag.putInt("ScrollValue", o.get("value").getAsInt());
-            return tag;
+        if (o.has("value") && o.get("value").isJsonPrimitive()) tag.putInt("ScrollValue", o.get("value").getAsInt());
+        if (o.has("tire") && o.get("tire").isJsonPrimitive()) {
+            CompoundTag tire = new CompoundTag();
+            tire.putString("id", id(o.get("tire").getAsString()));
+            tire = dev.creategalore.bridge.WheelMountSchematics.tire(tire);
+            if (tire != null) tag.put("CurrentStack", tire);
         }
-        return null;
+        return tag.isEmpty() ? null : tag;
     }
 
     /** One of the item, as Create writes a frequency slot's stack. */
@@ -142,25 +181,30 @@ public final class Wiring {
      * (the player sets those by hand); null for a model with neither.
      */
     static String report(JsonArray wiring, Map<BlockPos, Float> speeds, Map<BlockPos, BlockState> cells) {
-        int links = 0, values = 0;
+        int links = 0, values = 0, tires = 0;
         java.util.Set<BlockPos> linked = new java.util.HashSet<>();
         for (JsonElement e : wiring) {
             JsonObject o = e.getAsJsonObject();
             if (o.has("link")) {
                 links++;
                 linked.add(at(o));
-            } else values++;
+            } else if (o.has("value") && cells.get(at(o)) != null
+                    && BuiltInRegistries.BLOCK.getKey(cells.get(at(o)).getBlock()).toString().equals(WHEEL_MOUNT)) values++;
+            if (o.has("tire")) tires++;
         }
         List<String> blank = new java.util.ArrayList<>();
         cells.forEach((p, st) -> {
             if (!linked.contains(p) && BuiltInRegistries.BLOCK.getKey(st.getBlock()).toString().equals(LINK))
                 blank.add(p.getX() + "," + p.getY() + "," + p.getZ());
         });
-        if (links + values + speeds.size() == 0 && blank.isEmpty()) return null;
+        if (links + values + tires + speeds.size() == 0 && blank.isEmpty()) return null;
         List<String> set = new java.util.ArrayList<>();
         if (links > 0) set.add(links + " Redstone Link frequenc" + (links == 1 ? "y" : "ies"));
         if (!speeds.isEmpty()) set.add(speeds.size() + " speed controller setting" + (speeds.size() == 1 ? "" : "s"));
         if (values > 0) set.add(values + " Wheel Mount suspension" + (values == 1 ? "" : "s"));
+        if (tires > 0) set.add(tires + " Tire" + (tires == 1 ? "" : "s") + " in Wheel Mounts (the Schematicannon takes each "
+                + "from its chest like a block; built by hand, a Tire goes on with a right-click on the mount's front, the face "
+                + "it faces, where the wheel hangs)");
         StringBuilder s = new StringBuilder("Wiring: ");
         if (!set.isEmpty()) s.append("its schematic sets ").append(String.join(", ", set)).append(", so the Schematicannon "
                 + "prints them ready (tell the player; built by hand, they set each as you say)");
@@ -176,7 +220,9 @@ public final class Wiring {
         List<String> byHand = new java.util.ArrayList<>();
         if (ids.stream().anyMatch(id -> id.startsWith("aeroworks:") && id.endsWith("control_stand")))
             byHand.add("the Control Stand's modules and their frequencies");
-        if (ids.contains(WHEEL_MOUNT)) byHand.add("a Tire in each Wheel Mount");
+        long mounts = cells.values().stream().filter(st -> BuiltInRegistries.BLOCK.getKey(st.getBlock()).toString().equals(WHEEL_MOUNT)).count();
+        if (mounts > tires) byHand.add("a Tire in each Wheel Mount without one in the schematic (right-click the mount's front, "
+                + "the face it faces, with it)");
         if (!byHand.isEmpty()) s.append(". Not carried, so the player adds them: ").append(String.join(", ", byHand));
         return s.append('.').toString();
     }

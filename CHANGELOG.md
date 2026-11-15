@@ -5,6 +5,23 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.90
+
+### Added
+- Create Galore Bridge 1.195.0.
+- **Wheel Mounts print with their Tires.** A Schematicannon now prints an Offroad Wheel Mount with the Tire it held when the schematic was saved, taking a Tire from its chest for each one like any other block. Only Offroad's own Tires are copied, one per mount. Ask the Book's plane schematics carry a Tire in every mount.
+- **Ask the Book checks the pilot can see past the propeller.** A plane whose spinning propeller crosses too much of the pilot's view ahead is sent back with a fix (slim blades with sky between them, a smaller propeller, or the seat farther back), and so is one whose propeller tips would strike or skim the ground when parked.
+- **Field Guide:** new Propellers pages on fitting a Tire to a Wheel Mount and on a nose propeller you can see past.
+
+### Fixed
+- **The pilot couldn't see out of the book's planes.** A player reported that the nose propeller, a five-wide disc of sails, filled the view ahead. It is now two slim blades with open sky between them, twelve sails on a Honey Block hub at the old height on the nose: from the pilot's back seat the spinning blades cross about a sixth of the view ahead, where the disc covered about half. The planes are laid out again for its weight (the Copycat-winged ones are now 19 wide) and were flown again in a test world.
+- **Tires wouldn't go on a printed plane's Wheel Mounts.** A Tire goes on only at the mount's front, the face it faces, where the wheel hangs, and the book never said so. The book and the Field Guide now do, and the schematic carries the Tires anyway.
+- **The sail-winged biplane's flying notes were a guess.** It noses up harder as it lifts than the Copycat-winged one; the book now says to bring the power back to about 60% once the wheels are off and hold the stick half forward, measured in a test world.
+- **A jet's schematic looked as if it came wired.** A Schematicannon copies only what a block marks safe to copy, and Create: Flight Control's links and settings aren't, so a printed jet is linked with the Tool Gun after printing. The book now says so plainly before walking through each step.
+
+### Removed
+- The five-wide sail disc on the nose of the book's planes.
+
 ## 0.6.89
 
 ### Added
