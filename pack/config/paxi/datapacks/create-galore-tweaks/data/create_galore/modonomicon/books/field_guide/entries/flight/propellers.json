@@ -95,12 +95,12 @@
     {
       "type": "modonomicon:text",
       "title": "A plane that flies",
-      "text": "[#](FFFFFF)[#]() **In depth.** A 19-block biplane 13 wide on Copycat Wings (8m), with a closed wooden body and a tandem cockpit. Under its floor three Portable Engines drive a Rotation Speed Controller set to -256, whose shaft runs forward through an Analog Transmission, the throttle, to a twelve-sail Propeller Bearing on the nose. A fourth engine turns the Tilt Adapters that swing its ailerons and elevator on Swivel Bearings. On three Wheel Mounts set to 5 it lifts off after about 20 blocks and flies level at about 16 blocks a second on 60%% power. On sails it needs 17 across and 6 deep."
+      "text": "[#](FFFFFF)[#]() **In depth.** A 20-block biplane 19 wide on Copycat Wings (8m), with a closed wooden body and a tandem cockpit. Under its floor three Portable Engines drive a Rotation Speed Controller set to -256, whose shaft runs forward through an Analog Transmission, the throttle, to a Propeller Bearing on the nose with two slim blades of six sails. A fourth engine turns the Tilt Adapters that swing its ailerons and elevator on Swivel Bearings. On three Wheel Mounts set to 5 it lifts off after about 20 blocks and flies level at about 15 blocks a second on 60%% power. On sails it needs 19 across and 6 deep."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "The pilot sits in the back seat, as in an open-cockpit biplane: from the front one the propeller fills the middle of the view. Nothing holds it level, so the pilot flies it, and it loops and rolls. A Control Stand holds a Joystick Module (ailerons and elevator), a Lever Module (the throttle) and two Pedal Modules (the brakes), each direction on its own Redstone Link frequency. Bank to turn, with a touch of back stick to hold the height."
+      "text": "The pilot sits in the back seat, as in an open-cockpit biplane: from there the blades cross about a sixth of the view ahead. Nothing holds it level, so the pilot flies it, and it loops and rolls. A Control Stand holds a Joystick Module (ailerons and elevator), a Lever Module (the throttle) and two Pedal Modules (the brakes), each direction on its own Redstone Link frequency. Bank to turn, with a touch of back stick to hold the height."
     },
     {
       "type": "modonomicon:text",
@@ -109,8 +109,18 @@
     },
     {
       "type": "modonomicon:text",
+      "title": "Fitting the Tires",
+      "text": "A Tire goes on a Wheel Mount only at its front, the face it faces, where the wheel hangs: right-click that face with it.\\\n\\\nA schematic of a mount that holds a Tire carries it: the Schematicannon prints the mount with its Tire, taking one from its chest like a block."
+    },
+    {
+      "type": "modonomicon:text",
       "title": "Stopping and seeing",
-      "text": "Pull the throttle back and brake both main wheels after touching down: a light plane stops in about 15 blocks.\\\n\\\nKeep engines, machines and wings out from in front of the windscreen. A propeller on the nose is fine with the pilot sat a few blocks behind it."
+      "text": "Pull the throttle back and brake both main wheels after touching down: a light plane stops in about 15 blocks.\\\n\\\nKeep engines, machines and wings out from in front of the windscreen."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "The nose propeller",
+      "text": "Give it two slim blades with sky between them: seen from a few blocks behind, a five-wide disc of sails hides half the view ahead, two blades a sixth.\\\n\\\nKeep its hub level with the centre of mass (a low one noses the plane up under power) and its tips at least half a block off the ground when parked."
     },
     {
       "type": "modonomicon:text",

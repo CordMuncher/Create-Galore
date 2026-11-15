@@ -29,6 +29,7 @@ import net.minecraft.world.level.block.TrapDoorBlock;
 import net.minecraft.world.level.block.WallBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.SlabType;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.AABB;
@@ -479,8 +480,11 @@ final class PlayerCheck {
     }
 
     /** What one place at the helm sees ahead: lines out in the build and through its shell alone, and what stops the rest. */
-    private record Sight(Eye eye, int open, int shell, Map<BlockPos, Integer> blockers) {
+    private record Sight(Eye eye, Vec3 ahead, int open, int shell, Map<BlockPos, Integer> blockers) {
     }
+
+    /** The middle of the view ahead, where a spinning propeller is judged: degrees either side, down and up. */
+    private static final int MID_SIDE = 12, MID_DOWN = 10, MID_UP = 4;
 
     /**
      * Whether whoever steers can see where they are going. From each place at the helm, and each seat beside it (eyes
@@ -489,11 +493,16 @@ final class PlayerCheck {
      * it. The same lines are cast again through the vehicle's shell alone (full blocks, glass, stairs, slabs, fences,
      * walls, doors and trapdoors) for the view its windows and openings give, and whatever stops a line the shell leaves
      * open (a control, link, machine or fitting) is blocking the view. The pilot takes the best place at the helm: from
-     * there, more than a quarter of the view out lost, or no view out ahead at all, is a fault.
+     * there, more than a quarter of the view out lost, or no view out ahead at all, is a fault. A propeller's blades are
+     * looked past there (at rest they stand anywhere) and judged spinning instead: one that sweeps across more than a
+     * quarter of the middle of the view ahead (12 degrees either side, 10 down to 4 up) hides where it goes. Measured on a
+     * plane from its back seat: a five-wide disc of twelve sails level with the pilot's eyes hid about half of it, two
+     * slim blades five wide at the same height under a fifth, a cross of four such blades there a third.
      */
     private static void view(Map<BlockPos, BlockState> blocks, BlockGetter getter, Set<Node> helm, List<BlockPos> controls,
                              List<BlockPos> seats, List<String> faults) {
         if (controls.isEmpty()) return;
+        Map<BlockPos, BlockPos> spinning = propellers(blocks);
         List<Eye> eyes = new ArrayList<>();
         for (BlockPos s : seats)
             if (helm.stream().anyMatch(n -> n.cell.distManhattan(s) <= 2))
@@ -502,12 +511,19 @@ final class PlayerCheck {
         // A seat at the helm is where the pilot flies from: a spot to stand on beyond the wheel (looking back at it, into
         // the machinery behind) is no pilot's view. With no seat there, the pilot stands.
         if (eyes.isEmpty()) for (Node n : helm) eyes.add(new Eye(n.eye(), "standing at " + xyz(n.cell)));
+        // Where a propeller ahead hides the view, the pilot sits wherever it hides less than a quarter, if anywhere.
         Sight best = null;
+        Blur blur = null;
         for (Eye eye : eyes) {
             Vec3 ahead = ahead(blocks, getter, eye.at, controls);
             if (ahead == null) continue;
-            Sight s = sight(blocks, getter, eye, ahead);
-            if (best == null || s.open > best.open || s.open == best.open && s.shell > best.shell) best = s;
+            Sight s = sight(blocks, getter, eye, ahead, spinning.keySet());
+            Blur b = blur(blocks, getter, spinning, eye.at, ahead);
+            boolean hid = b != null && b.hides(), bestHid = blur != null && blur.hides();
+            if (best == null || bestHid && !hid || hid == bestHid && (s.open > best.open || s.open == best.open && s.shell > best.shell)) {
+                best = s;
+                blur = b;
+            }
         }
         if (best == null) return;
         if (best.shell == 0) {
@@ -516,6 +532,13 @@ final class PlayerCheck {
                     + "the wall ahead of the helm, at the pilot's eye height (about 1.6 above the floor they stand on)");
             return;
         }
+        if (blur != null && blur.hides())
+            faults.add(String.format(Locale.ROOT, "the propeller hides the way ahead: spinning, the blades on the %s at %s sweep "
+                    + "across %.0f%% of the middle of the pilot's view (%s, the best place at the helm; %d° either side, %d° down "
+                    + "to %d° up). Keep a propeller ahead of the pilot out of the middle of the view: two slim blades with open sky "
+                    + "between them rather than a full disc (from the book's biplane's back seat two blades five wide cross about "
+                    + "a sixth of it, a five-wide disc half), a smaller one, or the pilot's seat farther back from it", name(blocks.get(blur.bearing)),
+                    xyz(blur.bearing), blur.percent, best.eye.where, MID_SIDE, MID_DOWN, MID_UP));
         int lost = best.shell - best.open;
         if (lost * 4 <= best.shell) return;
         List<String> what = best.blockers.entrySet().stream().sorted((a, b) -> b.getValue() - a.getValue()).limit(5)
@@ -546,33 +569,123 @@ final class PlayerCheck {
         return f.length() < 0.3 ? null : f.normalize();
     }
 
-    private static Sight sight(Map<BlockPos, BlockState> blocks, BlockGetter getter, Eye eye, Vec3 ahead) {
+    private static Sight sight(Map<BlockPos, BlockState> blocks, BlockGetter getter, Eye eye, Vec3 ahead, Set<BlockPos> spinning) {
         int open = 0, shell = 0;
         Map<BlockPos, Integer> blockers = new HashMap<>();
         for (int yaw = -35; yaw <= 35; yaw += 5)
             for (int pitch = -15; pitch <= 10; pitch += 5) {
-                double y = Math.toRadians(yaw), p = Math.toRadians(pitch);
-                double x = ahead.x * Math.cos(y) - ahead.z * Math.sin(y), z = ahead.x * Math.sin(y) + ahead.z * Math.cos(y);
-                Vec3 to = eye.at.add(new Vec3(x * Math.cos(p), Math.sin(p), z * Math.cos(p)).scale(SIGHT));
-                BlockPos all = sightStop(blocks, getter, eye.at, to, false);
+                Vec3 to = eye.at.add(line(ahead, yaw, pitch).scale(SIGHT));
+                BlockPos all = sightStop(blocks, getter, eye.at, to, false, spinning);
                 if (all == null) open++;
-                if (sightStop(blocks, getter, eye.at, to, true) != null) continue;
+                if (sightStop(blocks, getter, eye.at, to, true, spinning) != null) continue;
                 shell++;
                 if (all != null) blockers.merge(all, 1, Integer::sum);
             }
-        return new Sight(eye, open, shell, blockers);
+        return new Sight(eye, ahead, open, shell, blockers);
     }
 
-    /** The first block that stops sight from {@code from} to {@code to}, or null; {@code shell} looks past all but the shell. */
-    private static BlockPos sightStop(Map<BlockPos, BlockState> blocks, BlockGetter getter, Vec3 from, Vec3 to, boolean shell) {
+    /** The way {@code yaw} degrees to the right of level {@code ahead} and {@code pitch} up. */
+    private static Vec3 line(Vec3 ahead, double yaw, double pitch) {
+        double y = Math.toRadians(yaw), p = Math.toRadians(pitch);
+        double x = ahead.x * Math.cos(y) - ahead.z * Math.sin(y), z = ahead.x * Math.sin(y) + ahead.z * Math.cos(y);
+        return new Vec3(x * Math.cos(p), Math.sin(p), z * Math.cos(p));
+    }
+
+    /**
+     * The first block that stops sight from {@code from} to {@code to}, or null; {@code shell} looks past all but the shell.
+     * The cells in {@code skip} (a propeller's, judged spinning) are looked past.
+     */
+    private static BlockPos sightStop(Map<BlockPos, BlockState> blocks, BlockGetter getter, Vec3 from, Vec3 to, boolean shell,
+                                      Set<BlockPos> skip) {
         return BlockGetter.traverseBlocks(from, to, null, (ctx, pos) -> {
             BlockState s = blocks.get(pos);
-            if (s == null || seeThrough(s) || shell && !shell(getter, pos, s)) return null;
+            if (s == null || skip.contains(pos) || seeThrough(s) || shell && !shell(getter, pos, s)) return null;
             VoxelShape shape = s.getShape(getter, pos);
             if (shape.isEmpty() || shape.move(pos.getX(), pos.getY(), pos.getZ()).toAabbs().stream().anyMatch(b -> b.contains(from)))
                 return null;
             return shape.clip(from, to, pos) != null ? pos.immutable() : null;
         }, ctx -> null);
+    }
+
+    /** How far along from {@code from} to {@code to} sight is first stopped by one of {@code cells}; infinity if it isn't. */
+    private static double stopsAt(Map<BlockPos, BlockState> cells, BlockGetter getter, Vec3 from, Vec3 to, Set<BlockPos> skip) {
+        Vec3 hit = BlockGetter.traverseBlocks(from, to, null, (ctx, pos) -> {
+            BlockState s = cells.get(pos);
+            if (s == null || skip.contains(pos) || seeThrough(s)) return null;
+            VoxelShape shape = s.getShape(getter, pos);
+            if (shape.isEmpty() || shape.move(pos.getX(), pos.getY(), pos.getZ()).toAabbs().stream().anyMatch(b -> b.contains(from)))
+                return null;
+            var r = shape.clip(from, to, pos);
+            return r != null ? r.getLocation() : null;
+        }, ctx -> null);
+        return hit == null ? Double.POSITIVE_INFINITY : hit.distanceTo(from);
+    }
+
+    /** Every cell that turns on a Propeller Bearing (its hub and sails), with the bearing it turns on. */
+    private static Map<BlockPos, BlockPos> propellers(Map<BlockPos, BlockState> blocks) {
+        Map<BlockPos, BlockPos> out = new HashMap<>();
+        blocks.forEach((p, s) -> {
+            String id = id(s);
+            if (!id.equals("aeronautics:propeller_bearing") && !id.equals("aeronautics:gyroscopic_propeller_bearing")
+                    || !s.hasProperty(BlockStateProperties.FACING)) return;
+            for (BlockPos q : VehicleCheck.propeller(blocks, p, s.getValue(BlockStateProperties.FACING))) out.putIfAbsent(q, p);
+        });
+        return out;
+    }
+
+    /** How much of the middle of the view ahead a propeller hides, spinning. */
+    private record Blur(BlockPos bearing, double percent) {
+        /** More than a quarter is a fault. */
+        boolean hides() {
+            return percent > 25;
+        }
+    }
+
+    /**
+     * The propeller that hides the most of the middle of the view ahead from {@code eye}, spinning, or null when none
+     * turns there: lines 2 degrees apart across it, each cast past the blades at 24 places round their turn, and the
+     * share of them the blades meet before anything else.
+     */
+    private static Blur blur(Map<BlockPos, BlockState> blocks, BlockGetter getter, Map<BlockPos, BlockPos> spinning, Vec3 eye,
+                             Vec3 ahead) {
+        if (spinning.isEmpty()) return null;
+        Map<BlockPos, Map<BlockPos, BlockState>> props = new HashMap<>();
+        spinning.forEach((q, b) -> props.computeIfAbsent(b, k -> new HashMap<>()).put(q, blocks.get(q)));
+        List<Vec3> ends = new ArrayList<>();
+        List<Double> still = new ArrayList<>();
+        for (int yaw = -MID_SIDE; yaw <= MID_SIDE; yaw += 2)
+            for (int pitch = -MID_DOWN; pitch <= MID_UP; pitch += 2) {
+                Vec3 to = eye.add(line(ahead, yaw, pitch).scale(SIGHT));
+                ends.add(to);
+                still.add(stopsAt(blocks, getter, eye, to, spinning.keySet()));
+            }
+        Blur worst = null;
+        for (Map.Entry<BlockPos, Map<BlockPos, BlockState>> e : props.entrySet()) {
+            Direction.Axis axis = blocks.get(e.getKey()).getValue(BlockStateProperties.FACING).getAxis();
+            Vec3 c = Vec3.atCenterOf(e.getKey());
+            int lines = 0, hidden = 0;
+            for (int i = 0; i < ends.size(); i++)
+                for (int k = 0; k < 24; k++) {
+                    double th = Math.toRadians(15 * k + 7);
+                    lines++;
+                    if (stopsAt(e.getValue(), getter, turn(eye, c, axis, -th), turn(ends.get(i), c, axis, -th), Set.of()) < still.get(i))
+                        hidden++;
+                }
+            Blur b = new Blur(e.getKey(), 100.0 * hidden / lines);
+            if (worst == null || b.percent > worst.percent) worst = b;
+        }
+        return worst;
+    }
+
+    /** {@code p} turned by {@code th} radians about the line through {@code c} along {@code axis}. */
+    private static Vec3 turn(Vec3 p, Vec3 c, Direction.Axis axis, double th) {
+        double cs = Math.cos(th), sn = Math.sin(th);
+        Vec3 r = p.subtract(c);
+        return c.add(switch (axis) {
+            case X -> new Vec3(r.x, r.y * cs - r.z * sn, r.y * sn + r.z * cs);
+            case Y -> new Vec3(r.x * cs + r.z * sn, r.y, -r.x * sn + r.z * cs);
+            case Z -> new Vec3(r.x * cs - r.y * sn, r.x * sn + r.y * cs, r.z);
+        });
     }
 
     private static boolean seeThrough(BlockState s) {

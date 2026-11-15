@@ -2283,6 +2283,7 @@ final class VehicleCheck {
                     + "so it tips onto a wing; put gear on both sides");
             return;
         }
+        propClearance(b, feet, best, faults);
         double drag = DAMP * b.m + w.drag(best.getAxis(), p0);
         // Take-off: from standing, until the wings carry the weight. Wheel mounts placed in a model have no setting yet;
         // the player is told to turn them down to 5, so that is what the run is judged at, with the default for comparison.
@@ -2361,6 +2362,62 @@ final class VehicleCheck {
         if (!reverse && wheels == 0 && mu < 0.3 && idle > 2 * x)
             notes.add(String.format(Locale.ROOT, "nothing stops it after landing but its own drag (about %.0f blocks): a Gearshift "
                     + "in each propeller line, on a lever at the pilot's hand, turns them backwards as an air brake", idle));
+    }
+
+    /**
+     * How far below its block a Wheel Mount with a Tire stands on the ground, at suspension 5 with the plane's weight on
+     * it. Measured on the book's plane: the mains' blocks stood 0.79 to 0.81 above the runway, the lighter nose 0.95.
+     */
+    private static final double WHEEL_FOOT = 0.8;
+    /** The least gap between a propeller's swept disc and the ground it stands on, blocks. */
+    private static final double PROP_CLEAR = 0.5;
+
+    /**
+     * A propeller on its nose or tail must clear the ground, parked on what it stands on: its tips sweep a circle round
+     * the bearing's axis, and the ground runs on the line through its front and back feet. Measured: the book's plane,
+     * level on three Wheel Mounts with a propeller set a block lower on its nose, its lowest tip 0.01 above the runway,
+     * struck the ground at 20 blocks/s as its nose dipped climbing out low, and spun off the field.
+     */
+    private static void propClearance(Body b, List<Part> feet, Direction best, List<String> faults) {
+        // The ground line, along the way it flies: through the lowest foot of the front-most and of the back-most row.
+        double f0 = Double.MAX_VALUE, f1 = -Double.MAX_VALUE;
+        for (Part p : feet) {
+            double f = forward(b, best, p.cx(), p.cz());
+            f0 = Math.min(f0, f);
+            f1 = Math.max(f1, f);
+        }
+        double y0 = Double.MAX_VALUE, y1 = Double.MAX_VALUE;
+        for (Part p : feet) {
+            double f = forward(b, best, p.cx(), p.cz()), y = p.pos.getY() - (p.id.equals("offroad:wheel_mount") ? WHEEL_FOOT : 0);
+            if (f < f0 + 0.5) y0 = Math.min(y0, y);
+            if (f > f1 - 0.5) y1 = Math.min(y1, y);
+        }
+        double slope = f1 - f0 < 0.5 ? 0 : (y1 - y0) / (f1 - f0), base0 = f1 - f0 < 0.5 ? Math.min(y0, y1) : y0;
+        for (Part p : b.parts) {
+            Direction f = facing(p.state);
+            if (!p.id.endsWith("propeller_bearing") || f == null || !f.getAxis().isHorizontal()) continue;
+            Set<BlockPos> cells = propeller(b.blocks, p.pos, f);
+            if (cells.stream().noneMatch(q -> b.blocks.get(q).is(SAILS))) continue;
+            // The swept circle's radius: the farthest corner of any of its cells from the axis through the bearing.
+            double ax = p.pos.getX() + 0.5, ay = p.pos.getY() + 0.5, az = p.pos.getZ() + 0.5, r = 0, front = -Double.MAX_VALUE;
+            for (BlockPos q : cells) {
+                for (int i = 0; i <= 1; i++)
+                    for (int j = 0; j <= 1; j++) {
+                        double side = f.getAxis() == Direction.Axis.Z ? q.getX() + i - ax : q.getZ() + i - az;
+                        r = Math.max(r, Math.hypot(side, q.getY() + j - ay));
+                    }
+                front = Math.max(front, Math.abs(forward(b, best, q.getX() + 0.5, q.getZ() + 0.5)));
+            }
+            double at = forward(b, best, p.pos.getX() + 0.5, p.pos.getZ() + 0.5) >= 0 ? front : -front;
+            double ground = base0 + slope * (at - f0), gap = ay - r - ground;
+            if (gap >= PROP_CLEAR) continue;
+            faults.add(String.format(Locale.ROOT, "the propeller on the Propeller Bearing at %s %s: parked on its gear, its "
+                    + "lowest tip sweeps %s the ground, and the least dip of the nose near the ground strikes it. Keep its tips "
+                    + "at least half a block clear: a taller nose leg (the nose Wheel Mount a block lower, under a block of the "
+                    + "body), the propeller higher on the nose (mind the pilot's view), or shorter blades", xyz(p.pos),
+                    gap < 0 ? "hits the ground" : "barely clears the ground", gap < 0 ? String.format(Locale.ROOT, "%.1f blocks into",
+                    -gap) : String.format(Locale.ROOT, "only %.1f blocks above", gap)));
+        }
     }
 
     /** {x, t, stuck 1/0, top speed}: the take-off run from standing with wheel mounts at {@code setting}. */
@@ -3318,26 +3375,38 @@ final class VehicleCheck {
     }
 
     private static int sails(Body b, BlockPos bearing, Direction f, Set<BlockPos> found) {
-        BlockPos start = bearing.relative(f);
-        if (!b.blocks.containsKey(start)) return 0;
-        Set<BlockPos> seen = new HashSet<>(List.of(start));
-        ArrayDeque<BlockPos> todo = new ArrayDeque<>(List.of(start));
+        Set<BlockPos> cells = propeller(b.blocks, bearing, f);
         int count = 0;
-        while (!todo.isEmpty() && seen.size() < 128) {
-            BlockPos p = todo.poll();
-            BlockState s = b.blocks.get(p);
-            if (s.is(SAILS)) {
+        for (BlockPos p : cells)
+            if (b.blocks.get(p).is(SAILS)) {
                 count++;
                 found.add(p);
             }
+        return count;
+    }
+
+    /**
+     * What turns on a propeller bearing, glued as one: its hub (the block on its face, and up to two more straight ahead
+     * of it, for a hub several deep) and the sails in the plane of each hub block, joined to it through each other. Empty
+     * when its face is bare.
+     */
+    static Set<BlockPos> propeller(Map<BlockPos, BlockState> blocks, BlockPos bearing, Direction f) {
+        Set<BlockPos> seen = new java.util.LinkedHashSet<>();
+        ArrayDeque<BlockPos> todo = new ArrayDeque<>();
+        for (int k = 1; k <= 3 && blocks.containsKey(bearing.relative(f, k)); k++) {
+            seen.add(bearing.relative(f, k));
+            todo.add(bearing.relative(f, k));
+        }
+        while (!todo.isEmpty() && seen.size() < 128) {
+            BlockPos p = todo.poll();
             for (Direction d : Direction.values()) {
                 if (d.getAxis() == f.getAxis()) continue;
                 BlockPos n = p.relative(d);
-                BlockState ns = b.blocks.get(n);
+                BlockState ns = blocks.get(n);
                 if (ns != null && ns.is(SAILS) && seen.add(n)) todo.add(n);
             }
         }
-        return count;
+        return seen;
     }
 
     /**

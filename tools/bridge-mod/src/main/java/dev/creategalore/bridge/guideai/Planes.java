@@ -15,20 +15,20 @@ import net.minecraft.world.level.block.state.BlockState;
 /**
  * Small planes laid out by the server (one or two seats, wood, colour), so the book never wires a plane by hand. The
  * propeller plane is the one that flies on Sable's rules and stays small: a light wooden fuselage with a tandem cockpit,
- * the pilot in the back seat as in an open-cockpit biplane (from the front one the nose propeller fills the middle of
- * the view), a low nose and a window ahead of them; under the cockpit floor three Portable Engines drive a Rotation Speed
- * Controller set to -256, whose shaft runs forward through an Analog Transmission (the throttle) to a twelve-sail
- * propeller on a Propeller Bearing at the nose. Nothing holds it level: a fourth engine behind the seats turns Tilt
+ * the pilot in the back seat as in an open-cockpit biplane, a low nose and a window ahead of them; under the cockpit
+ * floor three Portable Engines drive a Rotation Speed Controller set to -256, whose shaft runs forward through an Analog
+ * Transmission (the throttle) to a two-blade propeller of twelve sails on a Propeller Bearing at the nose, slim enough to
+ * see past as it spins. Nothing holds it level: a fourth engine behind the seats turns Tilt
  * Adapters that swing ailerons and an elevator on Swivel Bearings, so the pilot flies it, rolls it and loops it, as players
  * want (a Gyroscope would hold it level but stop all that, so it is only an add-on the player may ask for).
  * Offroad Wheel Mounts with Tires are its landing gear (one under the nose, two just behind the centre of mass,
- * suspension 5), each main wheel braked on its own Redstone Link, so braking one steers it on the ground. An Aeroworks
+ * suspension 5, the Tires in the schematic), each main wheel braked on its own Redstone Link, so braking one steers it on the ground. An Aeroworks
  * Control Stand is the cockpit: a Joystick Module for the stick, a Lever Module for the throttle and two Pedal Modules
  * for the brakes, each direction on its own Redstone Link frequency. Wings of several spans, chords and places, one deck or two, with
  * tails of several sizes, are each judged with the vehicle check itself (take-off and landing runs, flight, balance,
  * rolls, loops, the pilot's view and reach, boarding), and the smallest that passes with a short run is kept. The
- * result carries its wiring (every link's frequency, the controller's speed, each mount's suspension), which the
- * schematic keeps so the Schematicannon prints it set.
+ * result carries its wiring (every link's frequency, the controller's speed, each mount's suspension and Tire), which
+ * the schematic keeps so the Schematicannon prints it set.
  */
 final class Planes {
     /** Take-off run wished for, blocks: the smallest wing that needs no more than this wins; else the shortest run. */
@@ -315,6 +315,9 @@ final class Planes {
         raw.put("cogEncZ", "create:andesite_encased_cogwheel[axis=z,top_shaft=true,bottom_shaft=true]");
         raw.put("propBearing", "aeronautics:propeller_bearing[facing=north]");
         raw.put("hub", "minecraft:" + w + "_planks");
+        // In the propeller's hub, between two planks: sticks the planks, and the sails on them, together as the bearing
+        // takes them up.
+        raw.put("honey", "minecraft:honey_block");
         raw.put("blade", "create:" + spec.colour() + "_sail[facing=north]");
         raw.put("linkEast", "create:redstone_link[facing=east,receiver=true]");
         raw.put("linkNorth", "create:redstone_link[facing=north,receiver=true]");
@@ -375,10 +378,10 @@ final class Planes {
             c.put(new BlockPos(-1, 2, z), p.get("wallW"));
             c.put(new BlockPos(1, 2, z), p.get("wallE"));
         }
-        // The seats, in tandem. A propeller plane's pilot sits in the back one, as in an open-cockpit biplane: the
-        // propeller's disc is level with their eyes, and from the front seat, close behind it, it hid 44% of the view out
-        // (the check's limit is a quarter); from the back it hides little. A passenger sits in front, or that pit stays
-        // open. A jet has nothing on its nose, so its pilot sits in front, by the stand.
+        // The seats, in tandem. A propeller plane's pilot sits in the back one, as in an open-cockpit biplane: from there
+        // the spinning blades cross about a sixth of the middle of the view, from the front seat, closer behind them, about
+        // a third (the check's limit is a quarter). A passenger sits in front, or that pit stays open. A jet has nothing
+        // on its nose, so its pilot sits in front, by the stand.
         c.put(new BlockPos(0, 2, spec.jet() ? PILOT_JET : PILOT), p.get("seat"));
         if (spec.seats() > 1) c.put(new BlockPos(0, 2, spec.jet() ? PILOT : PILOT_JET), p.get("seat"));
         // The cockpit's sides: planks, with a gap on the left at the step in, a ladder up the side below it.
@@ -441,6 +444,8 @@ final class Planes {
 
     /** The row of the Rotation Speed Controller and the two drive engines either side of it, under the pilot's floor. */
     static final int RSC_ROW = 3;
+    /** How deep the propeller's hub and blades run in front of its bearing: three, for twelve sails on two blades. */
+    static final int PROP_DEEP = 3;
     /** Where the Physics Assembler sits: under the floor behind the drive, below the step in. */
     static final BlockPos ASSEMBLER = new BlockPos(0, 0, RSC_ROW + 1);
 
@@ -449,7 +454,7 @@ final class Planes {
      * (-256, which turns the propeller the way that pulls it forward) takes three Portable Engines at 32 RPM, one facing
      * it from the right and two facing each other into a gearbox on its left, and its encased large cogwheel (in the floor
      * above it) turns an encased shaft forward to an Analog Transmission in the nose (the throttle), which hands the drive
-     * up through its cogwheel to an encased cogwheel and a Propeller Bearing on the nose with a twelve-sail propeller.
+     * up through its cogwheel to an encased cogwheel and a Propeller Bearing on the nose with a two-blade, twelve-sail propeller.
      * Three engines give 6144 stress units; twelve sails at 256 RPM take exactly that and push 0.2 x 12^1.5 x 256 = 2128
      * (measured in a test world: 2128, every engine running, nothing overstressed). With two engines and eight sails it
      * pushed 1159: its wheels then topped out at about the speed its wings lifted it, and it crept off the ground; with
@@ -469,17 +474,20 @@ final class Planes {
         c.put(new BlockPos(1, 1, 0), p.get("linkEast"));
         c.put(new BlockPos(0, 2, 0), p.get("cogEncZ"));
         c.put(new BlockPos(0, 2, -1), p.get("propBearing"));
-        // The propeller: a plank hub, a cross of four two-sail blades and a sail in each corner between them, twelve in a
-        // five-wide disc in front of the bearing (its push counts sails, not their shape; a wider one would strike the
-        // ground, its lowest sail being level with the wheels' axles).
-        c.put(new BlockPos(0, 2, -2), p.get("hub"));
-        for (int r = 1; r <= 2; r++) {
-            c.put(new BlockPos(0, 2 + r, -2), p.get("blade"));
-            c.put(new BlockPos(0, 2 - r, -2), p.get("blade"));
-            c.put(new BlockPos(r, 2, -2), p.get("blade"));
-            c.put(new BlockPos(-r, 2, -2), p.get("blade"));
+        // The propeller: two blades, each two sails long, five wide in all, three sails deep on a hub three deep (a plank,
+        // a Honey Block, a plank): twelve sails, which take what the three engines give at 256 RPM (its push counts sails,
+        // not where they are). Spinning, two slim blades leave most of their circle open: from the pilot's seat they cross
+        // about a sixth of the middle of the view, where the old five-wide disc of twelve, a sail in each corner, hid
+        // half, and four blades at this height a third. Lower on the nose the disc would hide less, but there its push
+        // runs below the centre of mass and noses the plane up with power (measured: a sail-winged one pitched up past
+        // the stick's reach just off the ground, and stalled). A sail holds only to the blocks beside it in its own plane,
+        // and the bearing takes up only what holds to its face, so the Honey Block sticks the planks, and the blades on
+        // them, together: glue can't, as the Physics Assembler uses up the glue on the plane when it assembles it
+        // (measured on a two-deep hub: glued, it turned only the 4 sails on the bearing's face; with a Honey Block, all).
+        for (int k = 0; k < PROP_DEEP; k++) {
+            c.put(new BlockPos(0, 2, -2 - k), p.get(k == 1 ? "honey" : "hub"));
+            for (int x : new int[] {-2, -1, 1, 2}) c.put(new BlockPos(x, 2, -2 - k), p.get("blade"));
         }
-        for (int x : new int[] {-1, 1}) for (int y : new int[] {1, 3}) c.put(new BlockPos(x, y, -2), p.get("blade"));
         c.put(ASSEMBLER, p.get("assembler"));
         // Brakes: a Redstone Link on top of each main Wheel Mount brakes it while powered; one alone steers on the ground.
         c.put(new BlockPos(-1, 1, w.gear()), p.get("linkUp"));
@@ -695,11 +703,11 @@ final class Planes {
         return m;
     }
 
-    /** The plane's wiring in the model's frame, for its schematic: every link's frequency and each mount's suspension. */
+    /** The plane's wiring in the model's frame, for its schematic: every link's frequency, each mount's suspension and Tire. */
     private static com.google.gson.JsonArray wiring(Spec spec, Wing w, BlockPos shift) {
         com.google.gson.JsonArray a = new com.google.gson.JsonArray();
         receivers(spec, w).forEach((p, f) -> a.add(Wiring.link(p.offset(shift), f.item(), f.item())));
-        for (BlockPos g : gear(w)) a.add(Wiring.value(g.offset(shift), SUSPENSION));
+        for (BlockPos g : gear(w)) a.add(Wiring.mount(g.offset(shift), SUSPENSION, Wiring.TIRE));
         return a;
     }
 
@@ -742,8 +750,9 @@ final class Planes {
                 + "only 64 stress units). No gyroscope: the computer levels it.\n", at.apply(left), at.apply(right),
                 at.apply(left.offset(-1, 0, 0)), at.apply(right.offset(1, 0, 0)), at.apply(new BlockPos(0, 3, 8)),
                 at.apply(new BlockPos(-1, 4, 7)), at.apply(new BlockPos(0, 4, 7)), at.apply(new BlockPos(1, 4, 7))));
-        s.append(String.format(Locale.ROOT, "- Linking (the model can't hold links; tell the player each step, all with the "
-                + "Flight Control Tool Gun): select a thruster, right-click the computer; the same for the other thruster, the "
+        s.append(String.format(Locale.ROOT, "- Linking (the schematic can't carry these: a Schematicannon copies only what a "
+                + "block marks safe to copy, and Create: Flight Control's links and settings aren't, so they are done by hand "
+                + "after printing; tell the player each step, all with the Flight Control Tool Gun): select a thruster, right-click the computer; the same for the other thruster, the "
                 + "stabilizer and both couplers. Select each tank, right-click its thruster. Select each coupler, right-click "
                 + "the Redstone Proxy (%s). Then empty-handed: open the proxy and map the face with the receiver on its west "
                 + "side to the Angular Velocity Coupler's yaw left, the east one to its yaw right and the top one to the "
@@ -796,13 +805,15 @@ final class Planes {
                 + "the look doesn't change its weight.\n");
         List<BlockPos> gear = gear(w);
         s.append(String.format(Locale.ROOT, "- Landing gear: three Wheel Mounts, one under the nose (%s) and two just behind "
-                + "the centre of mass (%s and %s), each facing sideways: put a Tire in each (right-click the mount's open side "
-                + "with it). Each mount's suspension is at %d, its lowest (the schematic sets it; built by hand, scroll it "
+                + "the centre of mass (%s and %s), each facing sideways with a Tire in it. The schematic carries the Tires: the "
+                + "Schematicannon takes three from its chest, like blocks. Built by hand, a Tire goes on only at the mount's "
+                + "front, the face it faces (the open side away from the body, where the wheel hangs): right-click that face "
+                + "with it. Each mount's suspension is at %d, its lowest (the schematic sets it; built by hand, scroll it "
                 + "down): a wheel drags in proportion to that setting until the plane lifts off, and at the default 10 the run "
                 + "is far longer.%s Board on the left: a ladder on the plank there leads up to the gap in the cockpit's side.\n",
                 at.apply(gear.get(0)), at.apply(gear.get(1)), at.apply(gear.get(2)), SUSPENSION, spec.jet() ? ""
-                        : " Parked, it sits back on its main wheels and the end of its tail, nose up a little, so the nose wheel "
-                        + "only touches when the nose comes down."));
+                        : sitsBack(t) ? " Parked, it sits back on its main wheels and the end of its tail, nose up a little, so the "
+                        + "nose wheel only touches when the nose comes down." : " Parked, it stands about level on all three wheels."));
         if (spec.jet()) jetText(s, w, at);
         else propText(s, spec, w, f, at);
         boolean met = t.run() <= SHORT_RUN && t.ceiling() >= CEILING;
@@ -833,6 +844,20 @@ final class Planes {
         return new Airships.Layout(out, sx, sy, sz, speeds(spec, shift), s.toString(), wiring(spec, w, shift));
     }
 
+    /**
+     * Whether it rests back on its main wheels and tail when parked: its centre of mass is behind the main wheels (measured
+     * in a test world: one 0.4 behind them sat 9° nose up on its tail; one 0.5 ahead stood level on all three).
+     */
+    private static boolean sitsBack(Try t) {
+        double m = 0, mz = 0;
+        for (Map.Entry<BlockPos, BlockState> e : t.cells.entrySet()) {
+            double k = VehicleCheck.mass(net.minecraft.world.level.EmptyBlockGetter.INSTANCE, e.getKey(), e.getValue());
+            m += k;
+            mz += k * (e.getKey().getZ() + 0.5 - t.shift.getZ());
+        }
+        return m > 0 && mz / m > t.wing.gear() + 0.5;
+    }
+
     /** A propeller plane's drive, controls, wiring, cockpit and how to build and fly it, for finish(). */
     private static void propText(StringBuilder s, Spec spec, Wing w, Map<String, Double> f,
                                  java.util.function.Function<BlockPos, String> at) {
@@ -843,8 +868,12 @@ final class Planes {
                         + "the schematic sets it), which turns the propeller the way that pulls the plane forward. Its large "
                         + "cogwheel on top (%s) turns an encased shaft forward to an Analog Transmission in the nose (%s, the "
                         + "throttle), whose cogwheel turns the encased cogwheel above it and the Propeller Bearing (%s). The "
-                        + "propeller is twelve sails in front of the bearing: a plank hub, four two-sail blades in a cross and a "
-                        + "sail in each corner between them (a wider one would strike the ground). Twelve sails at 256 RPM take "
+                        + "propeller is two blades, five wide in all, three sails deep: on the bearing's face a plank, a Honey "
+                        + "Block and a plank in a row straight out from it, with two sails either side of each, twelve in all. The "
+                        + "Honey Block is what holds the front of it on when the bearing starts: a sail holds only to the blocks "
+                        + "beside it in its own plane, and the glue on the plane is used up when the Physics Assembler assembles "
+                        + "it. Spinning, two slim blades leave most of their circle open, so the pilot sees past them. Twelve "
+                        + "sails at 256 RPM take "
                         + "exactly the three engines' 6144 stress units and push about 2100; if it ever blows backwards, set the "
                         + "controller to 256 instead.\n", at.apply(new BlockPos(0, 0, RSC_ROW)), at.apply(new BlockPos(1, 0, RSC_ROW)),
                 at.apply(new BlockPos(-1, 0, RSC_ROW - 1)), at.apply(new BlockPos(-1, 0, RSC_ROW + 1)),
@@ -870,15 +899,15 @@ final class Planes {
         receivers(spec, w).forEach((p, q) -> by.computeIfAbsent(q, k -> new ArrayList<>()).add(at.apply(p)));
         java.util.function.Function<Freq, String> on = q -> "two " + q.name() + " (" + String.join(" and ", by.get(q)) + ")";
         s.append("- Wiring: every Redstone Link on it is a receiver, each set to two of one item. The schematic carries each "
-                + "link's frequency, the controller's -256 and each mount's suspension, so a Schematicannon prints them set; "
-                + "built by hand, set them as listed. Throttle " + on.apply(THROTTLE) + ", beside the transmission. Roll left "
+                + "link's frequency, the controller's -256, and each mount's suspension and Tire, so a Schematicannon prints "
+                + "them set; built by hand, set them as listed. Throttle " + on.apply(THROTTLE) + ", beside the transmission. Roll left "
                 + on.apply(LEFT) + " and roll right " + on.apply(RIGHT) + ", either side of the wing's Tilt Adapters. Nose up "
                 + on.apply(NOSE_UP) + ", in front of the tail's Tilt Adapters, and nose down " + on.apply(NOSE_DOWN) + ", behind "
                 + "them. Left brake " + on.apply(LEFT_BRAKE) + " and right brake " + on.apply(RIGHT_BRAKE) + ", on top of the "
                 + "main wheels.\n");
         s.append(String.format(Locale.ROOT, "- Cockpit: an Aeroworks Control Stand at %s at the front of the cockpit, in reach "
-                + "of the pilot's seat at %s, the back one, as in an open-cockpit biplane (from the front seat the nose "
-                + "propeller fills the middle of the view; %s). Mount a Joystick Module in its large socket, a Lever Module in a small one and a Pedal Module in the left and right "
+                + "of the pilot's seat at %s, the back one, as in an open-cockpit biplane (from there the spinning blades "
+                + "cross only a little of the view ahead; from the front seat, closer behind them, they cross a third of it; %s). Mount a Joystick Module in its large socket, a Lever Module in a small one and a Pedal Module in the left and right "
                 + "pedal sockets, then Shift + right-click the stand to set each one: every direction has two frequency slots, "
                 + "so put two of its item in them. The stick: Left %s, Right %s, Back %s (pull back, nose up), Forward %s; it "
                 + "follows the mouse and springs back to the middle when let go. The lever is the throttle: Forward %s, with "
@@ -901,8 +930,8 @@ final class Planes {
                 strips, at.apply(ASSEMBLER)));
         s.append(String.format(Locale.ROOT, "- Flying it: sit in the back seat and take the controls. Brakes off, lever fully "
                 + "forward: the propeller spins up over a couple of seconds and it rolls, lifting off by itself after about "
-                + "%.0f blocks (no back stick needed). At full power it keeps nosing up (left alone it is 45° nose up and "
-                + "nearly stalled within 5 s), so once the wheels are off bring the lever back to a little past halfway "
+                + "%.0f blocks (no back stick needed). At full power it keeps nosing up (left alone it is past 30° nose up "
+                + "within 5 s and goes on up and over into a loop), so once the wheels are off bring the lever back to a little past halfway "
                 + "(about 60%% power) and hold a gentle climb with a touch of forward stick. At about 60%% it flies level at "
                 + "about 15 blocks/s%s (flown level it needs more than the hands-off figure in the check below, which is "
                 + "slow and nose high). Turn by banking: stick to the side rolls it into a lean, a touch of back stick "
@@ -911,8 +940,10 @@ final class Planes {
                 + "with height to spare. To land, line up with the field, bring the lever back to about a quarter forward "
                 + "and hold the nose a little down: it sinks about 4 blocks a second at about 10 blocks/s. Just above the "
                 + "ground ease the stick back to touch down, then pull the lever right back and press both pedals. On the "
-                + "ground it steers with its brakes: hold one pedal with a little power on and it turns that way (about 7° "
-                + "a second at 40%% power).\n", f.getOrDefault("run", 0.0), spec.copycat() ? "" : " (measured on the Copycat-winged "
-                + "one; this sail-winged one is heavier, so find its level power by eye)"));
+                + "ground it steers with its brakes: hold one pedal with a little power on and it turns that way (4 to 7° "
+                + "a second at 40%% power).\n", f.getOrDefault("run", 0.0), spec.copycat() ? "" : " (that is the Copycat-winged "
+                + "one; this sail-winged one is heavier and slower and noses up harder as it lifts: bring the lever back to "
+                + "about 60%% as soon as the wheels are off and hold the stick about half forward, and it climbs gently at about "
+                + "11 blocks/s, nose up about 9°; a touch less power holds it level)"));
     }
 }

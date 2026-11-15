@@ -120,9 +120,13 @@ final class DesignBriefs {
             sky through it) narrowing back to a tail with a flat stabiliser and an upright fin, the wings over the centre \
             of mass, every part visibly joined to the next (a sail is a thin panel across the middle of its block and joins \
             only blocks beside it). The pilot sits with every control in reach, a low nose and a window ahead of their \
-            eyes, and no engine, machine or wing in front of the windscreen. A nose propeller's disc is level with their \
-            eyes: from a seat close behind it, it hides the middle of the view, so a tandem cockpit seats the pilot in the \
-            back, as in an open-cockpit biplane, and a passenger in front.
+            eyes, and no engine, machine or wing in front of the windscreen. A nose propeller must leave the way ahead \
+            open, and spinning it sweeps a full disc: give it two slim blades with open sky between them, never a solid \
+            disc of sails at the pilot's eye line (the check spins it and faults one that hides more than a quarter of \
+            the middle of the view: from the back seat two blades five wide hide about a sixth, a five-wide disc half). \
+            Keep its hub about level with the centre of mass: a propeller set low pulls below it and noses the plane up \
+            with power. Its lowest tip clears the ground by half a block or more, parked on its wheels. A tandem cockpit \
+            seats the pilot in the back, as in an open-cockpit biplane, and a passenger in front.
             Flying it level: nothing holds a plane level by itself, and that is what lets it bank, roll and loop: the \
             pilot flies it, as a real one. Ailerons near the wingtips roll it, an elevator behind the tail's stabiliser \
             pitches it: each a strip of Symmetric Sails glued out from the face of a Swivel Bearing (each strip its own \
@@ -159,8 +163,9 @@ final class DesignBriefs {
             eighth as much per engine. Portable Engines on one line add up, and one lit while the line already turns sets \
             its own direction to match. The throttle is an Analog Transmission in the line (shaft in, cogwheel on toward \
             the propeller): no signal passes full speed, a stronger one slows it, 15 stops it.
-            Wheels: three Offroad Wheel Mounts, each facing sideways with a Tire on its open side (Small, Tire, Large or \
-            Monstrous differ only in size): one under the nose, two just behind the centre of mass. A mount's suspension \
+            Wheels: three Offroad Wheel Mounts, each facing sideways with a Tire on its front, the face it faces, which \
+            must be open (a Tire goes on only there, by right-clicking that face; Small, Tire, Large or Monstrous differ \
+            only in size): one under the nose, two just behind the centre of mass. A mount's suspension \
             (its value panel, 5 to 180, starting at 10) sets how firmly it holds, and a wheel drags 1.5 x that per \
             block/s until the plane lifts off, so a light plane runs them at 5, their lowest. Redstone into a mount's top \
             brakes it by strength; into its sides it steers (up to 30 degrees). They don't retract; never Grindstones or \
@@ -176,9 +181,9 @@ final class DesignBriefs {
             Modules spring back: brakes. A Yoke Module (large socket) also pitches and rolls; a Throttle Quadrant has \
             four levers. The lever and pedals start on the W and S keys, so give each its own. Right-click the stand \
             with an empty hand to fly, Esc to let go. build_model writes each receiving Redstone Link's frequency \
-            (links), each Rotation Speed Controller's speed and each Wheel Mount's suspension into the model, so a \
-            Schematicannon prints them set; the Control Stand's modules and their frequencies and the Tires the player \
-            fits by hand: tell them.
+            (links), each Rotation Speed Controller's speed, each Wheel Mount's suspension and a Tire in each mount \
+            into the model, so a Schematicannon prints them set (Tires come from its chest like blocks); the Control \
+            Stand's modules and their frequencies the player fits by hand: tell them.
             Building it: on open flat ground or a runway pointed into the open, every engine cold. Glue it with Super \
             Glue in boxes covering all of it but each control surface's strip, and give each strip a small box of its \
             own; use the Physics Assembler; then right-click each Swivel Bearing with an empty hand to give it its strip; \

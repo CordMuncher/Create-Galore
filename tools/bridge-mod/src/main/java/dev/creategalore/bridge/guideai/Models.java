@@ -666,6 +666,7 @@ public final class Models {
             if (bad == null) wiring.add(e.getValue());
             else if (linkedNow.contains(e.getKey())) return Result.problem("Not built: " + bad + ".");
         }
+        Wiring.fitTires(wiring, cells);
         boolean showsFault = input.has("shows_a_fault") && input.get("shows_a_fault").isJsonPrimitive()
                 && input.get("shows_a_fault").getAsBoolean();
         // A vehicle's corner steps are filled so it glues as one piece; the book is told where, so it builds them in.

@@ -1,5 +1,5 @@
 {
-  "title": "A sail-winged biplane is laid out (bigger than a Copycat-winged one) and flies, with its own note on finding its level power",
+  "title": "A sail-winged biplane is laid out (bigger than a Copycat-winged one) and flies, with its own measured note on flying it (it noses up harder as it lifts)",
   "from": "2026-11-14: the plane search reached a 17-wide sail biplane once heavy tails stopped ruling out whole wing sizes; flown in a test world it lifts off and answers the stick",
   "roots": [
     "R3",
@@ -46,7 +46,7 @@
       "Laid out by the server from plane",
       "small biplane",
       "white sails",
-      "find its level power by eye"
+      "noses up harder as it lifts"
     ],
     "lacks": [
       "PROBLEM",
