@@ -9,6 +9,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -604,12 +607,12 @@ final class Planes {
         c.put(new BlockPos(0, 3, 7), p.get("gearboxZ"));
         c.put(new BlockPos(-1, 3, 7), p.get("gearboxZ"));
         c.put(new BlockPos(1, 3, 7), p.get("gearboxZ"));
-        c.put(new BlockPos(-1, 4, 7), p.get("speedCoupler"));
-        c.put(new BlockPos(0, 4, 7), p.get("stabilizer"));
-        c.put(new BlockPos(1, 4, 7), p.get("turnCoupler"));
+        c.put(SPEED_COUPLER, p.get("speedCoupler"));
+        c.put(STABILIZER, p.get("stabilizer"));
+        c.put(TURN_COUPLER, p.get("turnCoupler"));
         c.put(new BlockPos(0, 2, 8), p.get("assembler"));
-        c.put(new BlockPos(0, 3, 8), p.get("fcc"));
-        c.put(new BlockPos(0, 4, 8), p.get("proxy"));
+        c.put(FCC, p.get("fcc"));
+        c.put(PROXY, p.get("proxy"));
         c.put(new BlockPos(-1, 4, 8), p.get("linkWest"));
         c.put(new BlockPos(1, 4, 8), p.get("linkEast"));
         c.put(new BlockPos(0, 5, 8), p.get("linkUp"));
@@ -703,12 +706,114 @@ final class Planes {
         return m;
     }
 
-    /** The plane's wiring in the model's frame, for its schematic: every link's frequency, each mount's suspension and Tire. */
-    private static com.google.gson.JsonArray wiring(Spec spec, Wing w, BlockPos shift) {
+    /**
+     * The plane's wiring in the model's frame, for its schematic: every link's frequency, each mount's suspension and
+     * Tire, and a jet's Flight Control links and settings ({@code cells} are the model's, for the blocks' kinds).
+     */
+    private static com.google.gson.JsonArray wiring(Spec spec, Wing w, BlockPos shift, Map<BlockPos, BlockState> cells) {
         com.google.gson.JsonArray a = new com.google.gson.JsonArray();
         receivers(spec, w).forEach((p, f) -> a.add(Wiring.link(p.offset(shift), f.item(), f.item())));
         for (BlockPos g : gear(w)) a.add(Wiring.mount(g.offset(shift), SUSPENSION, Wiring.TIRE));
+        if (spec.jet()) jetLinks(w).forEach((p, set) -> {
+            BlockState st = cells.get(p.offset(shift));
+            if (st != null) a.add(Wiring.flight(p.offset(shift), st, set));
+        });
         return a;
+    }
+
+    /** Where a jet's Flight Control parts stand, in the layout's frame (see jet()). */
+    private static final BlockPos FCC = new BlockPos(0, 3, 8), PROXY = new BlockPos(0, 4, 8), SPEED_COUPLER = new BlockPos(-1, 4, 7),
+            STABILIZER = new BlockPos(0, 4, 7), TURN_COUPLER = new BlockPos(1, 4, 7);
+    /** The stabilizer's Medium strength (P, D): at Weak a jet sags many degrees nose down at speed. */
+    private static final double LEVEL_P = 50, LEVEL_D = 10;
+
+    /**
+     * A jet's Flight Control links and settings, as the Tool Gun and each block's screen leave them (read off a jet
+     * linked and set by hand): each thruster linked to the computer and its tank, the three controllers to the computer,
+     * both couplers to the proxy, the proxy's west, east and top faces mapped to yaw left (Body +w.y), yaw right (Body
+     * -w.y) and forward (Body -v.z: the nose is -z), the forward speed and yaw rate, the stabilizer Level at Medium and
+     * on by default, the computer on by default and applying thrust, and a Nozzle in each thruster. Every link is an
+     * offset from the block that keeps it, as Flight Control stores them.
+     */
+    private static Map<BlockPos, CompoundTag> jetLinks(Wing w) {
+        Map<BlockPos, CompoundTag> m = new LinkedHashMap<>();
+        CompoundTag fcc = new CompoundTag();
+        ListTag thrusters = new ListTag();
+        for (int s : new int[] {-1, 1}) {
+            BlockPos t = thrusterAt(w, s);
+            CompoundTag th = offset(new CompoundTag(), "oc", FCC.subtract(t));
+            offset(th, "olt", new BlockPos(s, 0, 0));
+            th.putBoolean("hasNozzle", true);
+            m.put(t, th);
+            // The computer's copy of each thruster: where it is, which way it faces (nozzle aft, pushing toward -z), its
+            // reach and push (the thruster's own defaults).
+            CompoundTag e = offset(new CompoundTag(), "r", t.subtract(FCC));
+            e.putString("descId", "block.create_flight_control.smart_vector_thruster");
+            e.putByte("dir", (byte) Direction.SOUTH.get3DDataValue());
+            e.putFloat("halfAngleDeg", 30);
+            e.putFloat("maxThrust", 6000);
+            e.putFloat("tcx", 0);
+            e.putFloat("tcy", 0);
+            e.putFloat("tcz", 1);
+            thrusters.add(e);
+        }
+        fcc.put("linkedThrusters", thrusters);
+        ListTag controllers = new ListTag();
+        for (Object[] c : new Object[][] {{SPEED_COUPLER, "velocity_coupler"}, {STABILIZER, "attitude_hold"}, {TURN_COUPLER, "angular_velocity_coupler"}}) {
+            CompoundTag e = offset(new CompoundTag(), "c", ((BlockPos) c[0]).subtract(FCC));
+            e.putString("typeId", "block.create_flight_control." + c[1]);
+            controllers.add(e);
+            m.put((BlockPos) c[0], offset(new CompoundTag(), "oc", FCC.subtract((BlockPos) c[0])));
+        }
+        fcc.put("linkedControllers", controllers);
+        fcc.putBoolean("workingDefaultEnabled", true);
+        fcc.putBoolean("workDryRun", false);
+        m.put(FCC, fcc);
+        m.get(SPEED_COUPLER).putDouble("maxVzNeg", VehicleCheck.JET_SPEED);
+        m.get(TURN_COUPLER).putDouble("maxWyPos", VehicleCheck.JET_TURN);
+        m.get(TURN_COUPLER).putDouble("maxWyNeg", VehicleCheck.JET_TURN);
+        CompoundTag level = m.get(STABILIZER);
+        level.putString("mode", "LEVEL_NO_YAW");
+        level.putDouble("kp", LEVEL_P);
+        level.putDouble("kd", LEVEL_D);
+        level.putBoolean("defaultEnabled", true);
+        level.putString("bodyForwardFacing", "north");
+        // The proxy faces north: its left face is east, its right west (Flight Control names them as it faces).
+        CompoundTag proxy = new CompoundTag();
+        ListTag linked = new ListTag();
+        for (Object[] c : new Object[][] {{SPEED_COUPLER, "velocity_coupler"}, {TURN_COUPLER, "angular_velocity_coupler"}}) {
+            CompoundTag e = offset(new CompoundTag(), "o", ((BlockPos) c[0]).subtract(PROXY));
+            e.putString("desc", "block.create_flight_control." + c[1]);
+            linked.add(e);
+        }
+        proxy.put("linkedBlocks", linked);
+        ListTag faces = new ListTag();
+        faces.add(face("front", null, null));
+        faces.add(face("back", null, null));
+        faces.add(face("left", TURN_COUPLER.subtract(PROXY), "body_wy_neg"));
+        faces.add(face("right", TURN_COUPLER.subtract(PROXY), "body_wy_pos"));
+        faces.add(face("top", SPEED_COUPLER.subtract(PROXY), "body_vz_neg"));
+        proxy.put("faceAssignments", faces);
+        m.put(PROXY, proxy);
+        return m;
+    }
+
+    private static CompoundTag offset(CompoundTag t, String prefix, BlockPos d) {
+        t.putInt(prefix + "x", d.getX());
+        t.putInt(prefix + "y", d.getY());
+        t.putInt(prefix + "z", d.getZ());
+        return t;
+    }
+
+    private static CompoundTag face(String face, BlockPos target, String action) {
+        CompoundTag f = new CompoundTag();
+        f.putString("face", face);
+        f.putBoolean("hasAssign", target != null);
+        if (target != null) {
+            offset(f, "t", target);
+            f.putString("actionId", action);
+        }
+        return f;
     }
 
     /** The cells moved so the smallest x, y and z are 0, as a model's are. */
@@ -741,25 +846,30 @@ final class Planes {
         BlockPos left = thrusterAt(w, -1), right = thrusterAt(w, 1);
         s.append(String.format(Locale.ROOT, "- Drive: two Smart Vector Thrusters (Create: Flight Control) either side of the tail "
                 + "boom (%s and %s), nozzles aft, each with a Smart Vector Thruster Nozzle installed "
-                + "(right-click it with one) and a Fluid Tank beside it (%s and %s) filled with lava buckets (or TFMG diesel, "
+                + "and a Fluid Tank beside it (%s and %s) filled with lava buckets (or TFMG diesel, "
                 + "gasoline or kerosene, which last longer). Each pushes up to 6000, far more than this plane needs, and swings "
                 + "its nozzle to steer and level it. A Flight Control Computer (%s, on the Physics Assembler) decides how hard "
                 + "each pushes and where it points, from three controllers in a row behind the cockpit: a Velocity Coupler "
                 + "(%s, the speed), a Smart Attitude Stabilizer (%s, keeps it level) and an Angular Velocity Coupler (%s, the "
                 + "turns). One Portable Engine behind the seats turns a gearbox tower into their bottom shafts (each takes "
                 + "only 64 stress units). No gyroscope: the computer levels it.\n", at.apply(left), at.apply(right),
-                at.apply(left.offset(-1, 0, 0)), at.apply(right.offset(1, 0, 0)), at.apply(new BlockPos(0, 3, 8)),
-                at.apply(new BlockPos(-1, 4, 7)), at.apply(new BlockPos(0, 4, 7)), at.apply(new BlockPos(1, 4, 7))));
-        s.append(String.format(Locale.ROOT, "- Linking (the schematic can't carry these: a Schematicannon copies only what a "
-                + "block marks safe to copy, and Create: Flight Control's links and settings aren't, so they are done by hand "
-                + "after printing; tell the player each step, all with the Flight Control Tool Gun): select a thruster, right-click the computer; the same for the other thruster, the "
-                + "stabilizer and both couplers. Select each tank, right-click its thruster. Select each coupler, right-click "
-                + "the Redstone Proxy (%s). Then empty-handed: open the proxy and map the face with the receiver on its west "
-                + "side to the Angular Velocity Coupler's yaw left, the east one to its yaw right and the top one to the "
-                + "Velocity Coupler's Forward Velocity; open the Velocity Coupler and set its forward max speed to %.0f; open "
-                + "the Angular Velocity Coupler and set its yaw rate to 0.3; open the stabilizer and pick Level (no yaw) and "
-                + "the Medium preset (Weak lets it sag nose down at speed); open the computer, set Default ON and press Apply "
-                + "Thrust.\n", at.apply(new BlockPos(0, 4, 8)), VehicleCheck.JET_SPEED));
+                at.apply(left.offset(-1, 0, 0)), at.apply(right.offset(1, 0, 0)), at.apply(FCC),
+                at.apply(SPEED_COUPLER), at.apply(STABILIZER), at.apply(TURN_COUPLER)));
+        s.append(String.format(Locale.ROOT, "- Links and settings: the schematic carries every Create: Flight Control link "
+                + "and setting, so a Schematicannon prints it ready (tell the player): each thruster linked to the computer "
+                + "and its tank, the three controllers to the computer, both couplers to the Redstone Proxy (%s) and its faces "
+                + "mapped, the speed and turn limits, the stabilizer's mode and strength, the computer's Default ON and Apply Thrust, and a Smart Vector "
+                + "Thruster Nozzle in each thruster, which the cannon takes from its chest like a block. Printed turned or "
+                + "mirrored, all of it turns with the plane. Built by hand (or a part swapped), they are set with the Flight "
+                + "Control Tool Gun: select a thruster, right-click the computer; the same for the other thruster, the "
+                + "stabilizer and both couplers. Select each thruster, right-click its tank. Select each coupler, right-click "
+                + "the proxy. Then empty-handed: open the proxy and map the face with the receiver on its west side to the "
+                + "Angular Velocity Coupler's Body +w.y (yaw left), the east one to its Body -w.y (yaw right) and the top one "
+                + "to the Velocity Coupler's Body -v.z (forward: the nose is -z); open the Velocity Coupler and set its v.z "
+                + "-Max to %.0f; open the Angular Velocity Coupler and set its w.y +Max and -Max to %.1f; open the stabilizer "
+                + "and pick Mode Level, Control Strength Medium (Weak lets it sag nose down at speed) and Default Enabled On; "
+                + "open the computer, set Default ON and press Apply Thrust; right-click each thruster with a Nozzle.\n",
+                at.apply(PROXY), VehicleCheck.JET_SPEED, VehicleCheck.JET_TURN));
         s.append(String.format(Locale.ROOT, "- Cockpit: an Aeroworks Control Stand at %s in front of the pilot's seat. Mount a "
                 + "Yoke Module and a Throttle Quadrant on it, then Shift + right-click the stand to set them; each direction has "
                 + "two frequency slots, so put two of its item in them: the yoke's Turn Left two %s (the receiver at %s), its "
@@ -770,7 +880,7 @@ final class Planes {
                 at.apply(new BlockPos(0, 5, 8))));
         s.append("- Flying it: build it on open flat ground or a runway pointed into the open, glue it all with Super Glue and "
                 + "use the Physics Assembler at " + at.apply(new BlockPos(0, 2, 8)) + " with the engine cold (assembled with "
-                + "its shaft turning, controllers went missing), then do the linking above; light the engine, sit in the front seat, take the controls and push the throttle lever forward: the thrusters bring it "
+                + "its shaft turning, controllers went missing); light the engine, sit in the front seat, take the controls and push the throttle lever forward: the thrusters bring it "
                 + "up to its set speed, it lifts and climbs level by itself. The yoke turns it flat and level (about 8° a "
                 + "second at speed), and with the yoke centred it holds its heading. To come down, pull the throttle back: the thrusters stop, it slows and "
                 + "sinks; push it forward again to level out. Once down, leave it back and it rolls to a stop.\n");
@@ -841,7 +951,7 @@ final class Planes {
                         + "this is the one that climbs highest, run %.0f blocks, ceiling y %.0f: tell the player)", t.run(), t.ceiling())));
         s.append("- Open cockpit: above y 128 the wind chills whoever is aboard and above y 192 it freezes them, so tell the "
                 + "player to sew Windproof Lining onto each armour piece before climbing high.\n");
-        return new Airships.Layout(out, sx, sy, sz, speeds(spec, shift), s.toString(), wiring(spec, w, shift));
+        return new Airships.Layout(out, sx, sy, sz, speeds(spec, shift), s.toString(), wiring(spec, w, shift, out));
     }
 
     /**

@@ -197,7 +197,8 @@ final class DesignBriefs {
             Stabilizer (Level, Medium preset: keeps it level), a Velocity Coupler (the throttle: holds the speed set in \
             it, 30 blocks/s) and an Angular Velocity Coupler (the turns), all flown from the same Control Stand through \
             a Redstone Proxy. Lava or TFMG fuel lasts long at cruise. A jet needs Control Units (sequenced assembly; \
-            diamonds) and every link made by hand with the Flight Control Tool Gun once it is built, so give one to a \
+            diamonds); its schematic prints every Flight Control link and setting, turned or mirrored with it (built by \
+            hand, the Flight Control Tool Gun links it), so give one to a \
             player who asks for a jet or thrusters, or can make those parts and wants speed or height. To judge a \
             player's jet: its thrusters go far from the centre of mass (the computer pitches it by swinging them; a \
             block or two from it, holding level took so much thrust that the plane ran away past its set speed and \

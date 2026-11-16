@@ -13,20 +13,23 @@ import net.minecraft.world.level.block.state.BlockState;
 
 /**
  * How a model is wired up, carried into its schematic so the Schematicannon prints it set: each Redstone Link's two
- * frequency items, each Rotation Speed Controller's speed, and each Wheel Mount's suspension and Tire. Create's
- * Schematicannon keeps what a block entity marks as safe to copy: a link's frequency and a block's value panel (written
- * as {@code FrequencyFirst}/{@code FrequencyLast} and {@code ScrollValue}), and a mount's Tire, which the Bridge marks
- * (WheelMountSchematics; the cannon takes a Tire from its chest for it). Anything else on a block (a Control Stand's
- * modules, fuel) the player sets by hand.
+ * frequency items, each Rotation Speed Controller's speed, each Wheel Mount's suspension and Tire, and a Create: Flight
+ * Control block's links and settings. Create's Schematicannon keeps what a block entity marks as safe to copy: a link's
+ * frequency and a block's value panel (written as {@code FrequencyFirst}/{@code FrequencyLast} and {@code ScrollValue}),
+ * a mount's Tire, which the Bridge marks (WheelMountSchematics; the cannon takes a Tire from its chest for it), and
+ * Flight Control's links and settings, which the Bridge marks too (FlightControlSchematics; a thruster's Nozzle is
+ * charged like a block). Anything else on a block (a Control Stand's modules, fuel) the player sets by hand.
  *
  * <p>An entry is {@code {x, y, z, link: [first item, last item]}} or {@code {x, y, z, value: n}}, a mount's with
- * {@code tire: item} too; the model JSON carries them as {@code wiring}, the client turns each into the block's data in
- * the schematic it saves.
+ * {@code tire: item} too, or {@code {x, y, z, flight: snbt}} with a Flight Control block's whole data (the server writes
+ * those for the jets it lays out; the book never does); the model JSON carries them as {@code wiring}, the client turns
+ * each into the block's data in the schematic it saves.
  */
 public final class Wiring {
     private static final String LINK = "create:redstone_link";
     private static final String SPEED_CONTROLLER = "create:rotation_speed_controller";
     private static final String WHEEL_MOUNT = "offroad:wheel_mount";
+    private static final String FLIGHT = "create_flight_control:";
 
     private Wiring() {
     }
@@ -53,6 +56,25 @@ public final class Wiring {
         JsonObject o = value(at, suspension);
         o.addProperty("tire", tire);
         return o;
+    }
+
+    /**
+     * A Create: Flight Control block's entry: its data as the block writes it once linked and set ({@code set} merged
+     * into a new block's), cut to what a schematic carries. Offsets in {@code set} run from this block, as Flight
+     * Control stores them.
+     */
+    static JsonObject flight(BlockPos at, BlockState state, CompoundTag set) {
+        JsonObject o = cell(at);
+        o.addProperty("flight", dev.creategalore.bridge.FlightControlSchematics.data(state, set).toString());
+        return o;
+    }
+
+    private static CompoundTag flightTag(JsonObject o) {
+        try {
+            return o.get("flight").isJsonPrimitive() ? net.minecraft.nbt.TagParser.parseTag(o.get("flight").getAsString()) : null;
+        } catch (com.mojang.brigadier.exceptions.CommandSyntaxException | RuntimeException e) {
+            return null;
+        }
     }
 
     /** The Tire a Wheel Mount prints with when nothing names another: Offroad's standard one. */
@@ -113,6 +135,10 @@ public final class Wiring {
             }
             return null;
         }
+        if (o.has("flight")) {
+            if (!id.startsWith(FLIGHT)) return "Flight Control settings at " + where + ", which holds " + id + ", not a Flight Control block";
+            return flightTag(o) == null ? "unreadable Flight Control settings at " + where : null;
+        }
         if (o.has("tire")) {
             if (!id.equals(WHEEL_MOUNT)) return "a Tire at " + where + ", which holds " + id + ", not a Wheel Mount";
             if (!o.get("tire").isJsonPrimitive() || !dev.creategalore.bridge.WheelMountSchematics.isTire(ResourceLocation.tryParse(id(o.get("tire").getAsString()))))
@@ -150,6 +176,7 @@ public final class Wiring {
      * null if the entry sets nothing. Used by the client when it saves a model as a schematic.
      */
     public static CompoundTag nbt(JsonObject o) {
+        if (o.has("flight")) return flightTag(o);
         CompoundTag tag = new CompoundTag();
         if (o.has("link") && o.get("link").isJsonArray()) {
             List<String> items = items(o);
@@ -181,7 +208,8 @@ public final class Wiring {
      * (the player sets those by hand); null for a model with neither.
      */
     static String report(JsonArray wiring, Map<BlockPos, Float> speeds, Map<BlockPos, BlockState> cells) {
-        int links = 0, values = 0, tires = 0;
+        int links = 0, values = 0, tires = 0, flight = 0;
+        boolean nozzles = false;
         java.util.Set<BlockPos> linked = new java.util.HashSet<>();
         for (JsonElement e : wiring) {
             JsonObject o = e.getAsJsonObject();
@@ -191,13 +219,18 @@ public final class Wiring {
             } else if (o.has("value") && cells.get(at(o)) != null
                     && BuiltInRegistries.BLOCK.getKey(cells.get(at(o)).getBlock()).toString().equals(WHEEL_MOUNT)) values++;
             if (o.has("tire")) tires++;
+            if (o.has("flight")) {
+                flight++;
+                CompoundTag f = flightTag(o);
+                nozzles |= f != null && f.getBoolean("hasNozzle");
+            }
         }
         List<String> blank = new java.util.ArrayList<>();
         cells.forEach((p, st) -> {
             if (!linked.contains(p) && BuiltInRegistries.BLOCK.getKey(st.getBlock()).toString().equals(LINK))
                 blank.add(p.getX() + "," + p.getY() + "," + p.getZ());
         });
-        if (links + values + tires + speeds.size() == 0 && blank.isEmpty()) return null;
+        if (links + values + tires + flight + speeds.size() == 0 && blank.isEmpty()) return null;
         List<String> set = new java.util.ArrayList<>();
         if (links > 0) set.add(links + " Redstone Link frequenc" + (links == 1 ? "y" : "ies"));
         if (!speeds.isEmpty()) set.add(speeds.size() + " speed controller setting" + (speeds.size() == 1 ? "" : "s"));
@@ -205,6 +238,8 @@ public final class Wiring {
         if (tires > 0) set.add(tires + " Tire" + (tires == 1 ? "" : "s") + " in Wheel Mounts (the Schematicannon takes each "
                 + "from its chest like a block; built by hand, a Tire goes on with a right-click on the mount's front, the face "
                 + "it faces, where the wheel hangs)");
+        if (flight > 0) set.add("every Create: Flight Control link and setting on its " + flight + " Flight Control blocks"
+                + (nozzles ? " (and each thruster's Nozzle, which the Schematicannon takes from its chest like a block)" : ""));
         StringBuilder s = new StringBuilder("Wiring: ");
         if (!set.isEmpty()) s.append("its schematic sets ").append(String.join(", ", set)).append(", so the Schematicannon "
                 + "prints them ready (tell the player; built by hand, they set each as you say)");

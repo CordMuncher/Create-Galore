@@ -87,6 +87,7 @@ public final class CreateGaloreBridge {
         SharedSchematics.register(modBus);
         SchematicannonGlue.register(modBus);
         WheelMountSchematics.register(modBus);
+        FlightControlSchematics.register(modBus);
         AnimalCare.register();
         AnimalTroughs.register();
         Wear.register(modBus);
