@@ -34,7 +34,7 @@
         "item": "create_flight_control:flight_control_tool_gun"
       },
       "title": "Flight Control Tool Gun",
-      "text": "Select an [#](2E5AAC)[engine](entry://flight/propulsion)[#]() or controller, then right-click the computer to link it. Also links tanks, sensors and seats."
+      "text": "Select an [#](2E5AAC)[engine](entry://flight/propulsion)[#]() or controller, then right-click the computer to link it. Select a thruster, then right-click a Fluid Tank within 2 blocks to fuel it from there. Also links sensors and seats."
     },
     {
       "type": "modonomicon:spotlight",
@@ -95,6 +95,11 @@
       "type": "modonomicon:text",
       "title": "Wiring a jet",
       "text": "Each controller draws 64 SU from a shaft below it. Assemble with that engine stopped, then start it: controllers spun up during assembly drop off.\\\n\\\nLink a Redstone Proxy and map its faces to the couplers: a Control Stand's yoke turns it, a latched lever is the throttle."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "In a schematic",
+      "text": "A Create schematic keeps every Flight Control link and setting, so a Schematicannon prints the craft linked, turned with it. Nozzles come from the cannon's chest; fuel stays behind.\\\n\\\nMirrored, a craft flies right if its nose points north or south or it has a Forward Indicator; otherwise turn it."
     },
     {
       "type": "modonomicon:text",

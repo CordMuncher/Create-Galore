@@ -5,6 +5,21 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.91
+
+### Added
+- Create Galore Bridge 1.196.0.
+- **Create: Flight Control craft print linked.** A Schematicannon now prints a Flight Control craft with every link and setting it had when the schematic was saved: thrusters to their computer and tanks, couplers and the stabilizer to the computer, the control proxy's faces, each coupler's limits and the stabilizer's mode. Links are kept relative to the block, so a turned or mirrored print is linked the same way, and the couplers' and stabilizer's axes turn with it so the craft still flies nose-first. Each thruster's Nozzle comes from the cannon's chest like a block; fuel and runtime state stay behind. A mirrored craft flies right when its nose points north or south or it has a Forward Indicator; one pointing east or west without an indicator is better turned than mirrored.
+- **Ask the Book's jets print ready to fly.** The book's jet schematic carries all of its Flight Control links and settings, so a printed jet lights and flies once its tanks are filled, with no Tool Gun work; the book still gives the hand steps for a jet built block by block.
+- **Field Guide:** a Flight Control page on printing a craft from a schematic.
+
+### Fixed
+- **A printed jet came out unlinked.** A player asked why a schematic couldn't simply carry a jet's links; now it does (see above).
+- **The book's steps for linking a jet by hand were off.** The Tool Gun links a tank when the thruster is selected first and the tank clicked second, not the other way round, and the stabilizer stays off until its Default Enabled is set On. The steps now say so and use the names the screens show.
+
+### Removed
+- Nothing.
+
 ## 0.6.90
 
 ### Added

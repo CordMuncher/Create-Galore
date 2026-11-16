@@ -1028,7 +1028,7 @@ hash = "cdb011f795454467f4ecc940bbf093ae913c0aba8c6e5dc95a283e1a5cc3ae5f"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/flight.md"
-hash = "df910acaab642b5a16a05e9c883adc85e9ac78202a0bc98f8c0a02860f5e8c12"
+hash = "ccb4e219517b371ec203a80e7380a46a1b65651acfa51437e5616f9a91b57f90"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/food.md"
@@ -1432,7 +1432,7 @@ hash = "6cf3835455a0bae13eb25abbd0115ade57310c5c4ab49ac620f43d1d68a47a9d"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/flight/aircraft_design.json"
-hash = "6bbfad0a1e5831debb6e6f36b96e98ae1ec884141b57f066c38ceef97783a5f8"
+hash = "6c259ac9ba4bf83d6afa33db28ed9abb78725d13964aa92faec02973c35f3ed6"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/flight/airships.json"
@@ -1452,7 +1452,7 @@ hash = "9869930ccd6beb05c45d26c96b96f134c9a802cf3f235ecb131eb6020e20cc07"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/flight/flight_control.json"
-hash = "eac4a934c8fd8b9d97febf29a6390b0184a0814215fc9b564da7a507263fae1b"
+hash = "c95d1579238e45bacb90123694c1b67edc43a29c9ad8f26f1d6046948b21610f"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/flight/hangars.json"
@@ -5056,8 +5056,8 @@ hash = "db683b65dc15a03dd6de2d34d5dc6ad0e3490744ced513a8cc584784ee9d3d8b"
 metafile = true
 
 [[files]]
-file = "mods/create-galore-bridge-1.195.0.jar"
-hash = "ebdbf1204c766b32bdc13b352ca06e8beb33d0efd4db737100e0d9917ad34b60"
+file = "mods/create-galore-bridge-1.196.0.jar"
+hash = "8b49f08877e4c0b372a23d925bb497af2ad2e58776750707bf578521eb42c50b"
 
 [[files]]
 file = "mods/create-galore-fishing-0.3.33.jar"

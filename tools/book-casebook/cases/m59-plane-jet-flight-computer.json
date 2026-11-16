@@ -1,5 +1,5 @@
 {
-  "title": "A two-seat jet laid out from build_model plane engine jet flies on its flight computer: Smart Vector Thrusters at the tail, stabilizer and couplers, held to its set speed, no gyroscope, no PROBLEM",
+  "title": "A two-seat jet laid out from build_model plane engine jet flies on its flight computer: Smart Vector Thrusters at the tail, stabilizer and couplers, held to its set speed, its schematic printing every Flight Control link, no gyroscope, no PROBLEM",
   "from": "2026-11-13 report (pack 0.6.82): the book's thruster plane had a huge gyroscope tower, no Flight Control Computer, a ship's wheel and bare-frame wings",
   "roots": [
     "R3",
@@ -46,6 +46,8 @@
       "Flight Control Computer",
       "Its Velocity Coupler holds it at 30",
       "Turns flat and level",
+      "the schematic carries every Create: Flight Control link",
+      "Flight Control blocks (and each thruster's Nozzle",
       "Flight Control Tool Gun",
       "Medium preset",
       "engine cold",

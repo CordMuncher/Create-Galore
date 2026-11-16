@@ -2197,6 +2197,8 @@ final class VehicleCheck {
     private static final double FC_TRIM = 2;
     /** The forward speed a laid-out jet's Velocity Coupler is set to, blocks/s (the coupler's own default is 5). */
     static final double JET_SPEED = 30;
+    /** The yaw rate a laid-out jet's Angular Velocity Coupler allows each way, rad/s (its own default is 0.2). */
+    static final double JET_TURN = 0.3;
     /**
      * Rolling drag of one Offroad wheel mount with a tire in it, per block/s: (0.075 + 0.3 x brake) x 20 x min(m, S) x
      * speed, from WheelMountBlockEntity, where m is the whole body's mass felt at the wheel (not its share of the weight,
@@ -4358,14 +4360,14 @@ final class VehicleCheck {
         return best;
     }
 
-    /** The yaw rate its Angular Velocity Coupler allows, rad/s: the setting in the world, 0.3 in a model. */
+    /** The yaw rate its Angular Velocity Coupler allows, rad/s: the setting in the world, JET_TURN in a model. */
     private static double couplerTurn(Body b) {
         double best = 0;
         for (Part p : b.parts) {
             if (!p.id.equals("create_flight_control:angular_velocity_coupler")) continue;
             var be = b.level instanceof net.minecraft.world.level.Level lvl ? lvl.getBlockEntity(p.pos) : null;
             if (be == null || !net.minecraft.core.registries.BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(be.getType()).toString().equals(p.id))
-                return 0.3;
+                return JET_TURN;
             var lvl = (net.minecraft.world.level.Level) b.level;
             var tag = be.saveWithoutMetadata(lvl.registryAccess());
             best = Math.max(best, Math.max(tag.getDouble("maxWyPos"), tag.getDouble("maxWyNeg")));
@@ -4375,7 +4377,7 @@ final class VehicleCheck {
 
     /**
      * How the crew flies a flight-computer plane: the couplers take their inputs from Redstone Proxy faces, which a
-     * console's Redstone Links feed, and nothing is linked until the player does it with the Tool Gun.
+     * console's Redstone Links feed, all linked with the Tool Gun or printed linked from a schematic.
      */
     private static void jetControls(Body b, List<String> faults, List<String> notes, StringBuilder out) {
         boolean proxy = b.count("create_flight_control:flight_control_redstone_proxy") > 0;
@@ -4386,10 +4388,13 @@ final class VehicleCheck {
             faults.add("nothing at the helm reaches its couplers: put a Flight Control Redstone Proxy on board, link the couplers "
                     + "to it with the Tool Gun and map its faces (Forward Velocity, yaw left and right) to Redstone Link receivers "
                     + "the console's controls send to");
-        notes.add("its flight computer works only once the player links it with the Flight Control Tool Gun (select each Smart "
-                + "Vector Thruster, the Smart Attitude Stabilizer and each coupler, then right-click the computer; select each "
-                + "coupler, then right-click the Redstone Proxy), opens the computer empty-handed, sets Default ON and presses "
-                + "Apply Thrust; a model can't hold those links, so tell the player each one");
+        notes.add("its flight computer works only once it is linked and set. A schematic carries Create: Flight Control's links "
+                + "and settings (a jet the server lays out has them all; a schematic the player saves keeps what they set), so "
+                + "a Schematicannon prints them ready; built by hand, the player links it with the Flight Control Tool Gun "
+                + "(select each Smart Vector Thruster, the Smart Attitude Stabilizer and each coupler, then right-click the "
+                + "computer; select each thruster, then right-click its Fluid Tank; select each coupler, then right-click the "
+                + "Redstone Proxy), opens the computer empty-handed, sets Default ON and presses Apply Thrust, and sets the "
+                + "stabilizer's Default Enabled On; tell the player each step the model's wiring doesn't carry");
         notes.add("each Smart Vector Thruster needs a Smart Vector Thruster Nozzle installed (right-click it with one) and fuel: "
                 + "lava, or TFMG diesel, gasoline or kerosene (two to four times as long a burn), piped into its sides or from a Fluid Tank within 2 blocks linked to it with the "
                 + "Tool Gun (lava burns 1000 mB a minute at full thrust; cruising takes a few percent "
