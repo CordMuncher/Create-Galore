@@ -26,12 +26,16 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.LockCode;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.ChestBlock;
+import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.ChestType;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.common.util.TriState;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.items.IItemHandler;
 import org.slf4j.Logger;
@@ -61,9 +65,17 @@ final class TouchedStorage {
         load();
     }
 
-    /** Server thread. */
+    /**
+     * Server thread; registered last, so a click a claim or protection mod cancelled never gets here. Only a block the
+     * click really uses counts: not one another mod denied, not a sneak-click with something in hand (which uses the
+     * item instead), and not a locked container the player has no key for. Otherwise a click alone would let the book
+     * read storage the player can't open.
+     */
     void onRightClick(PlayerInteractEvent.RightClickBlock event) {
         if (!(event.getEntity() instanceof ServerPlayer player) || !(player.level() instanceof ServerLevel level)) return;
+        if (event.isCanceled() || event.getUseBlock() == TriState.FALSE) return;
+        if (player.isSecondaryUseActive() && (!player.getMainHandItem().isEmpty() || !player.getOffhandItem().isEmpty())) return;
+        if (locked(level.getBlockEntity(event.getPos()), player)) return;
         BlockPos pos = canonical(level, event.getPos());
         if (level.getCapability(Capabilities.ItemHandler.BLOCK, pos, null) == null) return;
         LinkedHashSet<String> set = touched.computeIfAbsent(player.getUUID(), k -> new LinkedHashSet<>());
@@ -76,6 +88,32 @@ final class TouchedStorage {
             it.remove();
         }
         dirty = true;
+    }
+
+    private static java.lang.reflect.Field lockField;
+    private static boolean lockFieldLooked;
+
+    /**
+     * True for a container with a vanilla lock (LockCode) that the item in the player's hand doesn't open. Read without
+     * {@code canOpen}, which would show the "locked" message a second time.
+     */
+    private static boolean locked(BlockEntity be, ServerPlayer player) {
+        if (!(be instanceof BaseContainerBlockEntity)) return false;
+        if (!lockFieldLooked) {
+            lockFieldLooked = true;
+            try {
+                lockField = BaseContainerBlockEntity.class.getDeclaredField("lockKey");
+                lockField.setAccessible(true);
+            } catch (ReflectiveOperationException | RuntimeException e) {
+                LOG.warn("Field Guide: can't read container locks ({}); locked containers count as opened", e.toString());
+            }
+        }
+        try {
+            return lockField != null && lockField.get(be) instanceof LockCode code && code != LockCode.NO_LOCK
+                    && !code.unlocksWith(player.getMainHandItem());
+        } catch (ReflectiveOperationException | RuntimeException e) {
+            return false;
+        }
     }
 
     /** Every item in the storage they have opened within {@link #RANGE} blocks, with its total. Server thread. */

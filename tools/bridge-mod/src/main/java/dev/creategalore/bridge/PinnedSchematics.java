@@ -56,6 +56,13 @@ public final class PinnedSchematics {
     /** Bigger builds would not fit one packet; the Schematicannon is the tool for those. */
     public static final int MAX_BLOCKS = 120_000;
     static final int MAX_PINS = 64;
+    /**
+     * Largest box pinning lays out (air included, which Create's files keep): placing one is main-thread work, so a
+     * huge one is refused before it starts.
+     */
+    static final long MAX_VOLUME = 4_000_000L;
+    /** One pin per player every 30 seconds: each lays the build out and sends it to every player. */
+    private static final PlayerRateLimit PINNING = new PlayerRateLimit(1, 1.0 / 30);
 
     private PinnedSchematics() {
     }
@@ -119,8 +126,13 @@ public final class PinnedSchematics {
         for (Pin p : pins.pins.values()) if (p.key.equals(key)) return fail(source, "This Schematic is already pinned right here (#" + p.id + ")");
         if (pins.pins.size() >= MAX_PINS) return fail(source, "There are already " + MAX_PINS + " pinned schematics; unpin one first");
         StructureTemplate template = SchematicItem.loadSchematic(level, stack);
-        if (template.getSize().equals(Vec3i.ZERO))
+        Vec3i size = template.getSize();
+        if (size.equals(Vec3i.ZERO))
             return fail(source, "This server doesn't have that Schematic's file; make the Schematic again at a Schematic Table here");
+        if ((long) size.getX() * size.getY() * size.getZ() > MAX_VOLUME)
+            return fail(source, "That build is " + size.getX() + " x " + size.getY() + " x " + size.getZ() + ", too big to pin (a Schematicannon prints any size)");
+        if (!PINNING.tryAcquire(player.getUUID()))
+            return fail(source, "Wait a little before pinning another schematic");
         Map<BlockPos, BlockState> blocks = blocks(level, template, SchematicItem.getSettings(stack, false));
         if (blocks.isEmpty()) return fail(source, "That Schematic has no blocks in it");
         if (blocks.size() > MAX_BLOCKS)
@@ -165,11 +177,18 @@ public final class PinnedSchematics {
 
     static int unpin(CommandSourceStack source, int id) {
         Pins pins = Pins.get(source.getServer());
-        Pin pin = pins.pins.remove(id);
+        Pin pin = pins.pins.get(id);
         if (pin == null) {
             source.sendFailure(Component.literal("There is no pinned schematic #" + id + "; /schematic list shows them"));
             return 0;
         }
+        // The player who pinned it, or an operator (and the console).
+        ServerPlayer player = source.getPlayer();
+        if (player != null && !source.hasPermission(2) && !pin.by.equals(player.getGameProfile().getName())) {
+            source.sendFailure(Component.literal("Only " + pin.by + " (who pinned it) or an operator can unpin #" + id));
+            return 0;
+        }
+        pins.pins.remove(id);
         pins.setDirty();
         PacketDistributor.sendToAllPlayers(new Removed(id));
         tellAll(source.getServer(), source.getTextName() + " unpinned the schematic " + pin.name + " (#" + id + ") at " + where(pin));
@@ -255,14 +274,22 @@ public final class PinnedSchematics {
             ResourceKey<Level> dim = ResourceKey.create(Registries.DIMENSION, buf.readResourceLocation());
             BlockPos anchor = buf.readBlockPos();
             String name = buf.readUtf(), by = buf.readUtf(), key = buf.readUtf();
+            // Sizes and indexes come from the server, so they are checked before anything is allocated or looked up.
             int n = buf.readVarInt();
+            if (n < 0 || n > Math.min(MAX_BLOCKS, Block.BLOCK_STATE_REGISTRY.size()))
+                throw new io.netty.handler.codec.DecoderException("pinned schematic palette of " + n);
             BlockState[] palette = new BlockState[n];
             for (int i = 0; i < n; i++) palette[i] = Block.stateById(buf.readVarInt());
-            int count = Math.min(buf.readVarInt(), MAX_BLOCKS);
+            int count = buf.readVarInt();
+            if (count < 0 || count > MAX_BLOCKS)
+                throw new io.netty.handler.codec.DecoderException("pinned schematic of " + count + " blocks");
             Map<BlockPos, BlockState> blocks = new HashMap<>(count * 2);
             for (int i = 0; i < count; i++) {
                 BlockPos pos = new BlockPos(unzig(buf.readVarInt()), unzig(buf.readVarInt()), unzig(buf.readVarInt()));
-                blocks.put(pos, palette[buf.readVarInt()]);
+                int state = buf.readVarInt();
+                if (state < 0 || state >= n)
+                    throw new io.netty.handler.codec.DecoderException("pinned schematic block " + state + " outside its palette of " + n);
+                blocks.put(pos, palette[state]);
             }
             return new Pin(id, dim, anchor, name, by, key, blocks);
         });

@@ -38,10 +38,17 @@ NFV=$(basename "$(dirname "$NF")")
 CLIENT="$CACHE/client-$NFV"
 NFCLIENT="$CLIENT/libraries/net/neoforged/neoforge/$NFV/neoforge-$NFV-client.jar"
 if [ ! -s "$NFCLIENT" ]; then
+  # The installer runs here, so it has to be the pinned file (the .sha256 maven.neoforged.net publishes for it).
+  case "$NFV" in
+    21.1.262) NF_SHA256=e86f5d78ed310465bd1ecf79823abcbc58782699b068ac776f4c5e226d994a8f ;;
+    *) echo "No pinned installer checksum for NeoForge $NFV: add the .sha256 maven.neoforged.net publishes" >&2; exit 1 ;;
+  esac
   mkdir -p "$CLIENT"
   echo '{"profiles":{}}' > "$CLIENT/launcher_profiles.json"
   curl -sSfL --retry 4 -o "$CACHE/neoforge-$NFV-installer.jar" \
     "https://maven.neoforged.net/releases/net/neoforged/neoforge/$NFV/neoforge-$NFV-installer.jar"
+  echo "$NF_SHA256  $CACHE/neoforge-$NFV-installer.jar" | sha256sum -c --status \
+    || { rm -f "$CACHE/neoforge-$NFV-installer.jar"; echo "The NeoForge installer doesn't match its pinned checksum" >&2; exit 1; }
   (cd "$CACHE" && java -jar "neoforge-$NFV-installer.jar" --install-client "$CLIENT" > "$CACHE/client-install.log")
 fi
 # Patched client classes first, so they win over the server's copies of the same classes.
@@ -59,6 +66,13 @@ for m in iris colorwheel distanthorizons; do
   fi
   CP="$CP$JAR:"
 done
+
+# Every DLL the jar ships has to be the one recorded in natives.sha256 (natives-sums.sh rewrites it after a deliberate
+# change), so a swapped or extra DLL stops the build instead of reaching players.
+(cd "$HERE/src/main/resources" && sha256sum -c --quiet "$HERE/natives.sha256") \
+  || { echo "A DLL under natives/ doesn't match natives.sha256 (run natives-sums.sh only if you changed it on purpose)" >&2; exit 1; }
+[ "$(cut -d' ' -f3- "$HERE/natives.sha256" | LC_ALL=C sort)" = "$(cd "$HERE/src/main/resources" && find natives -name '*.dll' | LC_ALL=C sort)" ] \
+  || { echo "natives.sha256 doesn't list exactly the DLLs under natives/ (run natives-sums.sh if that's on purpose)" >&2; exit 1; }
 
 mkdir -p "$WORK/classes"
 javac --release 21 -nowarn -proc:none -cp "$CP" -d "$WORK/classes" $(find "$HERE/src/main/java" -name '*.java')

@@ -1,6 +1,4 @@
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -22,18 +20,19 @@ import java.util.zip.ZipOutputStream;
  * Checks whether a newer pack is out and asks in the console: no / yes / back up the world first, then yes.
  * Never updates without an answer: no answer, no console or no internet all mean "start as it is".
  *
- * Servers built by the install-server scripts (packwiz.json) update with packwiz-installer from the pack on
- * GitHub. Servers built by the Server Setup app (.galore-installed.txt) update with the matching app from
- * the latest release, run as "--update", which keeps memory, port, Elytra and edited configs.
+ * Servers built by the install-server scripts (packwiz.json) update with packwiz-installer from the latest
+ * release's pack on GitHub. Servers built by the Server Setup app (.galore-installed.txt) update with the matching
+ * app from the latest release, run as "--update", which keeps memory, port, Elytra and edited configs. The app only
+ * runs when its download has the checksum the release's pack info lists.
  *
  * Exit code 0: start the server. Anything else: don't (the update failed or needs a restart of the script).
  */
 final class ServerUpdateCheck {
-    static final String REPO = "https://github.com/CordMuncher/Create-Galore";
-    static final String RELEASE_INFO = REPO + "/releases/latest/download/Create-Galore-pack-info.txt";
     static final String STATE = ".galore-pack.txt";
     static final int ANSWER_SECONDS = 120;
     static final int START_AGAIN = 10;
+    /** updateWithApp's answer when it ran nothing (no or wrong checksum): nothing changed, so the server can start. */
+    static final int NOT_RUN = -1;
 
     final Path here = Paths.get("").toAbsolutePath();
     final PrintStream out = System.out;
@@ -86,30 +85,54 @@ final class ServerUpdateCheck {
 
         // What's installed, and what's out.
         String installedHash, installedVersion = state.getOrDefault("pack", "?");
-        String latestHash, latestVersion, latestNeoForge;
-        String packUrl = args.size() > 1 ? args.get(1) : CreateGaloreUpdater.PACK_URL;
+        String latestHash, latestVersion, latestNeoForge, appSha256 = null;
+        String packUrl = args.size() > 1 ? args.get(1) : null;
+        if (packUrl != null && Net.isUrl(packUrl) && !Net.isHttps(packUrl)) {
+            out.println("Refusing " + packUrl + ": the pack has to come over https:// or from a local pack.toml. Starting the server as it is.");
+            return 0;
+        }
         out.println("Checking for Create Galore updates...");
         if (scripts) {
             Matcher m = Pattern.compile("\"packFileHash\"\\s*:\\s*\\{[^}]*\"value\"\\s*:\\s*\"([0-9a-fA-F]+)\"")
                 .matcher(new String(Files.readAllBytes(here.resolve("packwiz.json")), StandardCharsets.UTF_8));
             installedHash = m.find() ? m.group(1) : "";
+            String expected = null;
+            if (packUrl == null) {
+                Map<String, String> info = Release.info();
+                packUrl = Release.packUrl(info);
+                if (packUrl != null) {
+                    expected = info.get("pack_sha256");
+                } else {
+                    packUrl = Release.BRANCH_PACK_URL;
+                    if (info != null) out.println("The latest release doesn't name its commit, so the pack is read from the branch.");
+                }
+            }
             byte[] toml = fetch(packUrl);
             if (toml == null) return offline();
             String text = new String(toml, StandardCharsets.UTF_8);
             latestHash = sha256(toml);
+            if (expected != null && !latestHash.equalsIgnoreCase(expected)) {
+                out.println("The pack at " + packUrl + " doesn't match the checksum the release lists, so it isn't installed. Starting the server as it is.");
+                return 0;
+            }
             latestVersion = Objects.toString(tomlString(text, "version"), "?");
             latestNeoForge = tomlString(text, "neoforge");
         } else {
             installedHash = state.getOrDefault("pack_sha256", "");
-            byte[] info = fetch(RELEASE_INFO);
-            if (info == null) return offline();
-            Map<String, String> kv = parseKeyValues(new String(info, StandardCharsets.UTF_8));
+            Map<String, String> kv = Release.info();
+            if (kv == null) return offline();
             latestHash = kv.getOrDefault("pack_sha256", "");
             latestVersion = kv.getOrDefault("pack", "?");
             latestNeoForge = kv.get("neoforge");
+            appSha256 = kv.get("app_sha256");
         }
         if (latestHash.isEmpty() || latestHash.equalsIgnoreCase(installedHash)) {
             out.println("Create Galore " + installedVersion + " is up to date.");
+            return 0;
+        }
+        // These end up in file names, a URL and the state file, so only plain version numbers are used.
+        if (!Release.validVersion(latestVersion) || (latestNeoForge != null && !Release.validNeoForge(latestNeoForge))) {
+            out.println("The update info from GitHub doesn't look right (its version isn't a plain number), so nothing is updated. Starting the server as it is.");
             return 0;
         }
 
@@ -119,7 +142,7 @@ final class ServerUpdateCheck {
         boolean newNeoForge = latestNeoForge != null && !Files.isDirectory(here.resolve(Paths.get("libraries", "net", "neoforged", "neoforge", latestNeoForge)));
         if (scripts && newNeoForge) {
             out.println(what + ". It moves the server to NeoForge " + latestNeoForge + ", which this check can't install.");
-            out.println("Stop here and run install-server from the new server kit (" + REPO + "/releases/latest). Starting the server as it is.");
+            out.println("Stop here and run install-server from the new server kit (" + Release.REPO + "/releases/latest). Starting the server as it is.");
             return 0;
         }
         if (app && File.separatorChar != '\\') {
@@ -143,7 +166,11 @@ final class ServerUpdateCheck {
 
         out.println();
         out.println("Updating to " + latestVersion + "...");
-        int code = scripts ? updateWithPackwiz(packUrl) : updateWithApp(latestVersion);
+        int code = scripts ? updateWithPackwiz(packUrl) : updateWithApp(latestVersion, appSha256);
+        if (code == NOT_RUN) {
+            out.println("Starting the server as it is.");
+            return 0;
+        }
         if (code != 0) {
             out.println();
             out.println("THE UPDATE DIDN'T FINISH (exit code " + code + "), so the server won't start: a half-updated server can");
@@ -295,17 +322,35 @@ final class ServerUpdateCheck {
         return new ProcessBuilder(cmd).inheritIO().start().waitFor();
     }
 
-    int updateWithApp(String version) throws Exception {
-        Path dir = here.resolve(".galore-update");
-        Files.createDirectories(dir);
+    /**
+     * Downloads the release's Server Setup app and runs it as "--update", but only when the download has the checksum
+     * the release's pack info lists ({@code expectedSha256}); otherwise nothing is written or run and the answer is
+     * {@link #NOT_RUN}. The bytes are checked in memory before they are written, so what runs is what was checked.
+     */
+    int updateWithApp(String version, String expectedSha256) throws Exception {
+        if (!Release.validVersion(version)) {
+            out.println("The release's version isn't a plain number, so its Server Setup app isn't downloaded.");
+            return NOT_RUN;
+        }
+        if (!Release.validSha256(expectedSha256)) {
+            out.println("The release doesn't list the Server Setup app's checksum, so the app isn't downloaded or run.");
+            out.println("Run the newest Server Setup app on this folder yourself to update.");
+            return NOT_RUN;
+        }
         String name = "Create-Galore-Server-Setup-" + version + ".exe";
-        Path exe = dir.resolve(name);
         out.println("Downloading " + name + " from the release...");
-        byte[] data = fetch(REPO + "/releases/download/v" + version + "/" + name);
+        byte[] data = Net.get(Release.REPO + "/releases/download/v" + version + "/" + name, Net.APP_LIMIT);
         if (data == null) {
-            out.println("Couldn't download it. The release may still be building: wait a few minutes and start again.");
+            out.println("Couldn't download it (" + Net.lastProblem + "). The release may still be building: wait a few minutes and start again.");
             return 2;
         }
+        if (!sha256(data).equalsIgnoreCase(expectedSha256)) {
+            out.println("The downloaded " + name + " doesn't match the checksum the release lists, so it isn't run.");
+            return NOT_RUN;
+        }
+        Path dir = here.resolve(".galore-update");
+        Files.createDirectories(dir);
+        Path exe = dir.resolve(name);
         Files.write(exe, data);
         Path log = dir.resolve("update-log.txt");
         int code = new ProcessBuilder(exe.toString(), "--update", here.toString(), "--log", log.toString())
@@ -329,31 +374,14 @@ final class ServerUpdateCheck {
 
     // ---------- Small helpers ----------
 
-    /** The body of a URL, or null when it can't be read (offline, 404, timeout). */
+    /** The pack.toml at a local path or an https:// address, or null when it can't be read (offline, 404, timeout). */
     byte[] fetch(String url) {
+        if (Net.isUrl(url)) return Net.get(url, Net.TEXT_LIMIT);
         try {
-            if (!url.startsWith("http://") && !url.startsWith("https://"))
-                return Files.isRegularFile(Paths.get(url)) ? Files.readAllBytes(Paths.get(url)) : null;
-            for (int hops = 0; hops < 5; hops++) {
-                HttpURLConnection c = (HttpURLConnection) new URL(url).openConnection();
-                c.setConnectTimeout(10000);
-                c.setReadTimeout(60000);
-                c.setRequestProperty("User-Agent", "create-galore-updater");
-                c.setInstanceFollowRedirects(true);
-                int status = c.getResponseCode();
-                if (status / 100 == 3 && c.getHeaderField("Location") != null) { url = c.getHeaderField("Location"); continue; }
-                if (status != 200) return null;
-                try (InputStream in = c.getInputStream()) {
-                    ByteArrayOutputStream b = new ByteArrayOutputStream();
-                    byte[] buf = new byte[1 << 16];
-                    for (int n; (n = in.read(buf)) > 0; ) b.write(buf, 0, n);
-                    return b.toByteArray();
-                }
-            }
-        } catch (IOException e) {
+            return Files.isRegularFile(Paths.get(url)) ? Files.readAllBytes(Paths.get(url)) : null;
+        } catch (IOException | RuntimeException e) {
             return null;
         }
-        return null;
     }
 
     static String sha256(byte[] data) throws Exception {

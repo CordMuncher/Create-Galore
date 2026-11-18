@@ -15,8 +15,12 @@ set -euo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"
 OUT="${1:-$HERE/../src/main/resources/natives/windows-x64/cg_present.dll}"
 SL_TAG=v2.14.16
+SL_COMMIT=625db07d4bca5abc67d781c42af7e7fb0761f1b6 # what that tag points to; the build stops if it moves
 FFX_TAG=v2.0.0
+FFX_COMMIT=f4c1da8e92f3fe563b5c28c44e6267ce6b6b8eb2
 XWIN_VERSION=0.6.5
+# xwin-$XWIN_VERSION-x86_64-unknown-linux-musl.tar.gz, the checksum its release publishes. Its CRT ends up in the DLL.
+XWIN_SHA256=9fd53950b064d067f42428a69453b927656cae68dbd7f8d3f86dcb81c80dd22d
 CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/create-galore-bridge"
 SL="$CACHE/streamline-$SL_TAG"
 FFX="$CACHE/fidelityfx-$FFX_TAG"
@@ -34,6 +38,8 @@ if [ ! -s "$SL/include/sl.h" ]; then
   git clone -q --depth 1 --branch "$SL_TAG" --filter=blob:none --sparse https://github.com/NVIDIA-RTX/Streamline.git "$SL"
   git -C "$SL" sparse-checkout set --no-cone /include/ /license.txt
 fi
+[ "$(git -C "$SL" rev-parse HEAD)" = "$SL_COMMIT" ] \
+  || { echo "$SL isn't Streamline $SL_TAG at $SL_COMMIT (did the tag move?): delete it and check before building" >&2; exit 1; }
 
 if [ ! -s "$FFX/Kits/FidelityFX/framegeneration/include/ffx_framegeneration.h" ]; then
   rm -rf "$FFX"
@@ -42,11 +48,15 @@ if [ ! -s "$FFX/Kits/FidelityFX/framegeneration/include/ffx_framegeneration.h" ]
   git -C "$FFX" sparse-checkout set --no-cone /Kits/FidelityFX/api/include/ /Kits/FidelityFX/framegeneration/include/ \
     /docs/license.md
 fi
+[ "$(git -C "$FFX" rev-parse HEAD)" = "$FFX_COMMIT" ] \
+  || { echo "$FFX isn't FidelityFX SDK $FFX_TAG at $FFX_COMMIT (did the tag move?): delete it and check before building" >&2; exit 1; }
 
 if [ ! -d "$WINSDK/crt" ]; then
   mkdir -p "$XWIN_DIR"
   curl -sSfL --retry 4 -o "$XWIN_DIR/xwin.tar.gz" \
     "https://github.com/Jake-Shadle/xwin/releases/download/$XWIN_VERSION/xwin-$XWIN_VERSION-x86_64-unknown-linux-musl.tar.gz"
+  echo "$XWIN_SHA256  $XWIN_DIR/xwin.tar.gz" | sha256sum -c --quiet - \
+    || { rm -f "$XWIN_DIR/xwin.tar.gz"; echo "The xwin download doesn't match its pinned checksum" >&2; exit 1; }
   tar -xzf "$XWIN_DIR/xwin.tar.gz" -C "$XWIN_DIR" --strip-components=1
   "$XWIN_DIR/xwin" --accept-license --arch x86_64 --cache-dir "$XWIN_DIR/cache" splat --output "$WINSDK"
   rm -rf "$XWIN_DIR/cache"
@@ -77,3 +87,4 @@ lld-link /nologo /dll /machine:x64 /Brepro /opt:ref /opt:icf /out:"$WORK/cg_pres
   "$WORK/cg_present.obj" "$WORK/cg_streamline.obj" "$WORK/cg_ffx.obj" dxguid.lib kernel32.lib user32.lib
 cp "$WORK/cg_present.dll" "$OUT"
 echo "Built $OUT ($(sha256sum "$OUT" | cut -d' ' -f1))"
+echo "Then run tools/bridge-mod/natives-sums.sh to record it: tools/bridge-mod/build.sh only packages recorded DLLs."

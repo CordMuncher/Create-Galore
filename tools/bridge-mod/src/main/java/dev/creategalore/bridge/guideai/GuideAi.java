@@ -82,6 +82,14 @@ public final class GuideAi {
         String status = "thinking";
     }
     private static final Map<UUID, Long> lastAsked = new HashMap<>();
+    /** Questions asked today by everyone together (server thread), against {@code server_daily_questions}. */
+    private static String serverDay = "";
+    private static int serverAskedToday;
+    /**
+     * Book requests a client can send at will (open, list, save, delete, ask): each can answer with a whole page, so a
+     * client sending them nonstop is slowed down. Far above what clicking through the book does.
+     */
+    private static final dev.creategalore.bridge.PlayerRateLimit REQUESTS = new dev.creategalore.bridge.PlayerRateLimit(20, 5.0);
     /** Request fields dropped after the API rejected them once (e.g. web tools on an account without them). */
     private static volatile boolean webRejected, fallbacksRejected, strictRejected, bindingRejected;
 
@@ -89,7 +97,8 @@ public final class GuideAi {
         GuideAiNet.register(modBus);
         NeoForge.EVENT_BUS.addListener(GuideAi::onStarted);
         NeoForge.EVENT_BUS.addListener(GuideAi::onStopping);
-        NeoForge.EVENT_BUS.addListener((net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.RightClickBlock e) -> {
+        // Last, so a click a claim or protection mod cancelled isn't counted (cancelled events don't reach it).
+        NeoForge.EVENT_BUS.addListener(net.neoforged.bus.api.EventPriority.LOWEST, (net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.RightClickBlock e) -> {
             TouchedStorage s = storage;
             if (s != null) s.onRightClick(e);
         });
@@ -115,7 +124,9 @@ public final class GuideAi {
         });
         NeoForge.EVENT_BUS.addListener(BuildClaims::onCommands);
         NeoForge.EVENT_BUS.addListener(BuildClaims::onTick);
-        NeoForge.EVENT_BUS.addListener(Casebook::onCommands);
+        // The casebook reads and writes files anywhere on the host, so it exists only on a test server started with
+        // -Dcreate_galore_bridge.casebook=true (tools/book-casebook sets it), never on a real one, even for operators.
+        if (Boolean.getBoolean("create_galore_bridge.casebook")) NeoForge.EVENT_BUS.addListener(Casebook::onCommands);
         NeoForge.EVENT_BUS.addListener(Casebook::onTick);
         NeoForge.EVENT_BUS.addListener((net.neoforged.neoforge.event.level.LevelEvent.Save e) -> {
             if (!(e.getLevel() instanceof net.minecraft.server.level.ServerLevel level)
@@ -266,6 +277,7 @@ public final class GuideAi {
 
     static void handle(GuideAiNet.Request request, Player sender) {
         if (!(sender instanceof ServerPlayer player)) return;
+        if (request.action() != GuideAiNet.AWAY && !REQUESTS.tryAcquire(player.getUUID())) return;
         Live l = live;
         if (l == null) {
             send(player, new GuideAiNet.Pages(false, offNotice, List.of()));
@@ -329,11 +341,19 @@ public final class GuideAi {
             book.day = today;
             book.askedToday = 0;
         }
+        if (!today.equals(serverDay)) {
+            serverDay = today;
+            serverAskedToday = 0;
+        }
         if (page != null && isPending(id, page.id)) refusal = "The book is still writing its answer on this page.";
         else if (pendingCount(id) >= MAX_AT_ONCE)
             refusal = "The book is already writing " + MAX_AT_ONCE + " answers for you. Ask again when one of them is done.";
         else if (lastAsked.containsKey(id) && now - lastAsked.get(id) < l.settings.cooldownSeconds * 1000L)
             refusal = "Give the book a few seconds between questions.";
+        else if (!player.hasPermissions(l.settings.minPermission))
+            refusal = "On this server only operators can ask the book.";
+        else if (serverAskedToday >= l.settings.serverDailyQuestions)
+            refusal = "The book has answered all the questions this server allows for today. It can answer again tomorrow.";
         else if (book.askedToday >= l.settings.dailyQuestions)
             refusal = "The book has answered " + l.settings.dailyQuestions + " of your questions today and needs to rest until tomorrow.";
         else if (page != null && page.kind != ThreadStore.KIND_CHAT)
@@ -351,6 +371,7 @@ public final class GuideAi {
         page.entries.add(new GuideAiNet.Entry(GuideAiNet.WHO_PLAYER, question));
         page.unread = false;
         book.askedToday++;
+        serverAskedToday++;
         lastAsked.put(id, now);
         synchronized (pending) {
             pending.computeIfAbsent(id, k -> new HashSet<>()).add(page.id);

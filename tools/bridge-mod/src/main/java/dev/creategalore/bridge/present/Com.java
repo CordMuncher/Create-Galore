@@ -1,11 +1,16 @@
 package dev.creategalore.bridge.present;
 
+import static org.lwjgl.system.MemoryStack.stackPush;
+import static org.lwjgl.system.MemoryUtil.memAddress;
 import static org.lwjgl.system.MemoryUtil.memGetAddress;
 import static org.lwjgl.system.MemoryUtil.memPutByte;
 import static org.lwjgl.system.MemoryUtil.memPutInt;
 import static org.lwjgl.system.MemoryUtil.memPutShort;
 import static org.lwjgl.system.MemoryUtil.nmemAlloc;
 
+import java.nio.ByteBuffer;
+
+import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.windows.WinBase;
 
 /**
@@ -57,19 +62,39 @@ public final class Com {
         return g;
     }
 
-    /** Address of an exported function in a system DLL, loading the DLL if needed. */
+    /**
+     * Address of an exported function in a system DLL, loading the DLL if needed. A DLL that isn't loaded yet is loaded from
+     * System32 only: a plain LoadLibrary would also search the game folder and every PATH folder, where anyone who can
+     * write there could put a DLL of the same name (nvapi64.dll isn't in System32 on AMD and Intel PCs, so the search
+     * would always go on to those folders).
+     */
     public static long function(String dll, String name) {
         long module = WinBase.GetModuleHandle(dll);
         if (module == 0L) {
-            module = WinBase.LoadLibrary(dll);
+            module = loadFromSystem32(dll);
         }
         if (module == 0L) {
-            throw new IllegalStateException("Could not load " + dll + " (error " + WinBase.getLastError() + ")");
+            throw new IllegalStateException("Could not load " + dll + " from System32");
         }
         long function = WinBase.GetProcAddress(module, name);
         if (function == 0L) {
             throw new IllegalStateException("No " + name + " in " + dll);
         }
         return function;
+    }
+
+    private static final int LOAD_LIBRARY_SEARCH_SYSTEM32 = 0x00000800;
+
+    /** LoadLibraryExW(dll, NULL, LOAD_LIBRARY_SEARCH_SYSTEM32); 0 if the DLL isn't in System32. */
+    private static long loadFromSystem32(String dll) {
+        long kernel32 = WinBase.GetModuleHandle("kernel32.dll");
+        long loadLibraryEx = kernel32 == 0L ? 0L : WinBase.GetProcAddress(kernel32, "LoadLibraryExW");
+        if (loadLibraryEx == 0L) {
+            return 0L;
+        }
+        try (MemoryStack stack = stackPush()) {
+            ByteBuffer wide = stack.UTF16(dll);
+            return Ffi.call("PPI:P", loadLibraryEx, memAddress(wide), 0L, LOAD_LIBRARY_SEARCH_SYSTEM32);
+        }
     }
 }

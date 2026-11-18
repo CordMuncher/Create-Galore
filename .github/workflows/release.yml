@@ -67,7 +67,9 @@ jobs:
           echo "Pack version $v"
 
       - name: Check CHANGELOG.md has notes for this version
-        run: python3 tools/changelog_section.py "${{ steps.version.outputs.version }}"
+        env:
+          V: ${{ steps.version.outputs.version }}
+        run: python3 tools/changelog_section.py "$V"
 
       - name: Check the Field Guide's AI notes match the guide
         run: python3 tools/guide_digest.py --check
@@ -91,7 +93,8 @@ jobs:
         env:
           V: ${{ steps.version.outputs.version }}
         run: |
-          go install github.com/packwiz/packwiz@latest
+          # Pinned (Go checks the module against sum.golang.org); bump it on purpose, never @latest.
+          go install github.com/packwiz/packwiz@v0.0.0-20261014010756-170b22d78595
           mkdir -p dist/release
           out="dist/release/Create-Galore-$V.mrpack"
           # packwiz can silently leave out a mod when a download lookup hiccups, so check the count and retry.
@@ -170,13 +173,15 @@ jobs:
 
       - name: Check the exe loads its pack data
         shell: pwsh
+        env:
+          V: ${{ needs.pack.outputs.version }}
         run: |
           $exe = "tools/server-setup/bin/Release/net48/Create-Galore-Server-Setup.exe"
           $p = Start-Process -FilePath $exe -ArgumentList "--check","--log","check.txt" -Wait -PassThru
           Get-Content check.txt
           if ($p.ExitCode -ne 0) { throw "exe check failed with exit code $($p.ExitCode)" }
           New-Item -ItemType Directory -Force app | Out-Null
-          Copy-Item $exe "app/Create-Galore-Server-Setup-${{ needs.pack.outputs.version }}.exe"
+          Copy-Item $exe "app/Create-Galore-Server-Setup-$env:V.exe"
 
       - uses: actions/upload-artifact@v4
         with:
@@ -208,6 +213,13 @@ jobs:
           V: ${{ needs.pack.outputs.version }}
         run: |
           tag="v$V"
+          # The update checks read these: the commit this release's pack was built from (players and servers install
+          # that commit's pack, never the branch tip) and the Server Setup app's checksum (servers run the app only
+          # when its download matches).
+          exe="out/Create-Galore-Server-Setup-$V.exe"
+          test -f "$exe"
+          printf 'commit=%s\napp_sha256=%s\n' "$GITHUB_SHA" "$(sha256sum "$exe" | cut -d' ' -f1)" >> out/Create-Galore-pack-info.txt
+          cat out/Create-Galore-pack-info.txt
           ls -la out
           # What changed comes first, from this version's CHANGELOG.md section; then how to play.
           { python3 tools/changelog_section.py "$V"; echo; echo '---'; echo; } > changes.md
@@ -257,6 +269,8 @@ jobs:
           path: app
       - name: Install a server with the app
         shell: pwsh
+        env:
+          MODS: ${{ needs.pack.outputs.mods }}
         run: |
           $exe = (Get-ChildItem app/*.exe).FullName
           $dir = Join-Path $env:RUNNER_TEMP "galore-server"
@@ -265,7 +279,7 @@ jobs:
           if ($p.ExitCode -ne 0) { throw "install failed with exit code $($p.ExitCode)" }
           $mods = (Get-ChildItem "$dir/mods/*.jar").Count
           Write-Host "$mods mods installed"
-          if ($mods -ne ${{ needs.pack.outputs.mods }}) { throw "expected ${{ needs.pack.outputs.mods }} mods" }
+          if ($mods -ne [int]$env:MODS) { throw "expected $env:MODS mods" }
           foreach ($f in "start-server.bat","run.bat","server.properties","user_jvm_args.txt","eula.txt","config/paxi/datapacks/create-galore-tweaks/pack.mcmeta") {
             if (-not (Test-Path (Join-Path $dir $f))) { throw "missing $f" }
           }

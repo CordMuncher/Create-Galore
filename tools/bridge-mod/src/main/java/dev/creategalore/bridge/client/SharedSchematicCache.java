@@ -65,6 +65,8 @@ public final class SharedSchematicCache {
     }
 
     public static void onPart(SharedSchematics.Part part) {
+        // Only builds this client asked for: a server can't make it hold buffers for keys it never wanted.
+        if (!asked.contains(part.key()) || builds.containsKey(part.key())) return;
         if (part.total() <= 0) {
             done(part.key(), NONE);
             return;

@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.HexFormat;
 
 import org.lwjgl.system.windows.WinBase;
@@ -35,7 +36,8 @@ public final class NativeHelper {
             bytes = in.readAllBytes();
         }
         Path dll = folder.resolve(name + "-" + sha256(bytes).substring(0, 12) + ".dll");
-        if (!Files.exists(dll) || Files.size(dll) != bytes.length) {
+        // Reused only when it is byte for byte the jar's copy: a same-size replacement must not load in its place.
+        if (!Files.isRegularFile(dll) || Files.size(dll) != bytes.length || !Arrays.equals(Files.readAllBytes(dll), bytes)) {
             Files.createDirectories(folder);
             Path temp = Files.createTempFile(folder, name, ".tmp");
             Files.write(temp, bytes);

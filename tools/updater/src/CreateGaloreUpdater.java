@@ -1,13 +1,12 @@
 import java.io.File;
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Pre-launch updater for a Create Galore instance. Runs from the instance's minecraft folder:
@@ -20,28 +19,48 @@ import java.util.List;
  * The update itself is packwiz-installer (pinned, shipped next to this jar). Nothing is touched unless the
  * pack can be read. --clean moves config/, defaultconfigs/, options.txt and each world's serverconfig/ aside
  * first, so the pack's files and the mods' defaults come back; if the update fails they are put back. Mods, Minecraft, NeoForge and the worlds themselves are never deleted.
+ *
+ * Without a pack argument the pack is the latest release's, read at the exact commit the release was built from and
+ * checked against the checksum the release lists (see Release). A pack argument is a local pack.toml or an https://
+ * address; plain http:// is refused, since packwiz trusts every mod address and checksum the pack lists.
  */
 public final class CreateGaloreUpdater {
-    static final String PACK_URL = "https://raw.githubusercontent.com/CordMuncher/Create-Galore/main-6fi2ef/pack/pack.toml";
 
     public static void main(String[] args) throws Exception {
         if (args.length > 0 && args[0].equals("--server-start")) { ServerUpdateCheck.main(args); return; }
         if (args.length > 0 && args[0].equals("--api-key")) { FieldGuideKey.standalone(); return; }
         boolean clean = false;
-        String url = PACK_URL;
+        String url = null;
         List<String> passOn = new ArrayList<>();
         for (String a : args) {
             if (a.equals("--clean")) clean = true;
             else if (a.startsWith("--")) passOn.add(a);
             else url = a;
         }
+        if (url != null && Net.isUrl(url) && !Net.isHttps(url)) {
+            System.err.println("Refusing " + url + ": the pack has to come over https:// (or from a local pack.toml),"
+                + " because anyone on the network can change a plain http:// download. Nothing was changed.");
+            System.exit(2);
+        }
         Path here = Paths.get("").toAbsolutePath();
         if (!Files.isDirectory(here.resolve("mods")) || !Files.isRegularFile(here.resolve("packwiz-installer-bootstrap.jar"))) {
             System.err.println("Not a Create Galore instance folder (needs mods/ and packwiz-installer-bootstrap.jar): " + here);
             System.exit(2);
         }
-        if (!packReachable(url)) {
-            System.err.println("Can't read the pack at " + url + ". Nothing was changed." + (url.startsWith("http")
+        String expectedSha256 = null;
+        if (url == null) {
+            Map<String, String> info = Release.info();
+            url = Release.packUrl(info);
+            if (url != null) {
+                expectedSha256 = info.get("pack_sha256");
+            } else {
+                url = Release.BRANCH_PACK_URL;
+                if (info != null) System.out.println("The latest release doesn't name its commit, so this run reads the pack from the branch.");
+            }
+        }
+        String problem = packProblem(url, expectedSha256);
+        if (problem != null) {
+            System.err.println("Can't read the pack at " + url + " (" + problem + "). Nothing was changed." + (Net.isUrl(url)
                 ? " If the GitHub repo is private, GitHub hides its files: use a local pack folder (see the README) or make the repo public."
                 : ""));
             System.exit(3);
@@ -76,20 +95,16 @@ public final class CreateGaloreUpdater {
     /** Exit code that stops this launch because NeoForge changed; the next launch uses the new version. */
     static final int NEW_LOADER = 4;
 
-    static boolean packReachable(String url) {
-        if (!url.startsWith("http://") && !url.startsWith("https://")) return Files.isRegularFile(Paths.get(url));
-        try {
-            HttpURLConnection c = (HttpURLConnection) new URL(url).openConnection();
-            c.setConnectTimeout(15000);
-            c.setReadTimeout(15000);
-            c.setRequestProperty("User-Agent", "create-galore-updater");
-            int status = c.getResponseCode();
-            c.disconnect();
-            return status == 200;
-        } catch (IOException e) {
-            System.err.println("  " + e);
-            return false;
-        }
+    /**
+     * Null when the pack can be read (and, for a release's pack, has the checksum the release lists), else what's wrong.
+     */
+    static String packProblem(String url, String expectedSha256) throws Exception {
+        if (!Net.isUrl(url)) return Files.isRegularFile(Paths.get(url)) ? null : "no such file";
+        byte[] toml = Net.get(url, Net.TEXT_LIMIT);
+        if (toml == null) return Net.lastProblem;
+        if (expectedSha256 != null && !(Release.validSha256(expectedSha256) && ServerUpdateCheck.sha256(toml).equalsIgnoreCase(expectedSha256)))
+            return "it doesn't match the checksum the release lists";
+        return null;
     }
 
     /** The paths --clean resets, relative to the instance folder. */

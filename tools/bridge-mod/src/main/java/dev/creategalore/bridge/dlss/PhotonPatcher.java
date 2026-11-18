@@ -2,15 +2,19 @@ package dev.creategalore.bridge.dlss;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Comparator;
 import java.util.HexFormat;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -79,6 +83,10 @@ public final class PhotonPatcher {
     private static final Pattern COLORWHEEL_ZIP = Pattern.compile("photon_v1\\.3a \\+ Clrwl_(\\d+)\\.(\\d+)\\.(\\d+)\\.zip");
     static final String PATCHED_NAME = "Photon v1.3a + DLAA";
     private static final String MARKER = "create_galore_dlaa.txt";
+    /** Photon is a few MB in a few hundred files; anything far bigger is not a shader pack to unpack. */
+    private static final long MAX_ZIP_BYTES = 256L << 20;
+    private static final long MAX_UNPACKED_BYTES = 256L << 20;
+    private static final int MAX_ENTRIES = 20_000;
 
     private static boolean prepared;
 
@@ -116,6 +124,10 @@ public final class PhotonPatcher {
         String sourceName = source.getFileName().toString();
         Path target = shaderpacks.resolve(PATCHED_NAME);
         try {
+            if (Files.size(source) > MAX_ZIP_BYTES) {
+                LOG.warn("DLAA: shaderpacks/{} is over {} MB, so no Photon + DLAA copy", sourceName, MAX_ZIP_BYTES >> 20);
+                return false;
+            }
             String stamp = "patch " + PATCH_VERSION + " of " + sourceName + " sha256 " + sha256(Files.readAllBytes(source));
             Path marker = target.resolve(MARKER);
             if (Files.isRegularFile(marker) && Files.readString(marker).trim().equals(stamp)) {
@@ -1018,30 +1030,86 @@ public final class PhotonPatcher {
             rrGuideImages=cg_rr_albedo_img,cg_rr_specular_img,cg_rr_normal_img,cg_rr_hitdist_img
             """;
 
-    private static void copyTree(Path from, Path to) throws IOException {
+    /**
+     * Unpacks the zip's files into {@code to}. A shader pack zip is only data, so every entry has to land inside {@code to}:
+     * a name with a backslash, a colon or a leading slash, or one that resolves outside, stops the copy. (The zip file system
+     * splits names on "/" only, but a Windows path also splits on "\", so "..\..\mods\x.jar" would otherwise climb out of
+     * the shader pack folder.) The size and file count are capped, so a zip bomb stops here too.
+     */
+    static void copyTree(Path from, Path to) throws IOException {
+        Path root = to.toAbsolutePath().normalize();
+        long total = 0;
+        int entries = 0;
+        byte[] buf = new byte[1 << 16];
         try (Stream<Path> paths = Files.walk(from)) {
             for (Path path : (Iterable<Path>) paths::iterator) {
-                Path dest = to.resolve(from.relativize(path).toString());
+                String rel = from.relativize(path).toString();
+                if (rel.isEmpty()) {
+                    continue;
+                }
+                if (++entries > MAX_ENTRIES) {
+                    throw new IOException("the zip has more than " + MAX_ENTRIES + " files");
+                }
+                Path dest = rel.indexOf('\\') >= 0 || rel.indexOf(':') >= 0 || rel.startsWith("/") ? null : root.resolve(rel).normalize();
+                if (dest == null || !dest.startsWith(root) || dest.equals(root)) {
+                    throw new IOException("unsafe file name in the zip: " + rel);
+                }
                 if (Files.isDirectory(path)) {
                     Files.createDirectories(dest);
-                } else {
-                    try (InputStream in = Files.newInputStream(path)) {
-                        Files.copy(in, dest, StandardCopyOption.REPLACE_EXISTING);
+                    continue;
+                }
+                Files.createDirectories(dest.getParent());
+                try (InputStream in = Files.newInputStream(path); OutputStream out = Files.newOutputStream(dest)) {
+                    for (int n; (n = in.read(buf)) > 0; ) {
+                        total += n;
+                        if (total > MAX_UNPACKED_BYTES) {
+                            throw new IOException("the zip unpacks to more than " + (MAX_UNPACKED_BYTES >> 20) + " MB");
+                        }
+                        out.write(buf, 0, n);
                     }
                 }
             }
         }
     }
 
-    private static void deleteTree(Path root) throws IOException {
-        if (!Files.exists(root)) {
+    /**
+     * Deletes a folder tree without following links: a symbolic link or a Windows junction (at the top or inside) is
+     * removed itself, never what it points to.
+     */
+    static void deleteTree(Path root) throws IOException {
+        if (!Files.exists(root, LinkOption.NOFOLLOW_LINKS)) {
             return;
         }
-        try (Stream<Path> paths = Files.walk(root)) {
-            for (Path path : (Iterable<Path>) paths.sorted(Comparator.reverseOrder())::iterator) {
-                Files.delete(path);
-            }
+        BasicFileAttributes top = Files.readAttributes(root, BasicFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
+        if (!top.isDirectory() || top.isSymbolicLink() || top.isOther()) {
+            Files.delete(root);
+            return;
         }
+        Files.walkFileTree(root, new SimpleFileVisitor<>() {
+            @Override
+            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+                if (attrs.isOther() || attrs.isSymbolicLink()) {
+                    Files.delete(dir);
+                    return FileVisitResult.SKIP_SUBTREE;
+                }
+                return FileVisitResult.CONTINUE;
+            }
+
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                Files.delete(file);
+                return FileVisitResult.CONTINUE;
+            }
+
+            @Override
+            public FileVisitResult postVisitDirectory(Path dir, IOException e) throws IOException {
+                if (e != null) {
+                    throw e;
+                }
+                Files.delete(dir);
+                return FileVisitResult.CONTINUE;
+            }
+        });
     }
 
     private static String sha256(byte[] bytes) {
