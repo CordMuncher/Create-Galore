@@ -76,7 +76,7 @@ Neither mode deletes or re-downloads mods that didn't change, and neither touche
    ```
 3. Press Play. A small window checks the pack. The first run on an instance you already have just checks the files and downloads nothing if they match the latest release. After that, soft launches with no pack change take a couple of seconds. Clean launches fetch the pack's configs (a few hundred small files) each time.
 
-The command reads the pack from GitHub, which only works while the repo is public. To update from a local copy instead (a private repo, or no internet), unzip the release's `Create-Galore-<version>-server-kit.zip` somewhere and put the path of its `pack\pack.toml` after the jar, for example `"$INST_JAVA" -jar create-galore-updater.jar C:\CreateGalorePack\Create-Galore-<version>-server-kit\pack\pack.toml --clean`. Unzip a newer kit over it to update.
+The command reads the latest release's pack from GitHub (at the exact commit that release was built from, checked against the checksum the release lists), which only works while the repo is public. A pack address after the jar has to be `https://`; plain `http://` is refused. To update from a local copy instead (a private repo, or no internet), unzip the release's `Create-Galore-<version>-server-kit.zip` somewhere and put the path of its `pack\pack.toml` after the jar, for example `"$INST_JAVA" -jar create-galore-updater.jar C:\CreateGalorePack\Create-Galore-<version>-server-kit\pack\pack.toml --clean`. Unzip a newer kit over it to update.
 
 If the pack can't be read, the updater stops before changing anything. `--clean` moves the configs aside first and puts them back if the update fails, so a failed launch never leaves the instance without configs.
 

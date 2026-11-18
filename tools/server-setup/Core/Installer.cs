@@ -138,7 +138,10 @@ namespace CreateGalore.ServerSetup
                 return;
             }
             string jar = P("neoforge-installer.jar");
-            await DownloadAsync("https://maven.neoforged.net/releases/net/neoforged/neoforge/" + pack.NeoForge + "/neoforge-" + pack.NeoForge + "-installer.jar", jar, null);
+            // The installer runs as a program, so it has to be the exact file the pack pinned.
+            if (string.IsNullOrEmpty(pack.NeoForgeInstallerSha256))
+                throw new InstallException("This app build has no checksum for the NeoForge installer. Use a newer Server Setup app.");
+            await DownloadAsync("https://maven.neoforged.net/releases/net/neoforged/neoforge/" + pack.NeoForge + "/neoforge-" + pack.NeoForge + "-installer.jar", jar, null, pack.NeoForgeInstallerSha256);
             log("Running the NeoForge installer (downloads Minecraft " + pack.Minecraft + " server files)");
             int code = await RunAsync(java, "-jar \"" + jar + "\" --install-server \"" + dir + "\"", dir);
             if (code != 0) throw new InstallException("The NeoForge installer failed (exit code " + code + "). See the log above.");
@@ -221,7 +224,7 @@ namespace CreateGalore.ServerSetup
             log(pack.Mods.Count + " server mods: " + downloaded + " downloaded, " + copied + " copied from your folder, " + kept + " already up to date");
         }
 
-        async Task DownloadAsync(string url, string dest, string sha512)
+        async Task DownloadAsync(string url, string dest, string sha512, string sha256 = null)
         {
             string part = dest + ".part";
             for (int attempt = 1; ; attempt++)
@@ -236,6 +239,8 @@ namespace CreateGalore.ServerSetup
                             await src.CopyToAsync(dst, 81920, ct);
                     }
                     if (sha512 != null && Hashing.Sha512File(part) != sha512)
+                        throw new InstallException("downloaded file doesn't match the pack's checksum");
+                    if (sha256 != null && !string.Equals(Hashing.Sha256File(part), sha256, StringComparison.OrdinalIgnoreCase))
                         throw new InstallException("downloaded file doesn't match the pack's checksum");
                     if (File.Exists(dest)) File.Delete(dest);
                     File.Move(part, dest);

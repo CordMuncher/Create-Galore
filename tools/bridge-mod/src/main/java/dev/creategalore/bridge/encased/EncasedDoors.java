@@ -30,6 +30,7 @@ import net.minecraft.world.level.material.PushReaction;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -132,6 +133,9 @@ public final class EncasedDoors {
         Block block = state.getBlock();
         if (isEncased(block) || !(block instanceof DoorBlock || block instanceof TrapDoorBlock)) return;
         if (!level.mayInteract(player, pos)) return;
+        // Casing a door changes a block that may be someone else's: ask claim and protection mods the way breaking it
+        // would, and leave the click alone (the door opens as usual, if they allow that) when they say no.
+        if (!level.isClientSide && NeoForge.EVENT_BUS.post(new BlockEvent.BreakEvent(level, pos, state, player)).isCanceled()) return;
         event.setCanceled(true);
         event.setCancellationResult(InteractionResult.sidedSuccess(level.isClientSide));
         if (level.isClientSide) return;

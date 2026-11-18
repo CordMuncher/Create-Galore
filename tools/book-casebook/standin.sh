@@ -43,6 +43,9 @@ case "${1:-}" in
     set_prop online-mode false
     set_prop spawn-protection 0
     set_prop max-tick-time -1
+    # The casebook commands exist only on a server started with this flag (they read and write files anywhere on the host).
+    grep -qx -- '-Dcreate_galore_bridge.casebook=true' user_jvm_args.txt 2>/dev/null \
+      || { echo; echo '-Dcreate_galore_bridge.casebook=true'; } >> user_jvm_args.txt
     rm -f "$STATE/console"; mkfifo "$STATE/console"
     echo "$SERVER" > "$STATE/server"
     mkdir -p logs

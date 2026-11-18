@@ -114,7 +114,7 @@ record PackProfile(String pass, int colorAttachment, int[] outputAttachments, in
         // The hand-off to DLSS and FSR, needed only when the pack supports one of them.
         boolean upscaled = supports.contains(DLSS) || supports.contains(FSR);
         return new PackProfile(upscaled ? required(props, "pass") : optional(props, "pass"),
-                upscaled ? Integer.parseInt(required(props, "colorAttachment")) : -1,
+                upscaled ? attachment(required(props, "colorAttachment")) : -1,
                 ints(upscaled ? required(props, "outputAttachments") : props.getProperty("outputAttachments", "")),
                 ints(props.getProperty("keepAlpha", "")),
                 upscaled ? required(props, "motionImage") : optional(props, "motionImage"),
@@ -261,8 +261,27 @@ record PackProfile(String pass, int colorAttachment, int[] outputAttachments, in
         return value == null || value.isBlank() ? null : value.trim();
     }
 
+    /** Colour attachments a pack can name: OpenGL draw buffers 0..15 (Iris's colortex0..15). */
+    private static final int MAX_ATTACHMENT = 15;
+
+    /**
+     * One attachment number. The file comes from whatever shader pack is in the folder, and the numbers size the shader
+     * the Bridge writes, so one out of range makes the profile unreadable instead of building a huge program.
+     */
+    private static int attachment(String value) {
+        int a = Integer.parseInt(value.trim());
+        if (a < 0 || a > MAX_ATTACHMENT) {
+            throw new IllegalArgumentException("attachment " + a + " is outside 0.." + MAX_ATTACHMENT);
+        }
+        return a;
+    }
+
     private static int[] ints(String list) {
-        return names(list).stream().mapToInt(Integer::parseInt).toArray();
+        List<String> parts = names(list);
+        if (parts.size() > MAX_ATTACHMENT + 1) {
+            throw new IllegalArgumentException("more than " + (MAX_ATTACHMENT + 1) + " attachments listed");
+        }
+        return parts.stream().mapToInt(PackProfile::attachment).toArray();
     }
 
     private static List<String> names(String list) {

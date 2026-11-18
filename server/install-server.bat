@@ -6,6 +6,8 @@ rem            For bug hunting. Mods aren't downloaded again; the world, server.
 rem Needs Java 21. Start the server with start-server.bat: it asks before applying pack updates.
 setlocal
 set NEOFORGE=21.1.262
+rem SHA-256 of that NeoForge installer (matches the checksum maven.neoforged.net publishes). Change it with NEOFORGE.
+set NEOFORGE_SHA256=e86f5d78ed310465bd1ecf79823abcbc58782699b068ac776f4c5e226d994a8f
 set HERE=%~dp0
 for %%I in ("%HERE%..\pack\pack.toml") do set "PACK=%%~fI"
 if "%~1"=="" (
@@ -23,15 +25,22 @@ if not exist "libraries\net\neoforged\neoforge\%NEOFORGE%" set NEED_NF=1
 if defined NEED_NF (
   echo Installing NeoForge %NEOFORGE% server...
   curl -fL -o neoforge-installer.jar "https://maven.neoforged.net/releases/net/neoforged/neoforge/%NEOFORGE%/neoforge-%NEOFORGE%-installer.jar" || exit /b 1
+  call :verify neoforge-installer.jar %NEOFORGE_SHA256% || exit /b 1
   java -jar neoforge-installer.jar --install-server . || exit /b 1
   del neoforge-installer.jar neoforge-installer.jar.log 2>nul
 )
 
 rem packwiz-installer remembers what it installed (packwiz.json), so a re-run only downloads what changed,
 rem removes mods the pack dropped and leaves config edits alone unless the pack changed that file.
-if not exist packwiz-installer-bootstrap.jar curl -fL -o packwiz-installer-bootstrap.jar https://github.com/packwiz/packwiz-installer-bootstrap/releases/download/v0.0.3/packwiz-installer-bootstrap.jar
-
-if not exist packwiz-installer.jar curl -fL -o packwiz-installer.jar https://github.com/packwiz/packwiz-installer/releases/download/v0.5.14/packwiz-installer.jar
+rem Pinned versions, checked by hash (the same ones the release build checks).
+if not exist packwiz-installer-bootstrap.jar (
+  curl -fL -o packwiz-installer-bootstrap.jar https://github.com/packwiz/packwiz-installer-bootstrap/releases/download/v0.0.3/packwiz-installer-bootstrap.jar || exit /b 1
+  call :verify packwiz-installer-bootstrap.jar a8fbb24dc604278e97f4688e82d3d91a318b98efc08d5dbfcbcbcab6443d116c || exit /b 1
+)
+if not exist packwiz-installer.jar (
+  curl -fL -o packwiz-installer.jar https://github.com/packwiz/packwiz-installer/releases/download/v0.5.14/packwiz-installer.jar || exit /b 1
+  call :verify packwiz-installer.jar c9f646908d340d84773948a9a7d98bc1dae250d35e1016dc6e2b8459760b5598 || exit /b 1
+)
 
 echo Downloading the server-side mods and configs that changed...
 java -jar packwiz-installer-bootstrap.jar --bootstrap-no-update -g -s server "%PACK%" || exit /b 1
@@ -75,3 +84,14 @@ if not exist mods\twilightforest-*.jar (
 findstr /c:"eula=true" eula.txt >nul 2>&1 || echo Read https://aka.ms/MinecraftEULA, then put eula=true in %DEST%\eula.txt
 echo Done. Start the server with start-server.bat (it checks for pack updates first, then opens the server window with the live memory and player panel; use start-server.bat nogui for console only)
 endlocal
+exit /b 0
+
+rem Checks a download against its pinned SHA-256 and deletes it when it doesn't match.
+:verify
+powershell -NoProfile -Command "if ((Get-FileHash -Algorithm SHA256 -LiteralPath '%~1').Hash -ne '%~2') { exit 1 }"
+if errorlevel 1 (
+  echo %~1 doesn't match its pinned checksum, so it was deleted. Try again; if it keeps happening, don't use that download.
+  del "%~1" 2>nul
+  exit /b 1
+)
+exit /b 0

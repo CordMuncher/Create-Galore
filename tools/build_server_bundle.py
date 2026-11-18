@@ -17,6 +17,11 @@ OUT = sys.argv[1] if len(sys.argv) > 1 else sys.exit(__doc__)
 TF_FILE = 'twilightforest-1.21.1-4.8.3345-universal.jar'
 TF_SHA256 = '493da16d10210f9f53a3c33b3d8fcb4ae9b14016ee420d753c894562bd9aba35'
 TF_VERSION = '4.8.3345'
+# The NeoForge installer the app downloads, checked by hash. Each value is the .sha256 maven.neoforged.net publishes
+# next to that installer; a pack on a NeoForge version missing here doesn't build.
+NEOFORGE_INSTALLER_SHA256 = {
+    '21.1.262': 'e86f5d78ed310465bd1ecf79823abcbc58782699b068ac776f4c5e226d994a8f',
+}
 
 def load(path):
     with open(path, 'rb') as f:
@@ -26,6 +31,9 @@ pack = load(os.path.join(PACK, 'pack.toml'))
 # The same checksum packwiz-installer keeps in packwiz.json: any change to the pack changes it.
 pack_sha256 = hashlib.sha256(open(os.path.join(PACK, 'pack.toml'), 'rb').read()).hexdigest()
 index = load(os.path.join(PACK, pack['index']['file']))
+neoforge_installer_sha256 = NEOFORGE_INSTALLER_SHA256.get(pack['versions']['neoforge']) or sys.exit(
+    f"No pinned installer checksum for NeoForge {pack['versions']['neoforge']}: add the .sha256 maven.neoforged.net publishes "
+    "to NEOFORGE_INSTALLER_SHA256")
 os.makedirs(OUT, exist_ok=True)
 
 mods, files, skipped = [], [], 0
@@ -64,7 +72,7 @@ with zipfile.ZipFile(os.path.join(OUT, 'server-files.zip'), 'w', zipfile.ZIP_DEF
 
 with open(os.path.join(OUT, 'pack-info.txt'), 'w', newline='\n') as f:
     f.write(f"pack={pack['version']}\npack_sha256={pack_sha256}\nminecraft={pack['versions']['minecraft']}\n"
-            f"neoforge={pack['versions']['neoforge']}\n"
+            f"neoforge={pack['versions']['neoforge']}\nneoforge_installer_sha256={neoforge_installer_sha256}\n"
             f"tf_file={TF_FILE}\ntf_sha256={TF_SHA256}\ntf_version={TF_VERSION}\n")
 
 print(f"pack {pack['version']}: {len(mods)} server mods, {skipped} client-only skipped, {len(files)} other files")

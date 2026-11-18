@@ -12,10 +12,13 @@ tools/bridge-mod/build.sh /path/to/test-server    # builds the Bridge jar into p
 tools/book-casebook/run.sh /path/to/test-server [CASE]
 ```
 
-`run.sh` copies the Bridge jar into the server, switches it to a flat offline world called `casebook`, starts it,
-runs `/fieldguide casebook run <this folder>`, prints the report (also written to `casebook-report.md` here, which git
+`run.sh` copies the Bridge jar into the server, switches it to a flat offline world called `casebook`, adds
+`-Dcreate_galore_bridge.casebook=true` to its `user_jvm_args.txt`, starts it, runs
+`/fieldguide casebook run <this folder>`, prints the report (also written to `casebook-report.md` here, which git
 ignores) and stops the server. No API key is needed, because the replay runs the book's checks and tools without a
-model. On a running server an operator (or the console) can run `/fieldguide casebook run "<folder>" [case]` directly.
+model. The casebook commands read and write files anywhere on the host, so they exist only on a server started with
+that flag: on such a test server an operator (or the console) can run `/fieldguide casebook run "<folder>" [case]`
+directly. Never add the flag to a real server.
 
 Exit status 0 means nothing regressed.
 

@@ -7,7 +7,19 @@
 set -euo pipefail
 
 NEOFORGE=21.1.262
+# SHA-256 of that NeoForge installer (matches the checksum maven.neoforged.net publishes). Change it with NEOFORGE.
+NEOFORGE_SHA256=e86f5d78ed310465bd1ecf79823abcbc58782699b068ac776f4c5e226d994a8f
 HERE="$(cd "$(dirname "$0")" && pwd)"
+
+# Checks a download against its pinned SHA-256 and deletes it when it doesn't match.
+verify() {
+  if command -v sha256sum >/dev/null 2>&1; then got="$(sha256sum "$1" | cut -d' ' -f1)"; else got="$(shasum -a 256 "$1" | cut -d' ' -f1)"; fi
+  if [ "$got" != "$2" ]; then
+    echo "$1 doesn't match its pinned checksum (got $got), so it was deleted. Try again; if it keeps happening, don't use that download." >&2
+    rm -f "$1"
+    exit 1
+  fi
+}
 PACK="$HERE/../pack/pack.toml"
 DEST="${1:?give the server folder, e.g. ./install-server.sh ~/CreateGaloreServer}"
 
@@ -19,17 +31,24 @@ if [ ! -f run.sh ] || [ ! -d "libraries/net/neoforged/neoforge/$NEOFORGE" ]; the
   echo "Installing NeoForge $NEOFORGE server..."
   curl -fL -o neoforge-installer.jar \
     "https://maven.neoforged.net/releases/net/neoforged/neoforge/$NEOFORGE/neoforge-$NEOFORGE-installer.jar"
+  verify neoforge-installer.jar "$NEOFORGE_SHA256"
   java -jar neoforge-installer.jar --install-server .
   rm -f neoforge-installer.jar neoforge-installer.jar.log
 fi
 
 # packwiz-installer remembers what it installed (packwiz.json), so a re-run only downloads what changed,
 # removes mods the pack dropped and leaves config edits alone unless the pack changed that file.
-[ -f packwiz-installer-bootstrap.jar ] || curl -fL -o packwiz-installer-bootstrap.jar \
-  https://github.com/packwiz/packwiz-installer-bootstrap/releases/download/v0.0.3/packwiz-installer-bootstrap.jar
-
-[ -f packwiz-installer.jar ] || curl -fL -o packwiz-installer.jar \
-  https://github.com/packwiz/packwiz-installer/releases/download/v0.5.14/packwiz-installer.jar
+# Pinned versions, checked by hash (the same ones the release build checks).
+if [ ! -f packwiz-installer-bootstrap.jar ]; then
+  curl -fL -o packwiz-installer-bootstrap.jar \
+    https://github.com/packwiz/packwiz-installer-bootstrap/releases/download/v0.0.3/packwiz-installer-bootstrap.jar
+  verify packwiz-installer-bootstrap.jar a8fbb24dc604278e97f4688e82d3d91a318b98efc08d5dbfcbcbcab6443d116c
+fi
+if [ ! -f packwiz-installer.jar ]; then
+  curl -fL -o packwiz-installer.jar \
+    https://github.com/packwiz/packwiz-installer/releases/download/v0.5.14/packwiz-installer.jar
+  verify packwiz-installer.jar c9f646908d340d84773948a9a7d98bc1dae250d35e1016dc6e2b8459760b5598
+fi
 
 echo "Downloading the server-side mods and configs that changed..."
 java -jar packwiz-installer-bootstrap.jar --bootstrap-no-update -g -s server "$PACK"

@@ -5,6 +5,33 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.92
+
+A security pass over the updater and the Create Galore Bridge.
+
+### Added
+- Create Galore Bridge 1.197.0.
+- **Server-wide limits for Ask the Book.** `server_daily_questions` (default 300) caps the questions all players together can ask in a day, on top of each player's own limit, and `min_permission` (default 0; 2 for operators only) sets who may ask. New servers get both lines in `field-guide-ai.properties`; on an existing server, add them there to change the defaults.
+
+### Fixed
+- **The server's update check ran the Server Setup app without checking it.** It now runs the downloaded app only when it matches the checksum the release lists, and takes only a plain version number from GitHub, so a tampered or broken download is never run.
+- **Players and servers updated to the branch even when the release build failed.** The updater now installs the latest release's pack, read at the exact commit that release was built from and checked against its checksum.
+- **Updates could come over plain http.** The updater refuses http:// pack addresses and redirects to http://, and caps the size of what it downloads. The Field Guide voice won't send the API key to an http:// address (except a proxy on the same computer).
+- **A shader pack zip could write files outside its folder.** The Photon + DLAA patcher now refuses any zip entry that would land outside its copy (on Windows a name with backslashes could reach the mods folder), stops at 256 MB, and never follows a link when it deletes its old copy.
+- **NVIDIA Reflex could load an nvapi64.dll from the game folder or PATH** on PCs without an NVIDIA card. System DLLs now load from System32 only, and the Bridge's own helper DLL is reused only when it matches the jar's copy byte for byte.
+- **A shader pack's settings could make the Bridge build a huge shader.** Its attachment numbers are now checked (0 to 15).
+- **Any player could unpin anyone's pinned schematic and pin nonstop.** Only the player who pinned a schematic, or an operator, can unpin it; pins are 30 seconds apart per player, and a build too big to lay out is refused before the server starts on it.
+- **A client could make the server read and send schematics and book pages nonstop.** Those requests are now paced per player, and a schematic file over the size limit is never read.
+- **Casing a door ignored land claims.** It is now refused wherever breaking the door would be.
+- **The book could list what is in a container the player only clicked.** It now counts a container only when the click really opened it: not one a claim mod protects, not a locked one without its key.
+- **The Field Guide casebook's test commands existed on every server.** They read and write files anywhere on the host, so they now exist only on a test server started with `-Dcreate_galore_bridge.casebook=true`, which `tools/book-casebook` sets.
+- **A server could make a client hold memory for schematics it never asked for**, and a pinned schematic's data is now checked before it is read.
+- **Installers ran unchecked.** The install scripts and the Server Setup app check the NeoForge installer and the packwiz jars against pinned checksums before running them.
+- **The pack's build tools weren't pinned.** packwiz, xwin and the DLSS, Streamline and FidelityFX SDKs are pinned to exact versions and checksums, and the Bridge's build refuses a DLL that doesn't match `tools/bridge-mod/natives.sha256`.
+
+### Removed
+- Nothing.
+
 ## 0.6.91
 
 ### Added

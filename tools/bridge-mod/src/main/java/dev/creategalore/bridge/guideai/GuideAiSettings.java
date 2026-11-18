@@ -28,6 +28,10 @@ public final class GuideAiSettings {
     final int maxTokens;
     final int dailyQuestions;
     final int cooldownSeconds;
+    /** Questions all players together may ask per day: each can cost several API calls on the owner's key. */
+    final int serverDailyQuestions;
+    /** Permission level needed to ask (0: every player, 2: operators only). */
+    final int minPermission;
     final boolean webSearch;
     final String apiUrl;
     /** Never logged, never sent anywhere but the x-api-key header to {@link #apiUrl}. */
@@ -39,6 +43,8 @@ public final class GuideAiSettings {
         this.maxTokens = intProperty(p, "max_tokens", 32000, 1024, 64000);
         this.dailyQuestions = intProperty(p, "daily_questions", 100, 1, 10000);
         this.cooldownSeconds = intProperty(p, "cooldown_seconds", 10, 0, 3600);
+        this.serverDailyQuestions = intProperty(p, "server_daily_questions", 300, 1, 1_000_000);
+        this.minPermission = intProperty(p, "min_permission", 0, 0, 4);
         this.webSearch = !"false".equalsIgnoreCase(p.getProperty("web_search", "true").trim());
         String url = p.getProperty("api_url", "https://api.anthropic.com").trim();
         this.apiUrl = url.endsWith("/") ? url.substring(0, url.length() - 1) : url;
@@ -93,7 +99,25 @@ public final class GuideAiSettings {
             return null;
         }
         warnIfShared(keyFile);
-        return new GuideAiSettings(p, key);
+        GuideAiSettings settings = new GuideAiSettings(p, key);
+        if (!keySafe(settings.apiUrl)) {
+            LOG.warn("Field Guide voice: api_url in {} isn't an https:// address, so the key would travel unencrypted; staying off", props);
+            return null;
+        }
+        return settings;
+    }
+
+    /** True for https://, or plain http:// only to this computer (a local proxy). Same rule as the updater's Net.keySafe. */
+    static boolean keySafe(String base) {
+        try {
+            java.net.URI u = new java.net.URI(base);
+            String scheme = u.getScheme() == null ? "" : u.getScheme().toLowerCase(Locale.ROOT);
+            String host = u.getHost() == null ? "" : u.getHost().toLowerCase(Locale.ROOT);
+            if (scheme.equals("https")) return !host.isEmpty();
+            return scheme.equals("http") && (host.equals("localhost") || host.equals("127.0.0.1") || host.equals("[::1]") || host.equals("::1"));
+        } catch (java.net.URISyntaxException e) {
+            return false;
+        }
     }
 
     private static void warnIfShared(Path keyFile) {

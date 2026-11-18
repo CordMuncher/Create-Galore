@@ -155,6 +155,11 @@ final class FieldGuideKey {
                 out.println("That doesn't look like an API key (they start with sk-ant- and have no spaces). Try again.");
                 continue;
             }
+            if (!Net.keySafe(apiBase())) {
+                out.println("api_url in " + dir.resolve(PROPERTIES) + " isn't an https:// address, so the key would travel unencrypted.");
+                out.println("Fix api_url (or delete that line) and try again. Nothing changed.");
+                return;
+            }
             out.println("Checking the key with Anthropic...");
             int status = check(key);
             if (status == 200) {
@@ -185,12 +190,19 @@ final class FieldGuideKey {
         out.println("Nothing changed. Type K at the next start to try again.");
     }
 
+    /** The API address from the settings file (Anthropic's by default), without a trailing slash. */
+    String apiBase() {
+        String base = readProperties().getProperty("api_url", "https://api.anthropic.com").trim();
+        return base.endsWith("/") ? base.substring(0, base.length() - 1) : base;
+    }
+
     /** A free call (the model list) that only works with a valid key. Returns the HTTP status, 0 if unreachable. */
     int check(String key) {
         try {
-            String base = readProperties().getProperty("api_url", "https://api.anthropic.com").trim();
-            if (base.endsWith("/")) base = base.substring(0, base.length() - 1);
+            String base = apiBase();
+            if (!Net.keySafe(base)) return 0;
             HttpURLConnection c = (HttpURLConnection) new URL(base + "/v1/models?limit=1").openConnection();
+            c.setInstanceFollowRedirects(false);
             c.setConnectTimeout(15000);
             c.setReadTimeout(30000);
             c.setRequestProperty("x-api-key", key);
@@ -243,6 +255,10 @@ final class FieldGuideKey {
             "# Questions each player can ask per day, and seconds between their questions.",
             "daily_questions=100",
             "cooldown_seconds=10",
+            "# Questions all players together can ask per day (each can cost several API calls), and who may ask:",
+            "# 0 = every player, 2 = operators only.",
+            "server_daily_questions=300",
+            "min_permission=0",
             "# Look things up on Modrinth and the mods' own wikis when the guide has no answer.",
             "web_search=true",
             "");

@@ -5,7 +5,10 @@ import com.simibubi.create.AllDataComponents;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.foundation.utility.CreatePaths;
 import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.FilterInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -14,6 +17,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HexFormat;
 import java.util.List;
+import java.util.zip.GZIPInputStream;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -56,6 +60,10 @@ public final class SharedSchematics {
     /** Payloads stay well under the 1 MiB a server can send at once. */
     private static final int CHUNK = 512 * 1024;
     public static final int MAX_BYTES = 64 * 1024 * 1024;
+    /** Most a build's file may unpack to: far above any real schematic, low enough that a crafted one can't stall a game. */
+    private static final long MAX_UNPACKED = 128L * 1024 * 1024;
+    /** Builds a client can ask for: plenty for a full inventory of papers, not a way to make the server read files nonstop. */
+    private static final PlayerRateLimit REQUESTS = new PlayerRateLimit(16, 2.0);
 
     private SharedSchematics() {
     }
@@ -96,7 +104,8 @@ public final class SharedSchematics {
         Path upload = upload(stack);
         if (upload == null || !Files.isRegularFile(upload)) return;
         try {
-            byte[] bytes = Files.readAllBytes(upload);
+            byte[] bytes = readSmall(upload);
+            if (bytes == null) return;
             String hash = store(server, bytes);
             CustomData.update(DataComponents.CUSTOM_DATA, stack, tag -> tag.putString(TAG, hash));
         } catch (IOException e) {
@@ -130,10 +139,15 @@ public final class SharedSchematics {
         return hash;
     }
 
+    /** A file's bytes, or null when it isn't there or is over {@link #MAX_BYTES} (checked before reading it). */
+    private static byte[] readSmall(Path file) throws IOException {
+        return Files.isRegularFile(file) && Files.size(file) <= MAX_BYTES ? Files.readAllBytes(file) : null;
+    }
+
     private static byte[] stored(MinecraftServer server, String hash) {
         Path file = storeDir(server).resolve(hash + ".nbt");
         try {
-            return Files.isRegularFile(file) ? Files.readAllBytes(file) : null;
+            return readSmall(file);
         } catch (IOException e) {
             LOGGER.warn("Couldn't read the kept schematic {}", file, e);
             return null;
@@ -162,11 +176,14 @@ public final class SharedSchematics {
         return bytes == null ? null : parse(level, bytes);
     }
 
-    /** A build from its file's bytes (gzipped structure NBT, as Create writes it); an empty one if they don't read. */
+    /**
+     * A build from its file's bytes (gzipped structure NBT, as Create writes it); an empty one if they don't read. The
+     * bytes may be another player's upload relayed by the server, so what they unpack to is capped.
+     */
     public static StructureTemplate parse(Level level, byte[] bytes) {
         StructureTemplate template = new StructureTemplate();
-        try {
-            CompoundTag tag = NbtIo.readCompressed(new ByteArrayInputStream(bytes), NbtAccounter.create(0x20000000L));
+        try (DataInputStream in = new DataInputStream(new Capped(new GZIPInputStream(new ByteArrayInputStream(bytes)), MAX_UNPACKED))) {
+            CompoundTag tag = NbtIo.read(in, NbtAccounter.create(0x20000000L));
             template.load(level.holderLookup(Registries.BLOCK), tag);
         } catch (IOException | RuntimeException e) {
             LOGGER.warn("Failed to read schematic", e);
@@ -180,6 +197,11 @@ public final class SharedSchematics {
      */
     private static void onRequest(Request request, IPayloadContext context) {
         if (!(context.player() instanceof ServerPlayer player)) return;
+        if (!REQUESTS.tryAcquire(player.getUUID())) {
+            // Over the limit: an empty answer (the client falls back to its own folder) instead of reading the file.
+            send(player, request.key, "", new byte[0]);
+            return;
+        }
         List<ItemStack> papers = new ArrayList<>();
         for (int i = 0; i < player.getInventory().getContainerSize(); i++) papers.add(player.getInventory().getItem(i));
         papers.add(player.containerMenu.getCarried());
@@ -197,7 +219,7 @@ public final class SharedSchematics {
             if (bytes == null) {
                 Path upload = upload(paper);
                 try {
-                    if (upload != null && Files.isRegularFile(upload)) bytes = Files.readAllBytes(upload);
+                    if (upload != null) bytes = readSmall(upload);
                 } catch (IOException e) {
                     LOGGER.warn("Couldn't read the schematic {}", upload, e);
                 }
@@ -247,6 +269,30 @@ public final class SharedSchematics {
         @Override
         public Type<Part> type() {
             return TYPE;
+        }
+    }
+
+    /** Fails the read once more than {@code limit} bytes have come through. */
+    private static final class Capped extends FilterInputStream {
+        private long left;
+
+        Capped(InputStream in, long limit) {
+            super(in);
+            left = limit;
+        }
+
+        @Override
+        public int read() throws IOException {
+            int b = super.read();
+            if (b >= 0 && --left < 0) throw new IOException("schematic unpacks to more than " + (MAX_UNPACKED >> 20) + " MB");
+            return b;
+        }
+
+        @Override
+        public int read(byte[] buf, int off, int len) throws IOException {
+            int n = super.read(buf, off, len);
+            if (n > 0 && (left -= n) < 0) throw new IOException("schematic unpacks to more than " + (MAX_UNPACKED >> 20) + " MB");
+            return n;
         }
     }
 

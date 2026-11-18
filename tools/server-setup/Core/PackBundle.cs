@@ -23,7 +23,7 @@ namespace CreateGalore.ServerSetup
     /// </summary>
     public sealed class PackBundle
     {
-        public string PackVersion, PackSha256, Minecraft, NeoForge, TfFile, TfSha256, TfVersion;
+        public string PackVersion, PackSha256, Minecraft, NeoForge, NeoForgeInstallerSha256, TfFile, TfSha256, TfVersion;
         public List<ModEntry> Mods = new List<ModEntry>();
         public Dictionary<string, ModEntry> BySha512 = new Dictionary<string, ModEntry>(StringComparer.OrdinalIgnoreCase);
         Func<Stream> openFiles, openChecker;
@@ -58,6 +58,7 @@ namespace CreateGalore.ServerSetup
                     case "pack_sha256": b.PackSha256 = v; break;
                     case "minecraft": b.Minecraft = v; break;
                     case "neoforge": b.NeoForge = v; break;
+                    case "neoforge_installer_sha256": b.NeoForgeInstallerSha256 = v; break;
                     case "tf_file": b.TfFile = v; break;
                     case "tf_sha256": b.TfSha256 = v; break;
                     case "tf_version": b.TfVersion = v; break;
